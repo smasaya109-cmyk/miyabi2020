@@ -1,0 +1,26 @@
+---
+title: "Portfolio Starter（Phase 2）"
+date: "2026-01-23"
+summary: "MDXを追加するだけで一覧/詳細が自動更新されるポートフォリオ基盤。"
+tags: ["Next.js", "TypeScript", "MDX", "SSG"]
+status: "ongoing"
+pinned: true
+links:
+  - label: "Repository"
+    url: "https://example.com"
+---
+
+## 背景
+更新しやすいポートフォリオを最短で作る。
+
+## 課題
+- 追加のたびにページ実装を触ると運用が重い
+- 日付や必須項目が抜けても気づきにくい
+
+## アプローチ
+- `content/` にMDX + frontmatter
+- ビルド時にバリデーション（必須不足はエラー）
+- 一覧/詳細は静的生成（SSG）
+
+## 学び
+「構造（情報設計）」が先だと、見た目調整が楽。
