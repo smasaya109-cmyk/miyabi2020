@@ -35,21 +35,7 @@ export function Hero() {
       </div>
 
 
-      {site.links?.length ? (
-        <div className="mt-6 flex flex-wrap gap-4 text-sm">
-          {site.links.map((l) => (
-            <a
-              key={l.url}
-              href={l.url}
-              target={l.url.startsWith("/") ? undefined : "_blank"}
-              rel={l.url.startsWith("/") ? undefined : "noreferrer noopener"}
-              className="text-zinc-700 hover:text-zinc-950 underline underline-offset-4 decoration-zinc-300 hover:decoration-zinc-900"
-            >
-              {l.label}
-            </a>
-          ))}
-        </div>
-      ) : null}
+      
     </div>
   );
 }
