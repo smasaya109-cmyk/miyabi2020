@@ -6,10 +6,7 @@ import { Container } from "@/components/Container";
 import { MDX } from "@/components/MDX";
 import { getAllPlayroom, getPlayroomBySlug } from "@/lib/content/playroom";
 import { Prose } from "@/components/Prose";
-import ArcMenuPlayground from "@/components/playroom/ArcMenuPlayground";
-import { MagneticCtaDemo } from "@/components/playroom/MagneticCtaDemo";
-import { SpotlightGridDemo } from "@/components/playroom/SpotlightGridDemo";
-
+import { playroomMdxComponents } from "@/components/playroom/registry";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -48,32 +45,9 @@ export default async function PlayroomDetailPage({ params }: Props) {
           ))}
         </div>
 
-        {item.links?.length ? (
-          <div className="mt-6 flex flex-wrap gap-3">
-            {item.links.map((l: { label: string; url: string }) => (
-              <a
-                key={l.url}
-                className="btn"
-                href={l.url}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                {l.label}
-              </a>
-            ))}
-          </div>
-        ) : null}
-
         <div className="mt-10">
           <Prose>
-            <MDX
-              source={item.body}
-              components={{
-                ArcMenuPlayground,
-                MagneticCtaDemo,
-                SpotlightGridDemo,
-              }}
-            />
+            <MDX source={item.body} components={playroomMdxComponents} />
           </Prose>
         </div>
 

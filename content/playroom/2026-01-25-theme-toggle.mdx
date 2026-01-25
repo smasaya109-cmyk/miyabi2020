@@ -1,0 +1,24 @@
+---
+title: Theme Toggle (Light / Dark)
+date: "2026-01-25"
+summary: Playroomのステージ内だけでライト/ダークを切り替えるデモ。外枠（Stage）を統一しつつ中身は自由に。
+tags: ["theme", "ui", "a11y"]
+---
+
+<Stage
+  variant="grid"
+  actions={
+    <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-700 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+      localStorage
+    </span>
+  }
+>
+  <ThemeToggleDemo />
+</Stage>
+
+
+
+## メモ
+- ステージ内プレビューだけがライト/ダークに切り替わる（サイト全体は変更しない）
+- 統一するのは “Stage（器）” のみ。デモの中身（トグル/ボタン/配色）は各コンテンツで自由に変える。
+- `variant` と `minHeight` で雰囲気や密度だけ微調整できるようにしておくと、Playroom全体の統一感が出しやすい。

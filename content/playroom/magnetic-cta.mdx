@@ -5,8 +5,18 @@ summary: "カーソルにふわっと吸い付くCTAボタン。静かな強さ�
 tags: ["micro-interaction", "cta", "cursor"]
 ---
 
-<MagneticCtaDemo />
+<Stage
+  variant="grid"
+  actions={
+    <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-700 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+      magnetic
+    </span>
+  }
+>
+  <MagneticCtaDemo />
+</Stage>
 
-## ねらい
+
+## メモ
 - 目立たせすぎず、触った人だけが気持ちよくなる
 - アクセシビリティ（キーボード/モーション軽減）を崩さない

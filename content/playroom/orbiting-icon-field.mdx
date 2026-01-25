@@ -3,9 +3,19 @@ title: "Orbiting Icon Background (Alternating Columns)"
 date: "2026-01-25"
 summary: "背景のアイコンが列ごとに左右交互に回転するデモ。reduced-motion対応。"
 tags: ["ui", "motion", "background", "playroom"]
-draft: false
 ---
 
-背景に“バッジアイコン”がくるくる回るやつ。列（カラム）ごとに回転方向を交互にしています。
+<Stage
+  variant="grid"
+  minHeight="lg"
+  actions={
+    <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-700 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+      orbit
+    </span>
+  }
+>
+  <OrbitingIconField />
+</Stage>
 
-<OrbitingIconField />
+## メモ
+- 背景に“バッジアイコン”がくるくる回るやつ。列（カラム）ごとに回転方向を交互にしています。

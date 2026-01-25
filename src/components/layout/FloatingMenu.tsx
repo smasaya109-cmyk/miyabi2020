@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   Home as HomeIcon,
-  Info,
-  Sparkles,
+  UserRound,
+  GalleryVerticalEnd,
   FlaskConical,
   Mail,
   Menu as MenuIcon,
@@ -21,9 +21,9 @@ type Item = {
 
 const ITEMS: Item[] = [
   { href: "/", label: "Home", icon: HomeIcon },
-  { href: "/about", label: "About", icon: Info },
-  { href: "/showcase", label: "Showcase", icon: Sparkles },
+  { href: "/showcase", label: "Showcase", icon: GalleryVerticalEnd },
   { href: "/playroom", label: "Playroom", icon: FlaskConical },
+  { href: "/about", label: "About", icon: UserRound },
   { href: "/contact", label: "Contact", icon: Mail },
 ];
 
@@ -105,10 +105,10 @@ export function FloatingMenu() {
   });
 
   // セパレータ「・」配置：隣同士の中間
-    const separatorDegrees = degrees.slice(0, -1).map((deg, i) => {
+  const separatorDegrees = degrees.slice(0, -1).map((deg, i) => {
     const next = degrees[i + 1] ?? deg;
     return (deg + next) / 2;
-    });
+  });
 
   return (
     <div

@@ -3,12 +3,19 @@ title: "Arc Menu Playground"
 date: "2026-01-24"
 summary: "アーク状に展開するメニューを、ユーザーが触って調整できるデモ。"
 tags: ["UI", "Interaction", "Playroom"]
-draft: false
 ---
 
-<div className="not-prose">
+<Stage
+  minHeight="lg"
+  actions={
+    <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-700 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+      radial
+    </span>
+  }
+>
   <ArcMenuPlayground />
-</div>
+</Stage>
+
 
 ## メモ
 - ぜひ触ってどんな感じの動きか確認してみて下さい。

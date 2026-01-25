@@ -5,7 +5,17 @@ summary: "カード上をなぞると光が追従する、静かな質感演出�
 tags: ["micro-interaction", "cards", "cursor"]
 ---
 
-<SpotlightGridDemo />
+<Stage
+  variant="grid"
+  minHeight="lg"
+  actions={
+    <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-700 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+      hover
+    </span>
+  }
+>
+  <SpotlightGridDemo />
+</Stage>
 
 ## ねらい
 - 背景や影を盛らず、薄い光で“上質さ”だけを足す

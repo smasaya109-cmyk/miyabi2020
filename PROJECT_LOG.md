@@ -480,3 +480,156 @@ Phase1・Phase2完了。Phase3（見た目）を進行中。
 - 迷わせない。次にVSCode/ブラウザでやることを短いチェックリストで。
 - エラーがあれば：原因仮説→最短検証→修正案。
 - 進捗の最後に PROJECT_STATE を更新して出力する。
+
+## 2026-01-25 引き継ぎログ（Home更新 / Playroom拡充）
+
+### 発生した問題と解決
+- Homeの更新（MDX追加/削除）が反映されない
+  - 原因: `src/app/page.tsx` に `export const dynamic = "force-static";` があり、静的固定されやすかった
+  - 対応: `force-static` を削除し、更新が反映される挙動に修正
+
+- Vercelで「pushしても本番が変わらない」
+  - 原因: Production URLではなく、Preview / 別デプロイを見ていた可能性
+  - 対応: Vercelのデプロイ詳細画面の「Visit」から確認 → 更新が反映されることを確認
+  - メモ: メールアドレス等を `.env.local` で変えた場合はGitに入らず本番反映されないので、VercelのEnvironment Variables側で管理する
+
+- updatesのfrontmatterバリデーションエラー
+  - エラー: summary が undefined（`summary` が必須スキーマ）
+  - 対応: 該当MDXに `summary` を追加（または将来的に optional + 自動生成の方針も検討）
+
+### UI改善（ボタン統一）
+- `src/components/ui/ButtonLink.tsx` を追加し、primary/secondary + サイズでボタンを統一
+- Homeの Contact/Showcase ボタンを `ButtonLink` に置換
+- Hero（「Miyabiとは」内のボタン）も同じ `ButtonLink` デザインに統一
+
+### Playroom拡充（体験が主役のレイアウト方針）
+- 方針: “体験が主役” のステージ（大きいデモ領域）を中心に置き、補足はケースにまとめる
+- `not-prose` を使い、MDX(Prose)のタイポ影響で崩れないようにする
+- Magnetic CTA / Spotlight Grid を追加（MDXでデモ表示）
+
+### Playroom/MDXの重要仕様（詰まりポイント）
+- `src/app/playroom/[slug]/page.tsx` の `<MDX components={{...}} />` 方式のため、
+  - MDX内の `import` は効かないことがある
+  - 使うコンポーネントは page.tsx 側の `components` に登録が必要
+  - Runtime Error「Expected component ...」は未登録が原因
+
+### Spotlight Grid の挙動修正
+- 問題1: 全カードが同時に同じモーション
+  - 原因: 親要素のCSS変数（--mx/--my）を全カードが参照していた
+  - 対応: カード単位でCSS変数（--cx/--cy）を持ち、カード基準座標で更新
+
+- 問題2: 背後のカードも動く
+  - 原因: ステージ（親）側の追従スポットライトが全体に影響
+  - 対応: 親の追従をやめ、カード自身の `onPointerMove` で更新（ホバー中のカードだけ動く）
+
+### 軽さ・運用メモ
+- 依存ライブラリ追加なしで、rAF + CSS変数で表現
+- reduced-motion に配慮（動かない/安定）
+- Vercelでは「Visit」からProductionを確認する運用を固定
+
+### TODO（次回）
+- Playroomコンポーネント登録の手間を減らすため registry 化（`playroomComponents` を1箇所にまとめる）
+- Hero.tsx の未使用import Warning（Link未使用）を整理
+- updates の `summary` 必須を維持するか、optional + 自動生成にするか決める
+
+あなたは「ポートフォリオサイト制作専用の相棒GPT」です。
+Next.js(App Router)+TS、軽く見やすく、MDXで更新しやすい運用を最優先に進めてください。
+
+【現状】
+- Vercelにデプロイ済み。更新確認は Vercelデプロイ詳細の「Visit」から行う（本番URLを見間違えると反映されないように見える）。
+- Homeの更新反映問題は `src/app/page.tsx` の `export const dynamic = "force-static";` を削除して解消済み。
+- ボタンは `src/components/ui/ButtonLink.tsx` を追加して統一（primary/secondary + size=lg）。HomeとHero内ボタンも同デザインに統一済み。
+- Playroomを拡充中。「体験が主役」のレイアウトに寄せたい（大きいステージ、補足はケース、`not-prose` で崩れ防止）。
+- Playroom詳細は `src/app/playroom/[slug]/page.tsx` で `<MDX source=... components={{...}} />` 方式。MDX内importが効かないため、使うデモコンポーネントは page.tsx 側の components map に登録が必要。未登録だと Runtime Error「Expected component ...」になる。
+- SpotlightGridDemo:
+  - 全カード同期の原因は親CSS変数共有。カード単位変数（--cx/--cy）に変更。
+  - 背後カードも動く原因は親ステージ追従の光。親追従をやめ、カード自身のonPointerMoveで更新し「ホバー中のカードだけ動く」に修正。
+
+【いま取り組みたいこと】
+- Playroomのデモを増やしつつ、全体の見た目を「体験主役」UIに統一。
+- 次にやるなら:
+  1) Playroomコンポーネント登録を registry 化して追加作業を簡略化
+  2) Spotlight/Magneticなどのデモを同じ“ステージ枠”パターンで統一
+  3) Hero.tsxの未使用import警告整理
+  4) updatesのfrontmatter（summary必須）を維持するか、optional+自動生成にするか決める
+
+【制約】
+- できるだけSSG中心で軽量に。不要ライブラリは増やさない。
+- アクセシビリティ（focus-visible、reduced-motion）を崩さない。
+- 迷わせない：動くものを最短で作って段階的に磨く。
+
+上記前提で、次の改善提案と実装手順（ファイルツリー→全文コード→コマンド→確認ポイント）を提示してください。
+
+
+# PROJECT_LOG（Playroom統一・運用ルール固め）
+
+## 2026-01-XX（作業まとめ）
+### 目的
+- Playroomを「体験主役UI」に統一し、MDXで追加が迷わない運用を確立する。
+
+### できたこと（確定）
+- Vercel本番確認は Deploy 詳細の「Visit」を正として運用（URL見間違い対策）。
+- Home更新反映問題：`src/app/page.tsx` の `export const dynamic = "force-static";` を削除して解消。
+- ボタン統一：`src/components/ui/ButtonLink.tsx` を追加し、primary/secondary + size=lg で統一。
+- Playroom詳細のMDXレンダリング：`src/app/playroom/[slug]/page.tsx` で `<MDX source=... components={...} />` 方式。
+  - MDX内importは使えないため、使用するデモコンポは `components map`（registry）に登録必須。
+- frontmatter date問題：
+  - `date: 2026-01-25` は YAML が Date に解釈してZodで落ちる場合あり。
+  - 対策：`date: "YYYY-MM-DD"` のようにクォートして文字列にする。
+- Playroomの links 表示は恒久OFF（Playroomは体験主役のためリンク欄はノイズになりやすい）。
+
+### Stage（最終決定・器の統一）
+- 「タイトルなし」「actions右上固定」「minHeightデフォルト md」「背景はGridで統一」に決定。
+- Stageは“器だけ”を統一し、中身（デモUI/ボタン）は記事ごとに自由に作れる設計。
+
+### registry運用
+- `src/components/playroom/registry.tsx` に Playroomで使うMDXコンポを集約。
+- 追加作業は「コンポ作成 → registryに1行追加 → MDXで呼ぶ」に固定。
+- OrbitingIconFieldのRuntime Errorが出たため、registry側の import/export 形式（default/named）を合わせる必要あり。
+
+### ThemeToggle（成功例）
+- トグルをスライドで“ぬるっと”に改善（reduced-motion対応）。
+- Stageに載せて良い見た目になった。
+
+### ArcMenuPlayground（現在の問題）
+- Stageに乗せるために、ArcMenuPlaygroundの“カード枠/見出し/説明”を削り「中身だけ」に寄せる方向にした。
+- ただし現在スクショでレイアウトが崩れている（メニュー位置が上に寄る等）。
+- 原因仮説：Stage内で高さが確定せず、absolute配置が想定通り効かない可能性。
+- 未実行の提案修正：
+  - Stage側を `flex flex-col` + 子を `flex-1` にして“キャンバスの高さを確定”させる（absolute系デモ安定化）。
+
+### 次回の最優先TODO
+1. Stageに「flexで高さ確定」修正を適用してArcMenu崩れが解消するか確認。
+2. ArcMenuが直ったら、既存Playroom記事を順次「frontmatter直下に <Stage> + <Demo/>」へ統一。
+3. registry未登録が原因のRuntime Errorを都度潰す（使うMDXタグ=registryキーを一致させる）。
+
+あなたは「ポートフォリオサイト制作専用の相棒GPT」です。
+Next.js(App Router)+TS、軽く見やすく、MDXで更新しやすい運用を最優先。
+
+【現状】
+- Vercel本番確認は Deploy詳細の「Visit」で行う。
+- Homeのforce-staticは削除済みで反映OK。
+- ButtonLinkでボタンデザイン統一済み。
+- Playroom詳細は <MDX source=... components={...}/> 方式（MDX内import不可）。
+- Playroom詳細ページの links 表示は恒久OFF。
+- frontmatterの date は必ず "YYYY-MM-DD" の文字列で書く（クォート必須）。
+
+【Playroomの最終ルール（確定）】
+- “器”は Stage で統一、デモの中身（ボタン/UI）は各コンテンツで自由。
+- Stage仕様（確定）：
+  - タイトルなし
+  - actions は右上固定
+  - minHeight デフォルト md
+  - 背景は全ページ Gridで統一
+- MDX記事は frontmatter直下に必ず <Stage> を置き、すぐ体験できる構成にする。
+- 説明は本文の「## メモ」に寄せる（Stage下のnotesは原則使わない、必要時のみ）。
+- MDXで使うコンポは必ず src/components/playroom/registry.tsx に登録（未登録は Runtime Error）。
+
+【未解決】
+- ArcMenuPlaygroundがStageに載せた状態で崩れている。
+- 未実行の修正案：Stage側を flex化（flex flex-col + 子flex-1）して高さを確定し、absolute配置デモを安定化させたい。
+
+【次にやること】
+1) Stageに“高さ確定（flex）”修正を入れてArcMenu崩れが直るか検証
+2) 直ったら既存Playroom記事をStageに順次移行（統一）
+3) registry未登録のコンポが出たら即追加してRuntime Errorを潰す

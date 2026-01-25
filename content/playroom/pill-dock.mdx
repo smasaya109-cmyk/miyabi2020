@@ -3,10 +3,20 @@ title: "Pill Dock Button (Touchable UI)"
 date: "2026-01-25"
 summary: "ピル型の台座＋中央が盛り上がったボタン。タップで選択が切り替わるミニUI。"
 tags: ["ui", "microinteraction", "playroom"]
-draft: false
 ---
 
-触れる・押せる感がある **ピル型ボタンUI** の実験。  
-左右＋中央の3つをタップして、状態が切り替わるようにしています（アクセシビリティ: focus-visible / reduced-motion 対応）。
+<Stage
+  variant="grid"
+  actions={
+    <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-700 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+      dock
+    </span>
+  }
+>
+  <PillDockDemo />
+</Stage>
 
-<PillDockDemo />
+## メモ
+- 触れる・押せる感がある **ピル型ボタンUI** の実験。  
+- 左右＋中央の3つをタップして、状態が切り替わるようにしています（アクセシビリティ: focus-visible / reduced-motion 対応）。
+

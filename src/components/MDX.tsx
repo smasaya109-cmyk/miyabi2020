@@ -8,11 +8,9 @@ import type {
 
 // Showcase用のミニUIコンポーネント
 import { BeforeAfterMiniUI } from "@/components/showcase/BeforeAfterMiniUI";
+import { PricingCardGold } from "@/components/showcase/PricingCardGold";
 
 // Playroom用のミニUIコンポーネント
-import PillDockDemo from "@/components/playroom/PillDockDemo";
-import OrbitingIconField from "@/components/playroom/OrbitingIconField";
-import VoiceHoldTypeDemo from "@/components/playroom/VoiceHoldTypeDemo";
 
 
 
@@ -76,9 +74,7 @@ export function MDX({
 
     // ✅ 追加：MDX内で <BeforeAfterMiniUI /> を使えるようにする
     BeforeAfterMiniUI,
-    PillDockDemo,
-    OrbitingIconField,
-    VoiceHoldTypeDemo,
+    PricingCardGold,
   };
 
   return (

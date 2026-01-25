@@ -3,10 +3,19 @@ title: "Hold-to-Type (Space / Long Press)"
 date: "2026-01-25"
 summary: "Spaceホールド（または長押し）で文章が書かれていく“体験”だけを切り出したデモ。"
 tags: ["playroom", "microinteraction", "keyboard", "mobile"]
-draft: false
 ---
 
 PCは **Spaceをホールド**、スマホは **ボタンを長押し**すると文章が進みます。  
 「入力している感」を短時間で体験できるやつ。
 
-<VoiceHoldTypeDemo />
+<Stage
+  variant="grid"
+  actions={
+    <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-700 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200">
+      hold
+    </span>
+  }
+>
+  <VoiceHoldTypeDemo />
+</Stage>
+
