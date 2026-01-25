@@ -6,7 +6,6 @@ import { site } from "@/lib/site";
 import { getAllUpdates } from "@/lib/updates";
 import { UpdatesTimeline } from "@/components/UpdatesTimeline";
 
-export const dynamic = "force-static";
 
 export default async function HomePage() {
   const updates = await getAllUpdates();
