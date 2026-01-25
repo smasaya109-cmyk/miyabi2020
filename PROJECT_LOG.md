@@ -317,34 +317,166 @@ Phase1・Phase2完了。Phase3（見た目）を進行中。
 - READMEに「更新フロー（MDX追加→確認→push→Vercel）」を追記
 - Phase5：Vercelデプロイ → Xserver独自ドメイン接続（apex/www方針含めチェックリスト化）
 
-あなたは「ポートフォリオサイト制作専用の相棒GPT」です。以下のプロジェクトを引き継いでください。
+
+## 2026-01-24 — Deploy準備〜Vercel公開〜独自ドメイン接続（途中）
+
+### 技術/構成（現状）
+- Next.js(App Router) + TypeScript / Tailwind v3
+- Next 15.5.x 系（Vercel脆弱性検知対応で 15.5.9 まで更新）
+- MDX：next-mdx-remote/rsc + gray-matter + zod
+- SSG中心（content/ から Projects / Showcase / Playroom 生成、draft:trueは本番非表示）
+- Home Updates：src/content/updates/*.mdx を追加するだけで増える（typeでアイコン切替）
+- Header撤去運用：site.ui.showHeader=false
+  - 回遊は FloatingMenu + Footer
+- PageTransition：軽いフェード、reduced-motion対応
+- フォント：next/font（Noto Sans JP → --font-sans → font-sans）
+
+### 直近で解決したこと
+- Next.js 15.5.0 の脆弱性（Vercelがビルドを止める）
+  - 最初は 15.5.7 へ更新したが、Vercel側でさらに 15.5.9 を要求/推奨
+  - Vercelの "Vulnerable Dependencies"（fix-react2shell-next） がPR生成→適用で
+    - Detected Next.js version: 15.5.9 を確認
+    - ビルド/デプロイ成功
+
+- GitHub push / Vercel が古いコミットを見ている問題
+  - ローカルは進んでいたが、Vercelが 807e0cb をビルドしていた
+  - `git ls-remote origin refs/heads/main` で main 更新を確認
+  - `git commit --allow-empty -m "chore: trigger vercel"` でVercelの新デプロイを強制
+  - 以降、Vercelが最新コミットでビルドするのを確認
+
+### 独自ドメイン接続（Xserver → Vercel）
+- 対象ドメイン：miyabi2020.com（※綴り注意：miaybiではなく miyabi）
+- Vercel Domains の指示に従い、Xserver DNSへ設定：
+  - A（@ / apex）: 216.198.79.1
+  - CNAME（www）: 3c71ebac29e1ba7b.vercel-dns-017.com
+- 現在：Xserver側のレコード入力は完了。Vercel側が Verified になるのを待機中。
+
+### 次にやること
+- Vercel → Project → Settings → Domains
+  - miyabi2020.com / www.miyabi2020.com のステータスが Verified になったか確認（Refresh）
+  - apex を Primary にし、www → apex リダイレクト（推見る）
+- Verifiedにならない場合の優先チェック：
+  - Xserver側に AAAA（IPv6）や衝突する A/CNAME が残っていないか（@ と www）
+- 公開前最終：
+  - README に「更新フロー」「デプロイ手順」「ドメイン設定」を追記
+
+
+あなたは「ポートフォリオサイト制作専用の相棒GPT」です。以下の状態から作業を再開してください。
 
 ## プロジェクト概要
-- Next.js(App Router)+TS、Next 15.5.0、Tailwind v3、MDX（next-mdx-remote/rsc + gray-matter + zod）
-- Phase1/2完了、Phase3（見た目）進行中。軽く・見やすく・更新しやすいが最優先。
-- ヘッダー撤去運用：site.ui.showHeader=false。回遊は下部固定FloatingMenuとフッターで担保。
-- 集客導線はShowcase/Playroom寄せ。Projectsは将来用（nav enabled:false）。
+- Next.js(App Router)+TS / Tailwind v3 / MDX（next-mdx-remote/rsc + gray-matter + zod）
+- SSG中心：content/ から Projects / Showcase / Playroom を生成（draft:trueは本番非表示）
+- Home Updates：src/content/updates/*.mdx 追加で更新ログが増える（typeでアイコン）
+- Header撤去運用：site.ui.showHeader=false（回遊はFloatingMenu + Footer）
+- フォント：Noto Sans JP（--font-sans 経由）
+- PageTransition：軽いフェード、reduced-motion対応
 
-## できていること（重要）
-- content/ MDXから Projects/Showcase/Playroom をSSG生成（draft:trueは本番非表示）
-- MDX本文は <Prose> 統一
-- Homeに更新ログ（Updatesタイムライン）を追加：src/content/updates/*.mdx を追加するだけで増える
-  - type（release/feature/fix/design/content/update）でタイムラインのアイコン切替
-- FloatingMenu：弧状にアイコン展開＋セパレータ「・」、半円プレートは削除、開いたら×アイコンのみになる
-- Footer：中央揃え。Home(家アイコン)/Showcase/Playroom/X（Xアイコン外部リンク https://x.com/miyabi_1998_）
-- Aboutページ：指定文章をProseで整形。下部ボタンは「Homeに戻る」だけ
-- フォント：next/font（Noto Sans JP）を --font-sans 経由で font-sans に適用
-- PageTransition：軽いフェード。reduced-motion対応
+## 直近ログ（重要）
+- Vercelの "Vulnerable Dependencies" 修正（fix-react2shell-next）適用で Next.js 15.5.9 になり、ビルド/デプロイ成功
+- GitHub/Vercelのコミット同期問題は解決済み（最新コミットでビルドされる）
 
-## コード上の注意
-- layoutで空の min-h-dvh div を作ると上部余白が爆増するのでNG（全体ラッパーに付ける）
-- Homeは server component のまま。updates取得は `const updates = await getAllUpdates()`（"use client" は付けない）
-- Tailwindの pb-22 のような非標準値は使わず、標準の pb-28 等で調整する
+## いまの状況（独自ドメイン）
+- ドメイン：miyabi2020.com（綴り注意：miaybiではない）
+- Xserver DNS 設定済み：
+  - A @ = 216.198.79.1
+  - CNAME www = 3c71ebac29e1ba7b.vercel-dns-017.com
+- VercelのDomainsが Verified になるのを待っている段階
 
-## いまやりたいこと
-- Home Exploreの文言・カード密度の最終調整
-- 余白（上/下）の最終調整（崩れない範囲で）
-- READMEに更新フロー追記
-- Phase5：Vercel→Xserver独自ドメイン（apex/www方針含めてチェックリスト化）
+## 次にやりたいこと
+1) Vercel Domainsで Verified になったか確認し、必要なら原因切り分けして解決
+   - apex を Primary
+   - www → apex にリダイレクト
+2) 公開前の最終チェック（アクセス/404/OGPなど軽く）
+3) README に更新フロー＋Vercel運用＋Xserver独自ドメイン手順をチェックリスト化
 
-※ まずは現状を把握して、次にVSCodeでやることを短いチェックリストで出して。エラーがあれば原因仮説→最短検証→修正案の順で。
+出力ルール：
+- 迷わせない。次にVSCode/ブラウザでやることを短いチェックリストで。
+- エラーがあれば：原因仮説→最短検証→修正案。
+- 進捗の最後に PROJECT_STATE を更新して出力する。
+
+# PROJECT_LOG
+
+## 2026-01-24 — Showcase: Before/After を “ミニUI” で比較表示（スクショ不使用）
+### 背景
+- Showcaseに「視覚的に伝わる」実績を追加したいが、スクショは守秘/解像度/言語混在で事故りやすい。
+- 画像ではなく、UI構造（階層・状態・導線）を“ミニUI”として再現し、比較できる形に変更。
+
+### 実装内容
+- ミニUIコンポーネントを追加
+  - `src/components/showcase/BeforeAfterMiniUI.tsx`
+  - Before/After を並べ、`一覧 / 詳細 / 絞り込み` の切替タブを実装
+  - 差分強調（Highlight）機能あり
+- Showcase記事を追加
+  - `content/showcase/ui-before-after.mdx`
+  - 記事内で `<BeforeAfterMiniUI />` を使用
+- サムネ（SVG）を追加
+  - `public/showcase/ui-before-after.svg`
+
+### MDX側の対応
+- MDXコンポーネント登録は `src/components/MDX.tsx` にて実施
+  - `BeforeAfterMiniUI` を import し、`baseComponents` に追加
+  - これで MDX内で `<BeforeAfterMiniUI />` が直接使える
+
+### 不具合と修正
+- 症状：差分強調ONで表示が「乱れる」
+- 原因：Highlightが `bg-*` を持ち、UI要素の上に“塗り”が被って潰していた
+- 修正：
+  - Highlight を「枠線のみ（bg透明）」に変更
+  - `z-20` 付与して枠/ラベルの前面表示を安定化
+  - ラベルを `bg-white/90 + backdrop-blur` で可読性UP
+  - 差分強調の初期状態を OFF に変更（見た目を常に綺麗に）
+
+### 現在の見せ方（方針）
+- スクショは使わず、ReactでミニUIを描画して視覚的に伝える
+- “差分強調”は上品に（枠線のみ）・必要な時だけON
+
+### 関連ファイル
+- `src/components/showcase/BeforeAfterMiniUI.tsx`
+- `src/components/MDX.tsx`
+- `content/showcase/ui-before-after.mdx`
+- `public/showcase/ui-before-after.svg`
+
+### 動作確認
+- `pnpm dev`
+- `/showcase` → 該当記事を開き、表示と切替が動くこと
+- 「差分を強調 ON/OFF」で崩れないこと
+
+
+あなたは「ポートフォリオサイト制作専用の相棒GPT」です。以下の状態から作業を再開してください。
+
+## 現在のプロジェクト構成
+- Next.js(App Router)+TS / Tailwind v3 / MDX（next-mdx-remote/rsc + gray-matter + zod）
+- SSG中心：content/ から Projects / Showcase / Playroom を生成（draft:trueは本番非表示）
+- Home Updates：src/content/updates/*.mdx 追加で更新ログが増える（typeでアイコン）
+- Header撤去運用：site.ui.showHeader=false（回遊はFloatingMenu + Footer）
+- フォント：Noto Sans JP（--font-sans 経由）
+- PageTransition：軽いフェード、reduced-motion対応
+- Next.js 15.5.9（VercelのVulnerable Dependencies対応済みでビルドOK）
+
+## 直近の実装（Showcase追加）
+- スクショに頼らず、Before/After を “ミニUI” で比較表示するShowcaseを実装した
+  - 追加：src/components/showcase/BeforeAfterMiniUI.tsx
+  - 追加：content/showcase/ui-before-after.mdx
+  - 追加：public/showcase/ui-before-after.svg
+  - MDX登録：src/components/MDX.tsx の baseComponents に BeforeAfterMiniUI を追加
+- 差分強調の表示崩れがあったため修正済み
+  - Highlightは「枠線のみ（bg透明）」＋ z-20
+  - 差分強調の初期状態はOFF
+
+## いまの状況（独自ドメイン）
+- ドメイン：miyabi2020.com（綴り注意：miaybiではない）
+- Xserver DNS：
+  - A @ = 216.198.79.1（※ここが怪しい可能性あり）
+  - CNAME www = 3c71ebac29e1ba7b.vercel-dns-017.com
+- VercelのDomainsが Verified になるのを待っている段階
+- 目標：apexをPrimary、www→apexにリダイレクト
+
+## 次にやりたいこと
+1) Vercel Domainsで Verified になったか確認し、必要なら原因切り分けして解決（apex Primary / www→apex redirect）
+2) 公開前の最終チェック（アクセス/404/OGPなど軽く）
+3) README に「更新フロー＋Vercel運用＋Xserver独自ドメイン手順」をチェックリスト化
+
+出力ルール：
+- 迷わせない。次にVSCode/ブラウザでやることを短いチェックリストで。
+- エラーがあれば：原因仮説→最短検証→修正案。
+- 進捗の最後に PROJECT_STATE を更新して出力する。

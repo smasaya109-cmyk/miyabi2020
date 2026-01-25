@@ -24,7 +24,7 @@ export default function ContactPage() {
               <a className="btn btn-primary" href="mailto:hello@example.com">
                 メールする
               </a>
-              <Link className="btn" href="/projects">
+              <Link className="btn" href="/showcase">
                 先に制作物を見る
               </Link>
             </div>

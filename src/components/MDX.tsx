@@ -6,6 +6,17 @@ import type {
   ComponentType,
 } from "react";
 
+// Showcase用のミニUIコンポーネント
+import { BeforeAfterMiniUI } from "@/components/showcase/BeforeAfterMiniUI";
+
+// Playroom用のミニUIコンポーネント
+import PillDockDemo from "@/components/playroom/PillDockDemo";
+import OrbitingIconField from "@/components/playroom/OrbitingIconField";
+import VoiceHoldTypeDemo from "@/components/playroom/VoiceHoldTypeDemo";
+
+
+
+
 function isInternalHref(href: string) {
   return href.startsWith("/");
 }
@@ -62,11 +73,20 @@ export function MDX({
         {children}
       </code>
     ),
+
+    // ✅ 追加：MDX内で <BeforeAfterMiniUI /> を使えるようにする
+    BeforeAfterMiniUI,
+    PillDockDemo,
+    OrbitingIconField,
+    VoiceHoldTypeDemo,
   };
 
   return (
     <article className="mdx">
-      <MDXRemote source={source} components={{ ...baseComponents, ...components }} />
+      <MDXRemote
+        source={source}
+        components={{ ...baseComponents, ...components }}
+      />
     </article>
   );
 }
