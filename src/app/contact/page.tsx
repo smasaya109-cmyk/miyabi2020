@@ -21,7 +21,7 @@ export default function ContactPage() {
               目的・予算感・納期など、わかる範囲で添えてください。
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
-              <a className="btn btn-primary" href="mailto:hello@example.com">
+              <a className="btn btn-primary" href="mailto:contact@miyabi2020.com">
                 メールする
               </a>
               <Link className="btn" href="/showcase">
