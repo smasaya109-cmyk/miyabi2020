@@ -7,6 +7,9 @@ import { MDX } from "@/components/MDX";
 import { getAllPlayroom, getPlayroomBySlug } from "@/lib/content/playroom";
 import { Prose } from "@/components/Prose";
 import ArcMenuPlayground from "@/components/playroom/ArcMenuPlayground";
+import { MagneticCtaDemo } from "@/components/playroom/MagneticCtaDemo";
+import { SpotlightGridDemo } from "@/components/playroom/SpotlightGridDemo";
+
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -67,6 +70,8 @@ export default async function PlayroomDetailPage({ params }: Props) {
               source={item.body}
               components={{
                 ArcMenuPlayground,
+                MagneticCtaDemo,
+                SpotlightGridDemo,
               }}
             />
           </Prose>
