@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+
 
 export function Hero() {
   return (
@@ -18,24 +20,16 @@ export function Hero() {
         ))}
       </div>
 
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Link
-            href="/about"
-            className="no-underline inline-flex items-center justify-center rounded-2xl bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-50 hover:bg-zinc-800"
-        >
-            miyabi.comとは
-        </Link>
 
-        <Link
-            href="/contact"
-            className="no-underline inline-flex items-center justify-center rounded-2xl border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-900 hover:border-zinc-300 hover:bg-zinc-50"
-        >
-            Contact
-        </Link>
-      </div>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <ButtonLink href="/about" variant="primary" size="lg">
+            miyabiとは <span className="opacity-90">→</span>
+          </ButtonLink>
+          <ButtonLink href="/contact" variant="secondary" size="lg">
+            Contact <span className="text-zinc-700">→</span>
+          </ButtonLink>
+        </div>
 
-
-      
     </div>
   );
 }

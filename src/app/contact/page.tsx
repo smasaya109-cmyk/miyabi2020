@@ -10,9 +10,6 @@ export default function ContactPage() {
     <Container>
       <section className="py-14 sm:py-16">
         <h1>Contact</h1>
-        <p className="mt-4 max-w-2xl">
-          Phase 5でフォーム運用（最短はFormspree等）にします。いったん導線だけ用意。
-        </p>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <div className="card">
@@ -28,9 +25,6 @@ export default function ContactPage() {
                 先に制作物を見る
               </Link>
             </div>
-            <p className="mt-3 text-sm text-zinc-500">
-              ※ hello@example.com は自分のアドレスに置き換えてください
-            </p>
           </div>
 
           <div className="card">
