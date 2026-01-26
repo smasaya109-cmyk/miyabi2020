@@ -5,7 +5,7 @@ type Feature = { text: string };
 const features: Feature[] = [
   { text: "10,000件以上のAIプロンプト" },
   { text: "全システム無制限利用" },
-  { text: "How-toガイド・徹底マニュアル",},
+  { text: "How-toガイド・徹底マニュアル" },
   { text: "カスタムプロンプト無制限" },
   { text: "生涯アップデート" },
   { text: "24時間サポート体制" },
@@ -69,7 +69,13 @@ function StarDot({
  */
 export function PricingCardGold() {
   return (
-    <section className="not-prose relative overflow-hidden py-16 sm:py-24">
+    <section
+      className="
+        not-prose relative overflow-hidden py-16 sm:py-24
+        w-screen mx-[calc(50%-50vw)]
+        sm:w-auto sm:mx-0
+      "
+    >
       {/* Background base */}
       <div className="pointer-events-none absolute inset-0 bg-[#070810]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(900px_450px_at_30%_20%,rgba(255,205,70,0.18),rgba(0,0,0,0)),radial-gradient(700px_420px_at_70%_70%,rgba(255,255,255,0.08),rgba(0,0,0,0))]" />
@@ -87,7 +93,8 @@ export function PricingCardGold() {
             radial-gradient(circle at 75% 55%, rgba(255,230,160,0.18) 0 1px, transparent 2px),
             radial-gradient(circle at 85% 20%, rgba(255,255,255,0.18) 0 1px, transparent 2px)
           `,
-          backgroundSize: "220px 220px, 260px 260px, 240px 240px, 280px 280px, 300px 300px",
+          backgroundSize:
+            "220px 220px, 260px 260px, 240px 240px, 280px 280px, 300px 300px",
           backgroundPosition: "0 0, 40px 60px, 80px 20px, 120px 90px, 160px 30px",
         }}
       />
@@ -108,7 +115,8 @@ export function PricingCardGold() {
         <StarDot className="h-[1px] w-[1px] opacity-60" style={{ left: "92%", top: "55%" }} />
       </div>
 
-      <div className="relative mx-auto max-w-5xl px-6">
+      {/* ✅ モバイルだけ左右 5% / PCは従来(px-6) */}
+      <div className="relative mx-auto max-w-5xl px-[5vw] sm:px-6">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/80 backdrop-blur">
@@ -124,7 +132,8 @@ export function PricingCardGold() {
           <div className="relative w-full max-w-md">
             {/* 追加：背景とカードが“繋がる”光のベール */}
             <div className="pointer-events-none absolute -inset-24 rounded-[40px] bg-[radial-gradient(closest-side,rgba(255,220,120,0.22),rgba(0,0,0,0))] blur-2xl" />
-            <div className="pointer-events-none absolute -inset-24 opacity-70 mix-blend-screen blur-[1px]"
+            <div
+              className="pointer-events-none absolute -inset-24 opacity-70 mix-blend-screen blur-[1px]"
               style={{
                 backgroundImage: `
                   radial-gradient(circle at 35% 25%, rgba(255,255,255,0.18) 0 1px, transparent 2px),
@@ -199,9 +208,10 @@ export function PricingCardGold() {
                     >
                       月額
                     </span>
-                    <span className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white/90">
-                      年額
-                      <span className="rounded-full bg-yellow-200/95 px-2 py-0.5 text-[11px] font-semibold text-black">
+
+                    <span className="inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-medium text-white/90 sm:px-4 whitespace-nowrap flex-nowrap">
+                      <span className="whitespace-nowrap">年額</span>
+                      <span className="ml-2 inline-flex shrink-0 whitespace-nowrap rounded-full bg-yellow-200/95 px-2 py-0.5 text-[10px] font-semibold leading-none text-black sm:text-[11px]">
                         30%お得
                       </span>
                     </span>
@@ -239,7 +249,6 @@ export function PricingCardGold() {
                   </button>
                 </div>
 
-                {/* ✅ ここを白＆読みやすく（依頼対応） */}
                 <p className="mt-5 text-center text-xs !text-white !opacity-100 drop-shadow-[0_1px_1px_rgba(0,0,0,0.55)]">
                   7日間無料トライアル ・ 毎週アップデート ・ いつでも解約
                 </p>

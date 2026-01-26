@@ -57,9 +57,28 @@ export function Stage({
   const reserveTop = reserveTopForActions ?? Boolean(actions);
 
   return (
-    <section className={`not-prose ${className}`} aria-label="Demo stage">
-      <div className="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="relative overflow-hidden rounded-2xl">
+    <section
+      className={[
+        "not-prose",
+        // ✅ モバイルだけGrid背景を100%（フルブリード）
+        "w-screen mx-[calc(50%-50vw)] overflow-x-clip",
+        // ✅ PCは従来どおり（親コンテナの幅に従う）
+        "sm:w-auto sm:mx-0 sm:overflow-visible",
+        className,
+      ].join(" ")}
+      aria-label="Demo stage"
+    >
+      {/* ✅ 二重ガラス防止：モバイルはカード(ガラス)を外す / PCは従来どおり */}
+      <div
+        className={[
+          // mobile
+          "bg-transparent border-0 shadow-none rounded-none",
+          // desktop (従来)
+          "sm:rounded-2xl sm:border sm:border-zinc-200 sm:bg-white sm:shadow-sm",
+          "dark:sm:border-zinc-800 dark:sm:bg-zinc-950",
+        ].join(" ")}
+      >
+        <div className="relative overflow-hidden rounded-none sm:rounded-2xl">
           <div
             className={[
               "relative w-full overflow-hidden p-4 sm:p-6",
@@ -102,6 +121,5 @@ export function Stage({
     </section>
   );
 }
-
 
 

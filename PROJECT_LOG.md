@@ -627,7 +627,6 @@ Next.js(App Router)+TS、軽く見やすく、MDXで更新しやすい運用を�
 
 【未解決】
 - ArcMenuPlaygroundがStageに載せた状態で崩れている。
-- 未実行の修正案：Stage側を flex化（flex flex-col + 子flex-1）して高さを確定し、absolute配置デモを安定化させたい。
 
 【次にやること】
 1) Stageに“高さ確定（flex）”修正を入れてArcMenu崩れが直るか検証
