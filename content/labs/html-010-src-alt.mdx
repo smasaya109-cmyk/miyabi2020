@@ -1,0 +1,257 @@
+---
+title: "src と alt（画像パス・代替テキスト）"
+date: "2026-01-26"
+summary: "srcで「画像の場所」を正しく指し、altで「画像の意味」を言葉で渡すと、表示・SEO・アクセシビリティが揃います。"
+category: "html"
+level: "beginner"
+tags:
+  - img
+  - src
+  - alt
+  - path
+  - accessibility
+draft: false
+links: []
+---
+
+## まず結論（1行）
+
+srcで「画像の場所」を正しく指し、altで「画像の意味」を言葉で渡すと、表示・SEO・アクセシビリティが揃います。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+```html
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>srcとalt</title>
+  </head>
+  <body>
+    <h1>srcとaltの基本</h1>
+
+    <img src="./images/cafe.jpg" alt="カフェのテーブルに置かれたコーヒー" />
+  </body>
+</html>
+```
+
+---
+
+## 重要ポイント（ここが一番詰まりやすい）
+
+### src：パスの考え方（迷子にならないコツ）
+
+- srcは画像ファイルへの道順（パス）
+- よく使う3種類
+  - `photo.jpg` / `./photo.jpg`：同じフォルダ
+  - `./images/photo.jpg`：imagesフォルダの中
+  - `../photo.jpg`：1つ上のフォルダ
+
+✅ 迷ったら `./` を付けて「同じ階層」を明示すると事故が減る
+
+### alt：何を書くか（情報画像 vs 装飾画像）
+
+- 情報を伝える画像（商品写真、図、ロゴ、スクショなど）
+  - → 内容が伝わる短文を書く
+- 装飾だけの画像（背景っぽい飾り、区切り線、雰囲気だけ）
+  - → **`alt=""`（空）**にして読み上げを邪魔しない
+- altは「見えてない人に説明するつもり」で書くと失敗しにくい
+
+---
+
+## 例で理解（よく使うパターン：5つ）
+
+### 1) 同階層（最初はこれが多い）
+
+```html
+<img src="./logo.png" alt="サンプルサイト" />
+```
+
+### 2) imagesフォルダ
+
+```html
+<img src="./images/profile.jpg" alt="プロフィール写真" />
+```
+
+### 3) 1つ上の階層から参照
+
+```html
+<img src="../images/banner.png" alt="春のキャンペーンバナー" />
+```
+
+### 4) 図・グラフ（何が分かる図かを書く）
+
+```html
+<img src="./images/chart.png" alt="月別売上の推移を示す折れ線グラフ" />
+```
+
+### 5) 装飾画像（読み上げ不要）
+
+```html
+<img src="./images/wave.svg" alt="" />
+```
+
+---
+
+## 使い分け（altの“型”を持つと楽）
+
+- 写真：「何が写っているか」  
+  例：`alt="公園のベンチに座る犬"`
+
+- ロゴ（リンク付きが多い）：「どこへ行くか」も含めてOK  
+  例：`alt="トップページへ戻る"`
+
+- アイコン（ボタンの横の飾り）
+  - テキストが近くにある → `alt=""`（装飾扱いでOKなことが多い）
+  - アイコンだけで意味を担う → altで意味を書く（または別の方法でラベル付け）
+
+---
+
+## 実務のコツ（SEO・アクセシビリティ）
+
+- altに「画像」「写真」などは基本いらない（文として冗長になりやすい）  
+  例：×「写真：富士山」 → ○「富士山」
+- 同じ意味の画像が繰り返されるなら、altも毎回同じにしすぎない（状況に合わせる）
+- 画像がリンクなら、altは“リンクの目的”に寄せると親切
+
+---
+
+## NG・禁止例（なぜダメ？どう直す？）
+
+### 1) パスが間違って表示されない
+
+```html
+<img src="images/photo.jpg" alt="写真" />
+```
+
+→ ✅ いまのHTMLファイルから見て `./images/photo.jpg` なのか `../images/...` なのか確認する  
+（迷ったらフォルダ構成を見て、`./` と `../` で調整）
+
+### 2) altがファイル名
+
+```html
+<img src="./images/pic_1930.jpg" alt="pic_1930" />
+```
+
+→ ✅ `alt="店内の様子"` のように内容を書く
+
+### 3) 装飾なのにaltがうるさい
+
+```html
+<img src="./images/deco.svg" alt="波線の装飾画像です" />
+```
+
+→ ✅ 装飾なら `alt=""`
+
+### 4) 情報画像なのにaltが空
+
+```html
+<img src="./images/chart.png" alt="" />
+```
+
+→ ✅ 何の図か書く：`alt="利用者数の推移グラフ"`
+
+---
+
+## 見た目を整える（HTML+CSSセット：3例）
+
+### 例1：画像の比率を保ってはみ出し防止（定番）
+
+```html
+<img class="media" src="./images/cafe.jpg" alt="カフェのテーブルに置かれたコーヒー" />
+```
+
+```css
+.media {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+  border: 1px solid currentColor;
+}
+```
+
+### 例2：プロフィール画像＋説明（実務っぽい）
+
+```html
+<div class="profile">
+  <img class="profile__img" src="./images/profile.jpg" alt="プロフィール写真" />
+  <p class="profile__text">フロントエンド学習中。週末に作品を作っています。</p>
+</div>
+```
+
+```css
+.profile {
+  display: grid;
+  gap: 12px;
+  max-width: 520px;
+  padding: 16px;
+  border: 1px solid currentColor;
+  border-radius: 18px;
+}
+
+.profile__img {
+  width: 120px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.profile__text {
+  margin: 0;
+  opacity: 0.85;
+}
+```
+
+### 例3：画像リンク（altは“目的”に寄せる）
+
+```html
+<a class="brand" href="/index.html">
+  <img class="brand__logo" src="./images/logo.png" alt="トップページへ戻る" />
+</a>
+```
+
+```css
+.brand {
+  display: inline-block;
+  padding: 10px;
+  border-radius: 14px;
+}
+
+.brand:hover {
+  opacity: 0.85;
+}
+
+.brand__logo {
+  display: block;
+  height: 40px;
+  width: auto;
+}
+```
+
+---
+
+## 理解チェック（3問・答え付き）
+
+<QAToggle q='Q. ./images/a.jpg の ./ は何を意味する？'>
+A. このHTMLファイルと同じ階層（同じフォルダ）から見て。
+</QAToggle>
+
+<QAToggle q="Q. 情報を伝える画像のaltはどう書く？">
+A. 内容が分かる短文で（見えない人に説明するつもりで）。
+</QAToggle>
+
+<QAToggle q='Q. 装飾画像のaltは？'>
+A. alt=""（空）（読み上げを邪魔しない）。
+</QAToggle>
+
+---
+
+## ミニ演習（すぐ試せる小課題）
+
+1. imagesフォルダを作り、画像を1枚入れて `src="./images/..."` で表示してみよう。表示されないなら `./` と `../` を変えて原因を特定。
+2. 同じ画像で、(a)情報画像としてのalt、(b)装飾画像として `alt=""` の2パターンを書き分けて、「読み上げを想像」してみよう。

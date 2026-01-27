@@ -1,0 +1,303 @@
+---
+title: "target と rel（別タブと安全・nofollow含む）"
+date: "2026-01-26"
+summary: 'target="_blank"で別タブ表示にでき、同時にrelを正しく付けると安全性とSEOの意図（nofollow等）をコントロールできます。'
+category: "html"
+level: "beginner"
+tags:
+  - target
+  - rel
+  - noopener
+  - noreferrer
+  - nofollow
+draft: false
+links: []
+---
+
+## まず結論（1行）
+
+target="_blank"で別タブ表示にでき、同時にrelを正しく付けると安全性とSEOの意図（nofollow等）をコントロールできます。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+```html
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>targetとrel</title>
+  </head>
+  <body>
+    <h1>別タブリンク（安全セット）</h1>
+
+    <p>
+      <a href="https://example.com" target="_blank" rel="noopener noreferrer">
+        外部サイトを別タブで開く
+      </a>
+    </p>
+  </body>
+</html>
+```
+
+---
+
+## 重要ポイント（安全とSEOで超重要）
+
+### targetの基本
+
+- `target="_blank"`：新しいタブ（または新しいウィンドウ）で開く
+- それ以外のtargetは初心者のうちは基本不要（まず_blankだけ覚えればOK）
+
+### relの基本（セットで覚える）
+
+- `rel="noopener"`：別タブ先から元ページを操作されにくくする（tabnabbing対策）
+- `rel="noreferrer"`：参照元（referrer）を送らない＋古い環境の補助としてnoopener相当の役割も
+
+✅ 結論：外部リンクを `target="_blank"` にするなら **`rel="noopener noreferrer"` をセット**（事故防止）
+
+### nofollow（SEOの“意図”を変える）
+
+- `rel="nofollow"`：検索エンジンに「このリンク先を評価に反映しないでほしい」意図を伝える
+
+使いどころの例：
+
+- 広告・アフィリエイト
+- ユーザー投稿（コメント欄など）
+- 信頼できない/保証できない外部リンク
+
+よくある書き方（併用OK）：
+
+- `rel="nofollow noopener noreferrer"`
+
+---
+
+## 例で理解（よく使うパターン：5つ）
+
+### 1) 外部サイトを別タブ（基本セット）
+
+```html
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">
+  公式サイト（別タブ）
+</a>
+```
+
+### 2) 同じタブで外部へ（安全面のrelは基本不要）
+
+```html
+<a href="https://example.com">公式サイト</a>
+```
+
+target="_blank"を使わないなら、noopenerの必要性は下がる（ただし付けても害はほぼない）。
+
+### 3) 広告/アフィリエイト（nofollowを付ける）
+
+```html
+<a href="https://example.com" target="_blank" rel="nofollow noopener noreferrer">
+  おすすめ商品（広告）
+</a>
+```
+
+### 4) ユーザー投稿リンク（nofollowでリスク減）
+
+```html
+<a href="https://unknown.example" target="_blank" rel="nofollow noopener noreferrer">
+  参考リンク（投稿）
+</a>
+```
+
+### 5) ページ内リンク（別タブにする意味は薄い）
+
+```html
+<a href="#faq">FAQへ</a>
+```
+
+---
+
+## 使い分け（迷ったらこれ）
+
+- 外部リンクを別タブにしたい → `target="_blank" rel="noopener noreferrer"`
+- 広告/投稿などで評価を渡したくない → 上に `nofollow` を追加  
+  → `rel="nofollow noopener noreferrer"`
+- 同一サイト内のリンク → 通常はtarget不要（UXが混乱しにくい）
+
+---
+
+## 実務のコツ（SEO・安全・アクセシビリティ）
+
+- 別タブは便利だけど、乱用すると「戻る/履歴」が分かりにくくなる（必要な外部だけに絞る）
+- 「別タブで開きます」を文言やアイコンで示すと親切（特にアクセシビリティ）
+- nofollowは“いつでも付ければ安全”ではない：普通の参考リンクまで全部nofollowにすると、サイトの信頼設計が弱くなることも（付ける理由がある時に）
+
+---
+
+## NG・禁止例（なぜダメ？どう直す？）
+
+### 1) target="_blank"なのにrelなし（安全面）
+
+```html
+<a href="https://example.com" target="_blank">外部</a>
+```
+
+→ ✅ `rel="noopener noreferrer"` を付ける
+
+### 2) nofollowの意味を誤解して“全部”に付ける
+
+```html
+<a href="/about.html" rel="nofollow">About</a>
+```
+
+→ ✅ 自サイト内や普通の導線には通常不要（広告/投稿など理由がある時に）
+
+### 3) relの値をカンマ区切りにする（スペース区切りが正）
+
+```html
+<a href="https://example.com" target="_blank" rel="noopener,noreferrer">外部</a>
+```
+
+→ ✅ `rel="noopener noreferrer"`
+
+### 4) 別タブにしたのにユーザーに知らせない（UX）
+
+```html
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">公式</a>
+```
+
+→ ✅ 文言で補足：公式（別タブ） など
+
+---
+
+## 見た目を整える（HTML+CSSセット：3例）
+
+### 例1：別タブだと分かるリンク（テキストで示す）
+
+```html
+<a class="ext" href="https://example.com" target="_blank" rel="noopener noreferrer">
+  公式サイト（別タブ）
+</a>
+```
+
+```css
+.ext {
+  display: inline-block;
+  padding: 10px 12px;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.ext:hover {
+  opacity: 0.75;
+}
+
+.ext:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+```
+
+### 例2：外部リンク一覧（nofollow混在の例）
+
+```html
+<ul class="out">
+  <li>
+    <a href="https://example.com" target="_blank" rel="noopener noreferrer">
+      公式（別タブ）
+    </a>
+  </li>
+  <li>
+    <a href="https://ad.example" target="_blank" rel="nofollow noopener noreferrer">
+      広告リンク（nofollow）
+    </a>
+  </li>
+</ul>
+```
+
+```css
+.out {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.out a {
+  display: inline-block;
+  padding: 10px 12px;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.out a:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+```
+
+### 例3：カード内の外部リンクCTA（安全セット込み）
+
+```html
+<article class="card">
+  <h2 class="card__title">参考資料</h2>
+  <p>公式ドキュメントを別タブで開きます。</p>
+  <a class="card__cta" href="https://example.com" target="_blank" rel="noopener noreferrer">
+    公式を見る（別タブ）
+  </a>
+</article>
+```
+
+```css
+.card {
+  border: 1px solid currentColor;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.card__title {
+  margin: 0 0 10px;
+}
+
+.card__cta {
+  display: inline-block;
+  padding: 10px 14px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.card__cta:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+```
+
+---
+
+## 理解チェック（3問・答え付き）
+
+<QAToggle q='Q. 別タブで開く指定は？'>
+A. target="_blank"。
+</QAToggle>
+
+<QAToggle q='Q. target="_blank"と一緒に付けたい安全対策のrelは？'>
+A. rel="noopener noreferrer"。
+</QAToggle>
+
+<QAToggle q='Q. rel="nofollow"はいつ使う？'>
+A. 広告/アフィリエイト、ユーザー投稿、信頼できない外部リンクなど“評価を渡したくない理由があるとき”。
+</QAToggle>
+
+---
+
+## ミニ演習（すぐ試せる小課題）
+
+1. 外部リンクを1つ作り、target="_blank"にしたうえで `rel="noopener noreferrer"` を必ず付けてみよう。
+2. 「広告リンク（練習）」というリンクを作り、`rel="nofollow noopener noreferrer"` にして“nofollowを付ける理由”を一言メモとして隣に書いてみよう。

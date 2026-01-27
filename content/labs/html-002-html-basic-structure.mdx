@@ -1,0 +1,264 @@
+---
+title: "HTMLの基本構造（doctype / html / head / body）"
+date: "2026-01-26"
+summary: "HTMLの基本構造を押さえると、「ブラウザが正しく解釈するページの土台」を毎回迷わず作れます。"
+category: "html"
+level: "beginner"
+tags:
+  - doctype
+  - html
+  - head
+  - body
+  - structure
+draft: false
+links: []
+---
+
+## まず結論
+
+HTMLの基本構造を押さえると、「ブラウザが正しく解釈するページの土台」を毎回迷わず作れます。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+```html
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>基本構造</title>
+  </head>
+  <body>
+    <h1>ページの見出し</h1>
+    <p>本文はここに書きます。</p>
+  </body>
+</html>
+```
+
+---
+
+## 重要ポイント（ここだけ覚える）
+
+- `<!doctype html>`：**「これはHTML5です」宣言**。古い解釈（互換モード）を避けるために必須。
+- `<html>`：ページ全体の入れ物。`lang="ja"`で**言語**を伝える（読み上げ・翻訳・SEOに効く）。
+- `<head>`：**裏方情報**（タイトル、文字コード、CSS読み込みなど）。画面に直接は出にくい。
+- `<body>`：**画面に出る中身**（見出し、文章、画像、リンク、フォームなど）。
+
+---
+
+## 例で理解（よくある配置パターン：2〜5個）
+
+### 1) headにCSSを読み込む（見た目はCSSへ）
+
+```html
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>CSSを読む</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>見た目はCSS</h1>
+  </body>
+</html>
+```
+
+### 2) bodyの最後でJSを読む（表示を邪魔しにくい）
+
+```html
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSを読む</title>
+  </head>
+  <body>
+    <h1>動きはJS</h1>
+    <script src="app.js"></script>
+  </body>
+</html>
+```
+
+### 3) headにstyleを書いて小さく試す（学習用に便利）
+
+```html
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>ちょいCSS</title>
+    <style>
+      .box {
+        border: 1px solid currentColor;
+        padding: 12px;
+        border-radius: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">この枠はCSSで付けています</div>
+  </body>
+</html>
+```
+
+---
+
+## 使い分け（似て見えるけど別物）
+
+- **`<head>`に書くもの**：`<title>`, `<meta>`, `<link>`, `<style>` など「設定・読み込み」
+- **`<body>`に書くもの**：`<h1>`, `<p>`, `<a>`, `<img>`, `<form>` など「表示する内容」
+
+> 「表示したいのに出ない…」は、だいたい bodyに書くべきものをheadに書いているのが原因。
+
+---
+
+## 実務のコツ（SEO・安全・アクセシビリティ）
+
+- `lang="ja"`は入れる：読み上げの発音・検索エンジンの理解が安定。
+- `title`はページごとに変える：タブ名・検索結果の見出しに使われやすい。
+- `head`は“設定置き場”：本文を混ぜないだけで保守性が上がる。
+
+---
+
+## NG・禁止例（なぜダメ？どう直す？）
+
+1. **doctypeを書かない**
+
+```html
+<html>
+  <head>...</head>
+  <body>...</body>
+</html>
+```
+
+→ ✅ 先頭に `<!doctype html>` を入れてHTML5として解釈させる
+
+2. **headに本文を書く**
+
+```html
+<head>
+  <h1>タイトル</h1>
+</head>
+```
+
+→ ✅ `h1`は `body`へ移動
+
+3. **bodyの外に要素を書く**
+
+```html
+<!doctype html>
+<p>本文</p>
+<html>...</html>
+```
+
+→ ✅ すべて `html > body` の中へ
+
+4. **`<title>`が空**
+
+```html
+<title></title>
+```
+
+→ ✅ ページ内容が分かる短いタイトルにする（例：`<title>お問い合わせ</title>`）
+
+---
+
+## 見た目を整える（HTML+CSSセット：3例）
+
+### 例1：headで読み込んだCSSが効いてるか確認する枠
+
+```html
+<main class="wrap">
+  <h1>基本構造チェック</h1>
+  <p class="note">CSSが効いていれば枠と余白が出ます。</p>
+</main>
+```
+
+```css
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.note {
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  padding: 12px;
+  opacity: 0.9;
+}
+```
+
+### 例2：headの情報（title）とbodyの見出しをセットで整える
+
+```html
+<header class="hero">
+  <h1 class="hero__title">このページの主題</h1>
+  <p class="hero__lead">headは設定、bodyは中身。</p>
+</header>
+```
+
+```css
+.hero {
+  padding: 20px;
+  border-bottom: 1px solid currentColor;
+}
+
+.hero__title {
+  margin: 0 0 8px;
+  letter-spacing: 0.02em;
+}
+
+.hero__lead {
+  margin: 0;
+  opacity: 0.8;
+}
+```
+
+### 例3：bodyの中身を“セクション”として区切る
+
+```html
+<section class="section">
+  <h2 class="section__title">本文エリア</h2>
+  <p>ここにコンテンツを増やしていきます。</p>
+</section>
+```
+
+```css
+.section {
+  padding: 16px;
+  border: 1px solid currentColor;
+  border-radius: 18px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+}
+
+.section__title {
+  margin-top: 0;
+}
+```
+
+---
+
+## 理解チェック（3問・答え付き）
+
+<QAToggle q="Q. `<!doctype html>`の役割は？">
+A. **HTML5として正しく解釈させ、互換モードを避ける**。
+</QAToggle>
+
+<QAToggle q="Q. 画面に表示される本文はどこに書く？">
+A. **`<body>`の中**。
+</QAToggle>
+
+<QAToggle q='Q. `lang="ja"`は何のため？'>
+A. **言語を伝えて、読み上げ・翻訳・SEOの精度を上げるため**。
+</QAToggle>
+
+---
+
+## ミニ演習（すぐ試せる小課題）
+
+1. 最小コードをコピペして、`<title>`を「自己紹介」、`<h1>`を自分の名前に変えてみよう。
+2. `head`に `<style>` を追加して、`body`の背景ではなく（色指定なしルールなので）**本文に枠**を付けてみよう（例：`.wrap{border:1px solid currentColor;}`）。

@@ -1,0 +1,291 @@
+---
+title: "href（相対/絶対/#/mailto/tel/download）"
+date: "2026-01-26"
+summary: "hrefを使い分けると「どこへ飛ぶか（ページ/位置/メール/電話/ダウンロード）」を正確に指定できます。"
+category: "html"
+level: "beginner"
+tags:
+  - href
+  - relative
+  - absolute
+  - hash
+  - download
+draft: false
+links: []
+---
+
+## まず結論（1行）
+
+hrefを使い分けると「どこへ飛ぶか（ページ/位置/メール/電話/ダウンロード）」を正確に指定できます。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+```html
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>hrefの使い分け</title>
+  </head>
+  <body>
+    <h1>hrefの基本</h1>
+
+    <p><a href="./about.html">相対パス：同じフォルダ</a></p>
+    <p><a href="https://example.com">絶対URL：外部サイト</a></p>
+    <p><a href="#faq">#：ページ内リンク</a></p>
+    <p><a href="mailto:info@example.com">mailto：メール</a></p>
+    <p><a href="tel:0312345678">tel：電話</a></p>
+
+    <h2 id="faq">FAQ</h2>
+    <p>ここに飛んできます。</p>
+  </body>
+</html>
+```
+
+---
+
+## 重要ポイント（ここだけ押さえる）
+
+- 相対パス：自分のサイト内のファイル位置で決まる（引っ越しに強い）
+- 絶対URL：`https://...` から全部書く（外部サイトに飛ぶときの基本）
+- `#id`：同じページ内の特定位置へ（飛び先要素に `id` が必要）
+- `mailto:` / `tel:`：アプリを起動するリンク（端末/設定で挙動が変わる）
+- `download`属性：リンク先を“開く”より“保存”させたいときに使う（同一オリジン等で挙動に制限あり）
+
+---
+
+## 例で理解（よく使うパターン：5つ）
+
+### 1) 相対パス（同じ階層）
+
+```html
+<a href="./price.html">料金</a>
+```
+
+### 2) 相対パス（1つ上の階層へ）
+
+```html
+<a href="../index.html">トップへ</a>
+```
+
+### 3) ルート相対（サイトの先頭から）
+
+```html
+<a href="/blog/index.html">ブログ一覧</a>
+```
+
+サイトのルート（/）からの場所。公開先の構成が変わると影響するので注意。
+
+### 4) ページ内リンク（# + id）
+
+```html
+<a href="#contact">連絡先へ</a>
+
+<h2 id="contact">連絡先</h2>
+<p>メール：...</p>
+```
+
+### 5) ダウンロードさせる（ファイル配布）
+
+```html
+<a href="/files/menu.pdf" download>メニューPDFを保存</a>
+```
+
+---
+
+## 使い分け（迷ったらこの判断）
+
+- 自サイト内 → まず相対パス（`./` や `../`）を検討
+- 外部サイト → 絶対URL（`https://...`）
+- 同ページの下へ飛ぶ → `#id`
+- メール/電話を開く → `mailto:` / `tel:`
+- ファイルを保存させたい → `download`
+
+---
+
+## 実務のコツ（SEO・安全・アクセシビリティ）
+
+- リンクテキストは用途が分かるように（例：「資料をダウンロード」）
+- `tel:`は数字だけが安全（ハイフンは端末で解釈されることもあるが、まずは数字推奨）
+- `mailto:`は迷惑メール対策の都合で避ける現場もある（フォーム導線が一般的なことも）
+- ページ内リンクは見出しにidを付けると自然（構造が分かりやすい）
+
+---
+
+## NG・禁止例（なぜダメ？どう直す？）
+
+### 1) #だけ（行き先がない）を本番に置く
+
+```html
+<a href="#">もっと見る</a>
+```
+
+→ ✅ 行き先URLを入れる／その場操作ならbuttonにする
+
+### 2) ページ内リンク先のidがない
+
+```html
+<a href="#faq">FAQ</a>
+```
+
+（id="faq"がない）
+
+→ ✅ 飛び先に `id="faq"` を付ける
+
+### 3) 相対パスの階層を勘で書いて迷子
+
+```html
+<a href="about.html">About</a>
+```
+
+→ ✅ `./about.html` のように「同じ階層」を明示すると事故が減る
+
+### 4) mailtoの書式ミス
+
+```html
+<a href="mail:info@example.com">メール</a>
+```
+
+→ ✅ `mailto:` が正しい
+
+---
+
+## 見た目を整える（HTML+CSSセット：3例）
+
+### 例1：リンク種類を並べて見やすく（リスト化）
+
+```html
+<ul class="links">
+  <li><a href="./about.html">About（相対）</a></li>
+  <li><a href="https://example.com">外部サイト（絶対）</a></li>
+  <li><a href="#faq">FAQへ（#）</a></li>
+</ul>
+
+<h2 id="faq">FAQ</h2>
+<p>ここが飛び先です。</p>
+```
+
+```css
+.links {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.links a {
+  display: inline-block;
+  padding: 10px 12px;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.links a:hover {
+  opacity: 0.75;
+}
+```
+
+### 例2：ページ内リンクを“目次”っぽく
+
+```html
+<nav class="toc" aria-label="このページの目次">
+  <a href="#sec1">概要</a>
+  <a href="#sec2">料金</a>
+  <a href="#sec3">連絡先</a>
+</nav>
+
+<h2 id="sec1">概要</h2>
+<p>...</p>
+
+<h2 id="sec2">料金</h2>
+<p>...</p>
+
+<h2 id="sec3">連絡先</h2>
+<p>...</p>
+```
+
+```css
+.toc {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px;
+  border: 1px solid currentColor;
+  border-radius: 16px;
+}
+
+.toc a {
+  padding: 8px 10px;
+  border-radius: 10px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.toc a:hover {
+  opacity: 0.75;
+}
+```
+
+### 例3：downloadリンクをカード化（配布物が分かる）
+
+```html
+<a class="download" href="/files/menu.pdf" download>
+  <span class="download__title">メニューPDF</span>
+  <span class="download__meta">ダウンロード</span>
+</a>
+```
+
+```css
+.download {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid currentColor;
+  border-radius: 18px;
+  text-decoration: none;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+}
+
+.download:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.download__title {
+  font-weight: 700;
+}
+
+.download__meta {
+  opacity: 0.8;
+  font-size: 0.95rem;
+}
+```
+
+---
+
+## 理解チェック（3問・答え付き）
+
+<QAToggle q="Q. 外部サイトへ飛ぶhrefはどれ？">
+A. https://... から始まる絶対URL。
+</QAToggle>
+
+<QAToggle q="Q. href=&quot;#faq&quot;が動く条件は？">
+A. ページ内に id="faq" を持つ要素があること。
+</QAToggle>
+
+<QAToggle q="Q. 保存させたいリンクで使う属性は？">
+A. download。
+</QAToggle>
+
+---
+
+## ミニ演習（すぐ試せる小課題）
+
+1. 自己紹介ページに「目次」を作り、`#profile` / `#hobby` / `#contact` へジャンプできるようにしてみよう。
+2. 架空でOKなので `mailto:` と `tel:` のリンクを作り、スマホ表示（DevTools）でクリック時の挙動を想像できるようにしてみよう。

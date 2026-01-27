@@ -1,0 +1,253 @@
+---
+title: "aタグ（リンクの基本）"
+date: "2026-01-26"
+summary: "aタグでページ遷移・外部サイト・ファイルなどへの「行き先」を作れます（＝Webの回遊の核）。"
+category: "html"
+level: "beginner"
+tags:
+  - a
+  - anchor
+  - href
+  - link
+  - accessibility
+draft: false
+links: []
+---
+
+## まず結論（1行）
+
+aタグでページ遷移・外部サイト・ファイルなどへの「行き先」を作れます（＝Webの回遊の核）。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+```html
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>aタグの基本</title>
+  </head>
+  <body>
+    <h1>リンクを作る</h1>
+
+    <p>
+      <a href="https://example.com">外部サイトへ</a>
+    </p>
+
+    <p>
+      <a href="./about.html">同じサイトの別ページへ</a>
+    </p>
+  </body>
+</html>
+```
+
+---
+
+## 重要ポイント（初心者が迷う所だけ）
+
+- aはアンカー（anchor）：クリックできる“リンク”を作る要素。
+- 行き先はhref属性で指定する（hrefがないと基本リンクにならない）。
+- リンクの中身はテキストでも画像でもOK（詳細は後のテーマで扱う）。
+- aは遷移が目的：押して何かを実行する（送信・開閉）ならbuttonが向くことが多い。
+
+---
+
+## 例で理解（よく使うパターン：5つ）
+
+### 1) 外部サイトへ
+
+```html
+<a href="https://example.com">公式サイト</a>
+```
+
+### 2) 同一サイト内（相対パス）
+
+```html
+<a href="/contact.html">お問い合わせ</a>
+```
+
+### 3) ページ内リンク（同じページの特定位置へ）
+
+```html
+<a href="#faq">FAQへ飛ぶ</a>
+
+<h2 id="faq">よくある質問</h2>
+```
+
+### 4) メールを開く（環境による）
+
+```html
+<a href="mailto:info@example.com">メールする</a>
+```
+
+### 5) 電話をかける（スマホ向き）
+
+```html
+<a href="tel:0312345678">電話する</a>
+```
+
+---
+
+## 使い分け（aと似てる要素との違い）
+
+- a：どこかへ移動する（ページ/位置/別サイト/メール/電話）
+- button：その場で操作する（送信、モーダルを開く、再生する等）
+- divにクリック（JSで頑張る）
+  - できるけどアクセシビリティが落ちやすいので基本避ける（リンクはaで）
+
+---
+
+## 実務のコツ（SEO・安全・アクセシビリティ）
+
+- リンク文言は具体的に：「こちら」より「料金ページを見る」の方が分かりやすい。
+- クリック範囲が小さいと押しづらい：CSSで余白を付けると実務で助かる。
+- 外部リンクを別タブにする場合は後のテーマで扱うが、基本は安全のためにrelもセットで考える。
+
+---
+
+## NG・禁止例（なぜダメ？どう直す？）
+
+### 1) hrefがない
+
+```html
+<a>クリック</a>
+```
+
+→ ✅ hrefで行き先を書く（ページ内の仮ならhref="#"ではなく、できれば実URLか、ボタン用途ならbutton）
+
+### 2) リンクっぽいけどリンクじゃない（span/div）
+
+```html
+<span onclick="location.href='/about.html'">About</span>
+```
+
+→ ✅ ふつうに `<a href="/about.html">About</a>`
+
+### 3) 「ここをクリック」だけ
+
+```html
+<a href="/price.html">ここをクリック</a>
+```
+
+→ ✅ `<a href="/price.html">料金プランを見る</a>`
+
+### 4) ページ内リンク先（id）が存在しない
+
+```html
+<a href="#faq">FAQ</a>
+```
+
+（id="faq"がどこにもない）
+
+→ ✅ 飛び先に `id="faq"` を付ける
+
+---
+
+## 見た目を整える（HTML+CSSセット：3例）
+
+### 例1：押しやすいテキストリンク（色指定なし）
+
+```html
+<a class="link" href="/contact.html">お問い合わせ</a>
+```
+
+```css
+.link {
+  display: inline-block;
+  padding: 8px 10px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  border-radius: 10px;
+}
+
+.link:hover {
+  opacity: 0.75;
+}
+
+.link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+```
+
+### 例2：ボタン“風”リンク（遷移はaでOK）
+
+```html
+<a class="cta" href="/signup.html">無料で始める</a>
+```
+
+```css
+.cta {
+  display: inline-block;
+  padding: 10px 14px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.cta:hover {
+  transform: translateY(-1px);
+  opacity: 0.85;
+}
+```
+
+### 例3：リスト型ナビ（複数リンクを整理）
+
+```html
+<nav class="nav" aria-label="サイト内メニュー">
+  <a class="nav__item" href="/about.html">About</a>
+  <a class="nav__item" href="/works.html">Works</a>
+  <a class="nav__item" href="/contact.html">Contact</a>
+</nav>
+```
+
+```css
+.nav {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  flex-wrap: wrap;
+}
+
+.nav__item {
+  padding: 8px 10px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  border-radius: 10px;
+}
+
+.nav__item:hover {
+  opacity: 0.75;
+}
+```
+
+---
+
+## 理解チェック（3問・答え付き）
+
+<QAToggle q="Q. リンクの行き先を決める属性は？">
+A. href。
+</QAToggle>
+
+<QAToggle q="Q. 「その場で開閉する」操作はaとbuttonどっちが向く？">
+A. button（aは基本遷移）。
+</QAToggle>
+
+<QAToggle q="Q. 「こちら」より良いリンク文言は？">
+A. 内容が分かる具体的な文言（例：料金プランを見る）。
+</QAToggle>
+
+---
+
+## ミニ演習（すぐ試せる小課題）
+
+1. 自己紹介ページに「連絡先へ」リンク（`href="#contact"`）を作り、下に `id="contact"` の見出しを置いてジャンプさせよう。
+2. 「無料で始める」などのCTAリンクを1つ作り、CSS例2で“ボタン風”にしてみよう。

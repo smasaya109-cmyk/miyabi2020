@@ -1,0 +1,185 @@
+---
+title: "HTMLとは（役割と全体像）"
+date: "2026-01-26"
+summary: "HTMLの役割、最小コード、よく使うパターン、HTML/CSS/JavaScriptの使い分け、実務のコツをまとめます。"
+category: "html"
+level: "beginner"
+tags: ["HTML", "入門", "基礎"]
+draft: false
+---
+
+## HTMLとは（役割と全体像）
+
+### まず結論（1行）
+
+HTMLは「ページの骨組み」を作る言語で、見出し・文章・画像・リンクなど“意味のある構造”を表せるようになります。
+
+### 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>はじめてのHTML</title>
+  </head>
+  <body>
+    <h1>こんにちはHTML</h1>
+    <p>これは段落です。HTMLは文章に「役割」を与えます。</p>
+    <a href="https://example.com">リンク</a>
+  </body>
+</html>
+~~~
+
+### 重要ポイント（初心者が迷う所だけ）
+
+- HTML＝構造（意味）：見た目は基本的にCSSが担当。HTMLは「見出し」「段落」「ナビ」などの役割を付ける。
+- タグは“要素”を作る：`<h1>` や `<p>` のように、開始タグと終了タグで囲むのが基本。
+- 属性は追加情報：`href="..."` のように、要素に設定を足す。
+- ブラウザが読み取って表示する：HTMLを書いたら、Chromeなどで開けば表示される。
+
+## 例で理解（よく使うパターン）
+
+### 1) 見出し＋文章（記事っぽい構造）
+
+~~~html
+<h1>今日のメモ</h1>
+<p>やることを整理する。</p>
+~~~
+
+### 2) 画像を置く（ページの素材）
+
+~~~html
+<img src="photo.jpg" alt="海辺の写真" />
+~~~
+
+### 3) リンクで別ページへ（回遊）
+
+~~~html
+<a href="/about.html">このサイトについて</a>
+~~~
+
+### 4) 箇条書き（情報を整理）
+
+~~~html
+<ul>
+  <li>買うもの</li>
+  <li>連絡する人</li>
+  <li>提出する書類</li>
+</ul>
+~~~
+
+## 使い分け（HTML / CSS / JavaScript）
+
+- HTML：何があるページか（骨組み・意味）
+- CSS：どう見せるか（装飾・レイアウト）
+- JavaScript：どう動かすか（クリックで開く、入力チェック等）
+
+例：ボタンっぽく見せたい → HTMLで`<a>`か`<button>`を置き、CSSで見た目を作る。
+
+## 実務のコツ（SEO・安全・アクセシビリティ）
+
+- 見出しは順番が大事：h1はページの主題。いきなりh3から始めない。
+- 画像にはalt：読めない人・読み上げ・検索エンジンに内容を伝える。
+- 意味で選ぶ：ただの箱（div）で全部作るより、適切な要素を使うと保守が楽。
+
+## NG・禁止例（事故りやすい）
+
+### 閉じタグ忘れ
+
+~~~html
+<p>文章が続く
+~~~
+
+→ ✅ `</p>` を付ける
+
+### 見た目目的で要素を選ぶ
+
+~~~html
+<h3>文字を大きくしたいだけ</h3>
+~~~
+
+→ ✅ 役割は適切に、サイズはCSSで
+
+### 改行したいだけで`<br>`連打
+
+~~~html
+<p>1行目<br><br><br>2行目</p>
+~~~
+
+→ ✅ 段落は`<p>`、余白はCSSで
+
+## 見た目を整える（HTML+CSSセット：3例）
+
+### 例1：読みやすい本文幅＋行間
+
+~~~html
+<main class="content">
+  <h1>タイトル</h1>
+  <p>本文が読みやすくなります。</p>
+</main>
+~~~
+
+~~~css
+.content{
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 24px;
+  line-height: 1.8;
+}
+~~~
+
+### 例2：リンクを“それっぽく”する（色指定なし）
+
+~~~html
+<a class="link" href="#">詳しく見る</a>
+~~~
+
+~~~css
+.link{
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-weight: 600;
+}
+.link:hover{
+  opacity: .7;
+}
+~~~
+
+### 例3：カード風にまとめる
+
+~~~html
+<section class="card">
+  <h2>お知らせ</h2>
+  <p>HTMLは構造、CSSは見た目です。</p>
+</section>
+~~~
+
+~~~css
+.card{
+  border: 1px solid currentColor;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+~~~
+
+## 理解チェック（3問・答え付き）
+
+<QAToggle q="HTMLの主な役割は？">
+  ページの構造（意味）を表すこと。
+</QAToggle>
+
+<QAToggle q="hrefのようなものを何と呼ぶ？">
+  属性（要素に追加情報を与える）。
+</QAToggle>
+
+<QAToggle q="「見た目を変える担当」はどれ？">
+  CSS。
+</QAToggle>
+
+## ミニ演習（すぐ試せる小課題）
+
+- 上の最小コードをコピペして、`<title>`と`<h1>`を自分の好きなテーマ（例：自己紹介）に変えて表示してみよう。
+- `<p>`を2つに増やし、最後に`<a>`で「外部サイト」へリンクを1つ追加し
