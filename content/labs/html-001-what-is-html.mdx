@@ -1,5 +1,5 @@
 ---
-title: "HTMLとは（役割と全体像）"
+title: "1. HTMLとは（役割と全体像）"
 date: "2026-01-26"
 summary: "HTMLの役割、最小コード、よく使うパターン、HTML/CSS/JavaScriptの使い分け、実務のコツをまとめます。"
 category: "html"
@@ -114,56 +114,54 @@ HTMLは「ページの骨組み」を作る言語で、見出し・文章・画�
 
 ### 例1：読みやすい本文幅＋行間
 
-~~~html
-<main class="content">
+<HtmlCssDemo
+  title="例1：読みやすい本文幅＋行間"
+  html={String.raw`<main class="content">
   <h1>タイトル</h1>
   <p>本文が読みやすくなります。</p>
-</main>
-~~~
-
-~~~css
-.content{
+</main>`}
+  css={String.raw`.content{
   max-width: 680px;
   margin: 0 auto;
   padding: 24px;
   line-height: 1.8;
-}
-~~~
+}`}
+  height={210}
+/>
 
 ### 例2：リンクを“それっぽく”する（色指定なし）
 
-~~~html
-<a class="link" href="#">詳しく見る</a>
-~~~
-
-~~~css
-.link{
+<HtmlCssDemo
+  title="例2：リンクを“それっぽく”する（色指定なし）"
+  html={String.raw`<a class="link" href="#">詳しく見る</a>`}
+  css={String.raw`.link{
   text-decoration: underline;
   text-underline-offset: 4px;
   font-weight: 600;
 }
 .link:hover{
   opacity: .7;
-}
-~~~
+}`}
+  height={160}
+/>
 
 ### 例3：カード風にまとめる
 
-~~~html
-<section class="card">
+<HtmlCssDemo
+  title="例3：カード風にまとめる"
+  html={String.raw`<section class="card">
   <h2>お知らせ</h2>
   <p>HTMLは構造、CSSは見た目です。</p>
-</section>
-~~~
-
-~~~css
-.card{
+</section>`}
+  css={String.raw`.card{
   border: 1px solid currentColor;
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 6px 18px rgba(0,0,0,.08);
-}
-~~~
+}`}
+  height={210}
+/>
+
 
 ## 理解チェック（3問・答え付き）
 

@@ -1,0 +1,315 @@
+---
+title: "28. script（読み込み位置 / defer / type=moduleの触り）"
+date: "2026-01-28"
+summary: "scriptはJSの読み込みタグ。基本はhead + deferでDOM未読み込み事故を減らす。asyncは順番が崩れやすく用途限定。type=moduleはimport/exportが使えて実行タイミングもdefer寄り。"
+category: "html"
+level: "beginner"
+tags: ["html", "script", "defer", "async", "module", "type=module", "javascript", "dom", "loading"]
+draft: false
+---
+
+# 28. script（読み込み位置 / defer / type=moduleの触り）
+
+---
+## まず結論
+
+scriptは「JSを読み込むタグ」で、基本はdeferを付けて読み込み順の事故を減らせます。
+
+---
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Script Minimum</title>
+
+  <!-- 先に読み込み予約して、HTML解析後に実行（おすすめ） -->
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <button type="button" id="btn">押す</button>
+</body>
+</html>
+~~~
+
+`app.js`（同じフォルダ）にJSを書いて動かす想定です。
+
+---
+## 重要ポイント（ここで迷いがち）
+
+- scriptはJSの読み込み/実行タイミングが超大事  
+  HTMLがまだ読み込まれてないと、ボタン等が見つからずエラーになりがち。
+- deferは「HTMLを最後まで読んでから実行」（基本これ）  
+  しかも複数のdeferは**書いた順**に実行されやすい（依存関係の事故が減る）。
+- 昔ながらの安全策：`</body>`直前に置く  
+  defer無しでも、HTMLが先に読まれるのでエラーが起きにくい。
+- `type="module"`は“モジュールとして読み込む”  
+  - `import ...` が使える  
+  - だいたいdefer相当の動き（HTML解析後に実行）
+  - ただし別ファイル読み込み等でルールが増える（学習が進んだら強い）
+- asyncは初心者には事故りやすい  
+  読めた順に実行されるので、順番が重要なコードに向かないことがある。
+
+---
+## 例で理解（よく使うパターン 4つ）
+
+### 1) 推奨：headで defer
+
+~~~html
+<head>
+  <script src="app.js" defer></script>
+</head>
+~~~
+
+HTML解析を止めずに読み込む → 最後に実行。
+
+### 2) bodyの最後に置く（defer無しでもOK）
+
+~~~html
+<body>
+  <button id="btn" type="button">押す</button>
+
+  <script src="app.js"></script>
+</body>
+~~~
+
+### 3) その場でちょい書き（インライン）
+
+~~~html
+<button id="btn" type="button">押す</button>
+
+<script>
+  document.getElementById('btn').addEventListener('click', () => {
+    alert('押した！');
+  });
+</script>
+~~~
+
+小さな検証には便利。実務では外部ファイル化が多いです。
+
+### 4) moduleの触り（importが使える形）
+
+~~~html
+<script type="module" src="main.js"></script>
+~~~
+
+`main.js`の中で `import { ... } from './lib.js'` などが可能。
+
+---
+## 使い分け（defer / async / module の違い）
+
+### defer（おすすめ）
+- HTML解析を止めずに読み込む
+- HTML解析後に実行（順番は基本、記述順）
+
+### async（用途限定）
+- 読めたら即実行（順番が保証されない）
+- 解析中に割り込むことがあり、依存があると事故る
+
+### type="module"
+- import/exportが使える
+- 実行タイミングはdeferに近い
+- モダンな構成向け（学習が進んだら強い）
+
+---
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- まずは “head + defer” で統一すると保守が楽  
+  「どこに置くべき？」で迷わない。
+- JSが効いてない時の確認ポイント  
+  - srcのパスが合ってる？（#29のパス話とも関係）  
+  - Consoleにエラー出てない？  
+  - defer付けた？
+- フォーム送信や重要操作はJSだけに依存させない  
+  可能ならHTMLだけでも最低限成立するように（壊れにくい）。
+- 外部ライブラリを使うときは読み込み順に注意  
+  依存があるならasyncは避けてdeferかmoduleで管理。
+
+---
+## NG・禁止例（事故る書き方）
+
+### NG1）headでdefer無し → DOMが無くてエラー
+
+~~~html
+<head>
+  <script src="app.js"></script>
+</head>
+<body>
+  <button id="btn">押す</button>
+</body>
+~~~
+
+✅ 正：deferを付ける、またはbody末尾へ
+
+~~~html
+<script src="app.js" defer></script>
+~~~
+
+### NG2）asyncで順番依存のコードを読む
+
+~~~html
+<script src="lib.js" async></script>
+<script src="app.js" async></script>
+~~~
+
+✅ 正：順番が必要ならdefer
+
+~~~html
+<script src="lib.js" defer></script>
+<script src="app.js" defer></script>
+~~~
+
+### NG3）srcのパスが間違っていて読み込めない
+
+~~~html
+<script src="/ap.js" defer></script>
+~~~
+
+✅ 正：ファイル名・配置・相対パスを確認
+
+### NG4）同じJSを二重に読み込む
+イベントが二重登録されるなど地味に壊れます。  
+✅ 正：読み込みは1回に整理。
+
+---
+## 見た目を整える（HTML+CSSセット：3例）
+
+script自体は見た目を持たないので、「JSが効いてるのが分かるUI」を作ります。
+
+### 例1）クリックでテキストが変わる（ボタン＋表示）
+
+<HtmlCssDemo
+  title="例1）クリックでテキストが変わる（ボタン＋表示）"
+  height={900}
+  html={String.raw`<p class="msg" id="msg">未クリック</p>
+<button class="btn" id="btn" type="button">押す</button>
+
+<script>
+  document.getElementById('btn').addEventListener('click', () => {
+    document.getElementById('msg').textContent = 'クリック済み';
+  });
+</script>`}
+  css={String.raw`.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.msg{
+  padding: .8rem 1rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 16px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+  display: inline-block;
+}`}
+/>
+
+### 例2）deferで外部JS（HTMLは先に描画）
+
+<HtmlCssDemo
+  title="例2）deferで外部JS（HTMLは先に描画）"
+  height={980}
+  html={String.raw`<button class="btn" id="btn2" type="button">押す</button>
+<p class="out" id="out">---</p>
+
+<!-- headに置く想定：ここでは説明のため末尾に書いています -->
+<script src="app.js" defer></script>
+
+<!-- app.js（同じフォルダ想定）
+document.getElementById('btn2').addEventListener('click', () => {
+  document.getElementById('out').textContent = 'deferで動いた';
+});
+-->`}
+  css={String.raw`.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.out{
+  margin-top: .7rem;
+  padding: .8rem 1rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 16px;
+  display: inline-block;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}`}
+/>
+
+### 例3）moduleで読み込む（入口だけ）
+
+<HtmlCssDemo
+  title="例3）moduleで読み込む（入口だけ）"
+  height={940}
+  html={String.raw`<button class="btn" id="btn3" type="button">押す</button>
+<p class="out" id="out3">---</p>
+
+<script type="module" src="main.js"></script>
+
+<!-- main.js（同じフォルダ想定）
+import { setText } from './lib.js';
+
+document.getElementById('btn3').addEventListener('click', () => {
+  setText('#out3', 'moduleで動いた');
+});
+-->
+
+<!-- lib.js（同じフォルダ想定）
+export function setText(sel, text){
+  document.querySelector(sel).textContent = text;
+}
+-->`}
+  css={String.raw`.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.out{
+  margin-top: .7rem;
+  padding: .8rem 1rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 16px;
+  display: inline-block;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}`}
+/>
+
+---
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. headで外部JSを読み込むとき、初心者の安全策は？</summary>
+  <p>A. <code>defer</code> を付ける。</p>
+</details>
+
+<details>
+  <summary>Q. asyncが事故りやすい理由は？</summary>
+  <p>A. 読み込めた順に実行され、順番が保証されないから。</p>
+</details>
+
+<details>
+  <summary>Q. type="module"でできるようになる代表は？</summary>
+  <p>A. <code>import/export</code> が使える。</p>
+</details>
+
+---
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1) headに `<script src="app.js" defer></script>` を置き、  
+`app.js`でボタン（#btn）のクリックでテキストを変える処理を書いてみてください。
+
+2) 同じことを `script type="module"` でやってみて、  
+“HTML側は入口だけで、JSは別ファイルに置ける”感覚を掴んでください。

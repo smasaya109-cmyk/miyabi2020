@@ -1,0 +1,448 @@
+---
+title: "16. セマンティックHTML（header/main/section/article/footer）"
+date: "2026-01-28"
+summary: "divより意味のある要素で組むと、構造が伝わりやすくなり保守・SEO・アクセシビリティが強くなる。"
+category: "html"
+level: "beginner"
+tags: ["html", "semantic", "header", "main", "section", "article", "footer", "accessibility", "seo"]
+draft: false
+---
+
+# 16. セマンティックHTML（header/main/section/article/footer）
+
+## まず結論
+
+divではなく意味のある要素（header/main/section/article/footerなど）で組むと、構造が伝わりやすくなり保守・SEO・アクセシビリティが強くなります。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Semantic Minimum</title>
+</head>
+<body>
+  <header>
+    <h1>サイト名</h1>
+    <nav aria-label="主要メニュー">
+      <ul>
+        <li><a href="/">ホーム</a></li>
+        <li><a href="/blog.html">ブログ</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <article>
+      <h2>記事タイトル</h2>
+      <p>本文です。</p>
+    </article>
+  </main>
+
+  <footer>
+    <small>© サイト名</small>
+  </footer>
+</body>
+</html>
+~~~
+
+---
+
+## 重要ポイント（初心者が迷うところだけ）
+
+- **セマンティック = “意味が伝わる要素”**
+  - 人（チーム）にも機械（検索・読み上げ）にも「ここは何か」が伝わる。
+- **mainは基本1ページに1つ**
+  - そのページの主役の内容を入れる。ヘッダー・フッター・サイドは入れない。
+- **header / footer は“ページ全体”だけじゃない**
+  - articleの中に「記事ヘッダー」「記事フッター」として入れてもOK。
+- **sectionは“見出しとセット”が基本**
+  - 章として成立するまとまり（たいてい h2 などがある）。
+- **articleは“単体で成立するコンテンツ”**
+  - 例：ブログ記事、ニュース1本、レビュー1件、投稿1つ。
+  - 逆に「単体で成立しない区切り」なら section の方が合うことが多い。
+- **navは主要なナビ領域（#12）**
+  - 何でもかんでもnavにしない。意味ある単位で。
+
+---
+
+## 例で理解（よく使うパターン 4つ）
+
+### 1) 会社サイトの基本骨格（ページ全体）
+
+~~~html
+<header>
+  <h1>会社名</h1>
+  <nav aria-label="主要メニュー">...</nav>
+</header>
+
+<main>
+  <section>
+    <h2>サービス</h2>
+    <p>説明</p>
+  </section>
+
+  <section>
+    <h2>お知らせ</h2>
+    <ul>
+      <li><a href="/news/1.html">お知らせ1</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <nav aria-label="フッターメニュー">...</nav>
+  <small>© 会社名</small>
+</footer>
+~~~
+
+### 2) ブログ一覧：記事が複数 → articleを繰り返す
+
+~~~html
+<main>
+  <h1>ブログ</h1>
+
+  <article>
+    <h2><a href="/blog/1.html">記事1</a></h2>
+    <p>概要…</p>
+  </article>
+
+  <article>
+    <h2><a href="/blog/2.html">記事2</a></h2>
+    <p>概要…</p>
+  </article>
+</main>
+~~~
+
+### 3) articleの中にheader/footerを持たせる（記事単位）
+
+~~~html
+<article>
+  <header>
+    <h2>記事タイトル</h2>
+    <p>公開日：2026-01-28</p>
+  </header>
+
+  <p>本文…</p>
+
+  <footer>
+    <p>カテゴリ：HTML</p>
+  </footer>
+</article>
+~~~
+
+### 4) sectionの代わりにdivが適切な例（“章”じゃない）
+
+~~~html
+<div class="grid">
+  <div class="card">...</div>
+  <div class="card">...</div>
+</div>
+~~~
+
+単にレイアウト目的の箱はdivでOK。無理にsectionにしない。
+
+---
+
+## 使い分け（似た要素との違い）
+
+### section vs div
+
+- **section**：章として意味がある（見出しがある）
+- **div**：意味は不要、レイアウトやスタイルの箱
+
+### article vs section
+
+- **article**：それ単体で共有・再利用して成立する（RSSに流せるイメージ）
+- **section**：ページ内の章、記事の中の区切り
+
+### header/footerの範囲
+
+ページ全体でも、article内でもOK（“そのまとまりの頭/尻”）。
+
+---
+
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- **見出し階層（h1→h2→h3…）を守ると効果が出やすい**
+  - セマンティック要素と相性が良い（#4で深掘り）。
+- **mainの中に“そのページの主役”だけを入れる**
+  - 読み上げのショートカットで主内容へ飛びやすい。
+- **ナビが複数あるなら aria-label で区別**
+  - 例：主要メニュー / フッターメニュー / ページ内メニュー。
+- **「意味がある要素」→ classは“補助”**
+  - まず構造（意味）を作ってから、classで見た目を当てると壊れにくい。
+
+---
+
+## NG・禁止例（事故る書き方）
+
+### NG1）mainを複数置く
+
+~~~html
+<main>...</main>
+<main>...</main>
+~~~
+
+✅ 正：基本は1つにまとめる
+
+### NG2）見出しのないsectionを乱用する
+
+~~~html
+<section>ただの箱</section>
+~~~
+
+✅ 正：章なら見出しを入れる／箱ならdiv
+
+### NG3）全部divで意味ゼロにする
+
+~~~html
+<div class="header">...</div>
+<div class="main">...</div>
+<div class="footer">...</div>
+~~~
+
+✅ 正：要素自体で意味を出す
+
+~~~html
+<header>...</header>
+<main>...</main>
+<footer>...</footer>
+~~~
+
+### NG4）navを“リンク集なら何でも”にしてしまう
+
+主要ナビが埋もれて分かりにくい
+
+✅ 正：意味ある単位でnavにする（主要/フッター/ページ内 など）
+
+---
+
+## 見た目を整える（HTML+CSSセット：4例）
+
+色は使わず、余白・線・影・レイアウトで整えます。
+
+### 例1）ヘッダー＋メイン＋フッターの基本レイアウト
+
+<HtmlCssDemo
+  title="例1）ヘッダー＋メイン＋フッターの基本レイアウト"
+  html={String.raw`<header class="site-header">
+  <div class="wrap">
+    <h1 class="site-title">サイト名</h1>
+    <nav aria-label="主要メニュー">
+      <ul class="menu">
+        <li><a class="menu__link" href="/">ホーム</a></li>
+        <li><a class="menu__link" href="/blog.html">ブログ</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <div class="wrap">
+    <article class="post">
+      <h2 class="post__title">記事タイトル</h2>
+      <p class="post__text">本文です。</p>
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <small>© サイト名</small>
+  </div>
+</footer>`}
+  css={String.raw`.wrap{ max-width: 920px; margin: 0 auto; padding: 0 16px; }
+
+.site-header, .site-footer{
+  border-bottom: 1px solid rgba(0,0,0,.14);
+}
+.site-footer{
+  border-top: 1px solid rgba(0,0,0,.14);
+  border-bottom: none;
+}
+
+.site-title{ margin: 1rem 0 .5rem; font-size: 1.25rem; }
+
+.menu{
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+.menu__link{
+  display: inline-block;
+  padding: .55rem .85rem;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.main{ padding: 1.2rem 0 2rem; }
+
+.post{
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.post__title{ margin: 0 0 .5rem; font-size: 1.15rem; }
+.post__text{ margin: 0; line-height: 1.85; }`}
+  height={520}
+/>
+
+### 例2）sectionを“章”として見せる
+
+<HtmlCssDemo
+  title="例2）sectionを“章”として見せる"
+  html={String.raw`<main class="main">
+  <section class="chapter">
+    <h2 class="chapter__title">サービス</h2>
+    <p class="chapter__text">内容説明</p>
+  </section>
+
+  <section class="chapter">
+    <h2 class="chapter__title">料金</h2>
+    <p class="chapter__text">内容説明</p>
+  </section>
+</main>`}
+  css={String.raw`.main{ padding: 16px; }
+
+.chapter{
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(0,0,0,.14);
+}
+.chapter__title{ margin: 0 0 .4rem; font-size: 1.1rem; }
+.chapter__text{ margin: 0; line-height: 1.85; }`}
+  height={360}
+/>
+
+### 例3）ブログ一覧を“カード一覧”に（articleの繰り返し）
+
+<HtmlCssDemo
+  title="例3）ブログ一覧を“カード一覧”に（articleの繰り返し）"
+  html={String.raw`<main class="grid">
+  <article class="card">
+    <h2 class="card__title"><a href="/blog/1.html">記事1</a></h2>
+    <p class="card__text">概要…</p>
+  </article>
+
+  <article class="card">
+    <h2 class="card__title"><a href="/blog/2.html">記事2</a></h2>
+    <p class="card__text">概要…</p>
+  </article>
+</main>`}
+  css={String.raw`.grid{
+  display: grid;
+  gap: 1rem;
+  padding: 1rem 16px;
+}
+@media (min-width: 760px){
+  .grid{ grid-template-columns: 1fr 1fr; }
+}
+.card{
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.card__title{ margin: 0 0 .4rem; font-size: 1.05rem; }
+.card__text{ margin: 0; line-height: 1.85; }
+
+.card a{ text-decoration: none; }
+.card a:hover{ text-decoration: underline; }`}
+  height={420}
+/>
+
+### 例4）aside（補足）を“本文の横”に（レイアウト例）
+
+<HtmlCssDemo
+  title="例4）aside（補足）を“本文の横”に（レイアウト例）"
+  html={String.raw`<div class="layout">
+  <main class="layout__main">
+    <article class="post">
+      <h1>記事タイトル</h1>
+      <p>本文…</p>
+    </article>
+  </main>
+
+  <aside class="layout__aside">
+    <nav aria-label="ページ内メニュー">
+      <ul class="side">
+        <li><a class="side__link" href="#a">見出しA</a></li>
+        <li><a class="side__link" href="#b">見出しB</a></li>
+      </ul>
+    </nav>
+  </aside>
+</div>`}
+  css={String.raw`.layout{ display: grid; gap: 1rem; padding: 1rem 16px; }
+@media (min-width: 900px){
+  .layout{ grid-template-columns: 2fr 1fr; align-items: start; }
+}
+
+.post{
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.post h1{ margin: 0 0 .5rem; font-size: 1.15rem; }
+.post p{ margin: 0; line-height: 1.85; }
+
+.layout__aside{
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 1rem;
+}
+
+.side{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: .5rem;
+}
+.side__link{
+  display: block;
+  padding: .6rem .8rem;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 14px;
+  text-decoration: none;
+}`}
+  height={460}
+/>
+
+---
+
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. mainは基本1ページにいくつ？</summary>
+  <p>A. 1つ。</p>
+</details>
+
+<details>
+  <summary>Q. sectionを使うときにセットで用意すると良いものは？</summary>
+  <p>A. 見出し（h2など）。</p>
+</details>
+
+<details>
+  <summary>Q. 「単体で成立する投稿・記事」を表すのは section と article どっち？</summary>
+  <p>A. article。</p>
+</details>
+
+---
+
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1. 「会社サイトの1ページ」を作るつもりで、header（ロゴ+nav） / main（sectionを2つ） / footer を組んでみてください。  
+   sectionには必ずh2を入れる。
+2. ブログ一覧を想定して、mainの中にarticleを2つ並べてください。  
+   それぞれに h2 と p を入れ、CSS例3の“カード一覧”を当てて整える。

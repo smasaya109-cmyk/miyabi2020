@@ -1,0 +1,333 @@
+---
+title: "11. リスト：ul/ol/li（箇条書きの基本）"
+date: "2026-01-26"
+summary: "ul（順不同）とol（順序あり）でリストの骨組みを作り、項目は必ずliで書けるようになります。"
+category: "html"
+level: "beginner"
+tags:
+  - list
+  - ul
+  - ol
+  - li
+  - nested
+draft: false
+links: []
+---
+
+## まず結論（1行）
+
+ul（順不同）とol（順序あり）でリストの骨組みを作り、項目は必ずliで書けるようになります。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+```html
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>List Minimum</title>
+  </head>
+  <body>
+    <ul>
+      <li>りんご</li>
+      <li>バナナ</li>
+      <li>みかん</li>
+    </ul>
+  </body>
+</html>
+```
+
+---
+
+## 重要ポイント（ここで迷いがち）
+
+- ul = unordered list（順番が重要じゃない）  
+  例：持ち物、特徴、メニューなど
+- ol = ordered list（順番が重要）  
+  例：手順、ランキング、手続きの流れ
+- liは「リスト項目」専用  
+  liは必ずulかol（または後述のmenu）の中に置く。
+- リストの中に“別のリスト”を入れられる（入れ子）  
+  ただし「入れ子のul/olは、親のliの中」に入れるのが基本。
+
+---
+
+## 例で理解（よく使うパターン 4つ）
+
+### 1) 仕様・特徴の箇条書き（ul）
+
+```html
+<ul>
+  <li>予約不要</li>
+  <li>持ち物はタオルだけ</li>
+  <li>雨天でも開催</li>
+</ul>
+```
+
+### 2) 手順を書く（ol）
+
+```html
+<ol>
+  <li>フォームを開く</li>
+  <li>必要事項を入力</li>
+  <li>送信して完了</li>
+</ol>
+```
+
+### 3) 入れ子（カテゴリー→項目）
+
+```html
+<ul>
+  <li>
+    飲み物
+    <ul>
+      <li>コーヒー</li>
+      <li>お茶</li>
+    </ul>
+  </li>
+  <li>
+    食べ物
+    <ul>
+      <li>パン</li>
+      <li>サラダ</li>
+    </ul>
+  </li>
+</ul>
+```
+
+### 4) 手順の中に注意点を入れる（olの中にul）
+
+```html
+<ol>
+  <li>
+    申し込み前に確認
+    <ul>
+      <li>メール受信設定</li>
+      <li>入力内容の控え</li>
+    </ul>
+  </li>
+  <li>申し込む</li>
+</ol>
+```
+
+---
+
+## 使い分け（似た要素との違い）
+
+- pで箇条書きっぽくしない  
+  見た目はCSSで作れても、意味としては段落のまま。読み上げや検索にも弱い。
+- br連打で“なんちゃってリスト”にしない  
+  構造が壊れて、編集・保守・アクセシビリティが悪化。
+- ナビはnav + ul/li/aが基本（#12で詳しく）  
+  メニューも“リスト”として表現すると意味が通る。
+
+---
+
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- 読み上げ（スクリーンリーダー）はリストを理解できる  
+  「〇件のリスト」→「1つ目…」のように案内され、情報が伝わりやすい。
+- 入れ子は深くしすぎない（2段くらいまでが無難）  
+  深すぎると読みづらく、スマホでも操作しづらい。
+- リストは“同じ種類の項目”を並べる  
+  例：機能一覧、注意点一覧、ステップ一覧。混ぜると理解が落ちる。
+
+---
+
+## NG・禁止例（事故る書き方）
+
+### NG1）liを単体で置く（親がない）
+
+```html
+<li>これはNG</li>
+```
+
+✅ 正：ulかolの中に入れる
+
+```html
+<ul><li>OK</li></ul>
+```
+
+### NG2）ulの直下にテキストを置く（li以外が混ざる）
+
+```html
+<ul>
+  りんご
+  <li>バナナ</li>
+</ul>
+```
+
+✅ 正：全部liにする
+
+```html
+<ul>
+  <li>りんご</li>
+  <li>バナナ</li>
+</ul>
+```
+
+### NG3）入れ子リストをliの外に置く
+
+```html
+<ul>
+  <li>飲み物</li>
+  <ul><li>コーヒー</li></ul>
+</ul>
+```
+
+✅ 正：入れ子は親liの中
+
+```html
+<ul>
+  <li>
+    飲み物
+    <ul><li>コーヒー</li></ul>
+  </li>
+</ul>
+```
+
+### NG4）olで順番が意味ない内容を書く
+
+例：持ち物一覧をolにする → 「順番が意味あり」に誤解されやすい  
+✅ 正：順番が不要ならul
+
+---
+
+## 見た目を整える（HTML+CSSセット：4例）
+
+色は使わず、線・余白・影・アニメで整えます。
+
+### 例1）余白と行間で読みやすく
+
+<HtmlCssDemo
+  title="例1）余白と行間で読みやすく"
+  html={String.raw`<ul class="list-basic">
+  <li>予約不要</li>
+  <li>持ち物はタオルだけ</li>
+  <li>雨天でも開催</li>
+</ul>`}
+  css={String.raw`.list-basic {
+  padding-left: 1.25rem;
+  line-height: 1.9;
+}
+.list-basic li {
+  margin: 0.4rem 0;
+}`}
+  height={210}
+/>
+
+### 例2）点（・）を消して“カード風”
+
+<HtmlCssDemo
+  title="例2）点（・）を消して“カード風”"
+  html={String.raw`<ul class="list-card">
+  <li>受付は10:00から</li>
+  <li>開始5分前に集合</li>
+  <li>終了後にアンケート</li>
+</ul>`}
+  css={String.raw`.list-card {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.list-card li {
+  padding: 0.8rem 0.9rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}`}
+  height={250}
+/>
+
+### 例3）チェックっぽい見た目（疑似要素）
+
+<HtmlCssDemo
+  title="例3）チェックっぽい見た目（疑似要素）"
+  html={String.raw`<ul class="list-check">
+  <li>メールアドレスを確認</li>
+  <li>入力漏れがないか確認</li>
+  <li>送信後の自動返信を確認</li>
+</ul>`}
+  css={String.raw`.list-check {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.list-check li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+.list-check li::before {
+  content: "✓";
+  transform: translateY(0.05rem);
+  opacity: 0.8;
+}`}
+  height={260}
+/>
+
+### 例4）手順を“ステップ”っぽく（ol）
+
+<HtmlCssDemo
+  title="例4）手順を“ステップ”っぽく（ol）"
+  html={String.raw`<ol class="steps">
+  <li>フォームを開く</li>
+  <li>必要事項を入力</li>
+  <li>送信して完了</li>
+</ol>`}
+  css={String.raw`.steps {
+  counter-reset: step;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.steps li {
+  counter-increment: step;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  position: relative;
+}
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  top: 0.6rem;
+  right: 0.75rem;
+  opacity: 0.6;
+  font-size: 0.95rem;
+}`}
+  height={280}
+/>
+
+----
+
+## 理解チェック（3問・答え付き）
+
+<QAToggle q="持ち物リストはulとolどっち？">
+→ ul（順番が重要じゃない）
+</QAToggle>
+
+<QAToggle q="liはどこに置ける？">
+→ ulかolの中（親が必要）
+</QAToggle>
+
+<QAToggle q="入れ子のulはどこに入れるのが基本？">
+→ 親のliの中（項目の一部として扱う）
+</QAToggle>
+
+---
+
+## ミニ演習（すぐ試せる小課題 2つ）
+
+- 「今日やること」をolで3ステップ書いてみてください。  
+  さらに「1つ目の手順の注意点」を入れ子ulで2個追加。
+- 「購入前チェック」をulで5項目作り、CSS例3（チェック風）を当てて見た目を整えてください。

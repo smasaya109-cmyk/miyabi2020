@@ -1,0 +1,349 @@
+---
+title: "21. label（アクセシビリティと紐付け）"
+date: "2026-01-28"
+summary: "labelで入力に名前を付けて紐付ける。for/id、包む方式、checkbox/radio、required、aria-describedbyまで。"
+category: "html"
+level: "beginner"
+tags: ["html", "form", "label", "input", "accessibility", "for", "id", "required", "aria-describedby"]
+draft: false
+---
+
+# 21. label（アクセシビリティと紐付け）
+
+---  
+## まず結論
+
+labelで入力欄に“名前”を付けて紐付けると、クリックでフォーカスできて、読み上げでも正しく伝わるフォームになります。
+
+---  
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Label Minimum</title>
+</head>
+<body>
+  <form action="/submit" method="post">
+    <label for="email">メールアドレス</label>
+    <input id="email" name="email" type="email" autocomplete="email">
+
+    <button type="submit">送信</button>
+  </form>
+</body>
+</html>
+~~~
+
+---  
+## 重要ポイント（ここで迷いがち）
+
+- labelは入力の“説明（名前）”
+  - placeholderは補助であって、ラベルの代わりにはならない
+- 紐付けは **for と id を一致** させる  
+  - label for="email" / input id="email"
+- ラベルをクリックすると入力欄にフォーカス  
+  - スマホでも押しやすくなる（小さい入力欄でもOK）
+- チェックボックス/ラジオは“特に”labelが重要  
+  - 小さい丸や四角を狙わずに、文字ごとクリックできる
+- 1入力につきラベルは基本1つ（迷子防止）
+
+---  
+## 例で理解（よく使うパターン 5つ）
+
+### 1) 基本：for/idで紐付け
+
+~~~html
+<label for="name">お名前</label>
+<input id="name" name="name" type="text" autocomplete="name">
+~~~
+
+### 2) labelでinputを包む（for/id不要な書き方）
+
+~~~html
+<label>
+  お名前
+  <input name="name" type="text" autocomplete="name">
+</label>
+~~~
+
+シンプルでミスが減る一方、CSSでレイアウトするときは分けた方が楽な場合もあります。
+
+### 3) チェックボックス（文字ごと押せる）
+
+~~~html
+<input id="agree" name="agree" type="checkbox">
+<label for="agree">利用規約に同意する</label>
+~~~
+
+### 4) ラジオ（選択肢をまとめて分かりやすく）
+
+~~~html
+<p>お支払い方法</p>
+
+<input id="pay-card" name="pay" type="radio" value="card">
+<label for="pay-card">カード</label>
+
+<input id="pay-bank" name="pay" type="radio" value="bank">
+<label for="pay-bank">銀行振込</label>
+~~~
+
+### 5) 必須の見せ方（見た目 + 実際の必須）
+
+~~~html
+<label for="email">
+  メールアドレス <span class="req" aria-hidden="true">必須</span>
+</label>
+<input id="email" name="email" type="email" required>
+~~~
+
+見た目の「必須」はaria-hidden="true"で読み上げを邪魔しにくくしつつ、実際はrequiredで必須に。
+
+---  
+## 使い分け（似た要素/属性との違い）
+
+### label vs placeholder
+
+- label：入力の名前（常に残る・読み上げで伝わる）
+- placeholder：入力例（入力中に消える・ラベル代わりにしない）
+
+### label vs aria-label
+
+- 画面に見せられるなら labelが基本
+- どうしても文字を置けない（アイコンのみ等）→ aria-label を検討
+
+### for/id方式 vs 包む方式
+
+- for/id：構造が分かりやすく、CSSで並べやすい
+- 包む：最短で書けてミスが減る
+
+---  
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- 入力の目的が一目で分かる文言に  
+  ×「入力」→ ○「メールアドレス」「電話番号」
+- チェック/ラジオは“ラベルを大きく”  
+  文字をクリックできるだけでミスが激減する
+- エラー文は入力の近くに置く（実務で重要）  
+  まずはHTML段階では「どの入力が何か」をlabelで確実にするのが第一歩
+- idはユニーク（#15）  
+  for/id方式を使うなら特に、重複は事故の元
+
+---  
+## NG・禁止例（事故る書き方）
+
+### NG1）labelが無く、placeholderだけ
+
+~~~html
+<input name="email" type="email" placeholder="メールアドレス">
+~~~
+
+✅ 正：labelを付ける
+
+~~~html
+<label for="email">メールアドレス</label>
+<input id="email" name="email" type="email" placeholder="example@domain.com">
+~~~
+
+### NG2）forとidが一致していない（紐付かない）
+
+~~~html
+<label for="mail">メール</label>
+<input id="email" name="email" type="email">
+~~~
+
+✅ 正：一致させる
+
+~~~html
+<label for="email">メール</label>
+<input id="email" name="email" type="email">
+~~~
+
+### NG3）同じidを複数に使う（紐付けが壊れる）
+
+~~~html
+<input id="email" name="email" type="email">
+<input id="email" name="backup_email" type="email">
+~~~
+
+✅ 正：idは別々に
+
+~~~html
+<input id="email" name="email" type="email">
+<input id="email2" name="backup_email" type="email">
+~~~
+
+### NG4）“必須”の表示だけでrequiredが無い
+
+~~~html
+<label for="email">メール（必須）</label>
+<input id="email" name="email" type="email">
+~~~
+
+✅ 正：実際の必須も付ける
+
+~~~html
+<label for="email">メール</label>
+<input id="email" name="email" type="email" required>
+~~~
+
+---  
+## 見た目を整える（HTML+CSSセット：5例）
+
+色は使わず、余白・線・影・フォーカスで整えます。
+
+### 例1）縦並び（基本）
+
+<HtmlCssDemo
+  title="例1）縦並び（基本）"
+  height={520}
+  html={String.raw`<div class="field">
+  <label class="field__label" for="name1">お名前</label>
+  <input class="field__input" id="name1" name="name" type="text" autocomplete="name" />
+</div>`}
+  css={String.raw`.field{ display: grid; gap: .35rem; max-width: 520px; }
+.field__label{ font-size: .95rem; }
+.field__input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.field__input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}`}
+/>
+
+### 例2）横並び（PCでラベル列を揃える）
+
+<HtmlCssDemo
+  title="例2）横並び（PCでラベル列を揃える）"
+  height={560}
+  html={String.raw`<div class="row">
+  <label class="row__label" for="email2">メール</label>
+  <input class="row__input" id="email2" name="email" type="email" autocomplete="email" />
+</div>`}
+  css={String.raw`.row{ display: grid; gap: .35rem; align-items: center; }
+@media (min-width: 760px){
+  .row{ grid-template-columns: 160px 1fr; gap: .8rem; }
+}
+.row__input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+}
+.row__input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}`}
+/>
+
+### 例3）チェックボックスを“押しやすく”
+
+<HtmlCssDemo
+  title="例3）チェックボックスを“押しやすく”"
+  height={560}
+  html={String.raw`<div class="check">
+  <input class="check__box" id="agree3" name="agree" type="checkbox" />
+  <label class="check__label" for="agree3">利用規約に同意する</label>
+</div>`}
+  css={String.raw`.check{
+  display: flex;
+  gap: .6rem;
+  align-items: flex-start;
+  padding: .7rem .9rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 16px;
+}
+.check__box{ width: 18px; height: 18px; margin-top: .2rem; }
+.check__label{ line-height: 1.6; cursor: pointer; }`}
+/>
+
+### 例4）必須バッジ（見た目だけ・読み上げ邪魔しにくい）
+
+<HtmlCssDemo
+  title="例4）必須バッジ（見た目だけ・読み上げ邪魔しにくい）"
+  height={640}
+  html={String.raw`<div class="field">
+  <label class="field__label" for="email4">
+    メールアドレス <span class="req" aria-hidden="true">必須</span>
+  </label>
+  <input class="field__input" id="email4" name="email" type="email" required />
+</div>`}
+  css={String.raw`.field{ display: grid; gap: .35rem; max-width: 520px; }
+.field__label{ font-size: .95rem; }
+.field__input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.field__input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.req{
+  display: inline-block;
+  padding: .1rem .45rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: .8rem;
+  margin-left: .4rem;
+  opacity: .8;
+}`}
+/>
+
+### 例5）“説明文”を追加（ラベル + 補足）
+
+<HtmlCssDemo
+  title="例5）“説明文”を追加（ラベル + 補足）"
+  height={720}
+  html={String.raw`<div class="field">
+  <label class="field__label" for="tel5">電話番号</label>
+  <p class="help" id="tel-help5">ハイフンなしで入力してください。</p>
+  <input class="field__input" id="tel5" name="tel" type="tel" aria-describedby="tel-help5" autocomplete="tel" />
+</div>`}
+  css={String.raw`.field{ display: grid; gap: .35rem; max-width: 520px; }
+.field__label{ font-size: .95rem; }
+.help{ margin: 0; font-size: .9rem; opacity: .85; line-height: 1.6; }
+.field__input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.field__input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}`}
+/>
+
+aria-describedbyで補足説明も紐付けできます（便利だけど、まずはlabelを確実に！）。
+
+---  
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. labelとinputを紐付けるために一致させるのは？</summary>
+  <p>A. label for と input id。</p>
+</details>
+
+<details>
+  <summary>Q. placeholderはlabelの代わりになる？</summary>
+  <p>A. ならない（補助）。</p>
+</details>
+
+<details>
+  <summary>Q. チェックボックスでlabelが特に大事な理由は？</summary>
+  <p>A. 小さいチェック部分を狙わず、文字ごとクリックできるから。</p>
+</details>
+
+---  
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1) 「メールアドレス」と「パスワード」の2項目を作り、for/id方式で正しく紐付けてください（クリックでフォーカスできるのを確認）。
+
+2) 「利用規約に同意する」チェックボックスを作り、CSS例3を当てて“押しやすいチェック行”にしてください（文字クリックでもON/OFFできればOK）。

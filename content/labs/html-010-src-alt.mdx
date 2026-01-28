@@ -1,5 +1,5 @@
 ---
-title: "src と alt（画像パス・代替テキスト）"
+title: "10. src と alt（画像パス・代替テキスト）"
 date: "2026-01-26"
 summary: "srcで「画像の場所」を正しく指し、altで「画像の意味」を言葉で渡すと、表示・SEO・アクセシビリティが揃います。"
 category: "html"
@@ -160,31 +160,28 @@ srcで「画像の場所」を正しく指し、altで「画像の意味」を�
 
 ### 例1：画像の比率を保ってはみ出し防止（定番）
 
-```html
-<img class="media" src="./images/cafe.jpg" alt="カフェのテーブルに置かれたコーヒー" />
-```
-
-```css
-.media {
+<HtmlCssDemo
+  title="例1：画像の比率を保ってはみ出し防止（定番）"
+  html={String.raw`<img class="media" src="./images/cafe.jpg" alt="カフェのテーブルに置かれたコーヒー" />`}
+  css={String.raw`.media {
   max-width: 100%;
   height: auto;
   display: block;
   border-radius: 18px;
   border: 1px solid currentColor;
-}
-```
+}`}
+  height={210}
+/>
 
 ### 例2：プロフィール画像＋説明（実務っぽい）
 
-```html
-<div class="profile">
+<HtmlCssDemo
+  title="例2：プロフィール画像＋説明（実務っぽい）"
+  html={String.raw`<div class="profile">
   <img class="profile__img" src="./images/profile.jpg" alt="プロフィール写真" />
   <p class="profile__text">フロントエンド学習中。週末に作品を作っています。</p>
-</div>
-```
-
-```css
-.profile {
+</div>`}
+  css={String.raw`.profile {
   display: grid;
   gap: 12px;
   max-width: 520px;
@@ -204,19 +201,18 @@ srcで「画像の場所」を正しく指し、altで「画像の意味」を�
 .profile__text {
   margin: 0;
   opacity: 0.85;
-}
-```
+}`}
+  height={280}
+/>
 
 ### 例3：画像リンク（altは“目的”に寄せる）
 
-```html
-<a class="brand" href="/index.html">
+<HtmlCssDemo
+  title="例3：画像リンク（altは“目的”に寄せる）"
+  html={String.raw`<a class="brand" href="/index.html">
   <img class="brand__logo" src="./images/logo.png" alt="トップページへ戻る" />
-</a>
-```
-
-```css
-.brand {
+</a>`}
+  css={String.raw`.brand {
   display: inline-block;
   padding: 10px;
   border-radius: 14px;
@@ -230,8 +226,10 @@ srcで「画像の場所」を正しく指し、altで「画像の意味」を�
   display: block;
   height: 40px;
   width: auto;
-}
-```
+}`}
+  height={220}
+/>
+
 
 ---
 

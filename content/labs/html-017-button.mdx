@@ -1,0 +1,369 @@
+---
+title: "17. button（aとの使い分け・押す操作）"
+date: "2026-01-28"
+summary: "ページ移動はa、その場の操作はbutton。意味で使い分けると意図どおりに動いてアクセシビリティも崩れない。"
+category: "html"
+level: "beginner"
+tags: ["html", "button", "a", "accessibility", "form", "aria"]
+draft: false
+---
+
+# 17. button（aとの使い分け・押す操作）
+
+## まず結論
+
+「ページ移動はa」「その場の操作はbutton」と分けると、意図どおりに動いてアクセシビリティも崩れません。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>button Minimum</title>
+</head>
+<body>
+  <button type="button">モーダルを開く</button>
+</body>
+</html>
+~~~
+
+---
+
+## 重要ポイント（ここで迷いがち）
+
+- **aは「移動（ナビゲーション）」、buttonは「操作（アクション）」**
+  - a：別ページへ行く、別URLへ飛ぶ、ページ内リンクへ飛ぶ
+  - button：送信、開閉、追加、削除、いいね、モーダル表示…など
+- **buttonはデフォルトで送信になることがある**
+  - フォームの中だと、type未指定のbuttonは多くの場面でsubmit扱い
+  - → フォーム以外のボタンは **type="button"** を習慣に
+- **キーボード操作の差が出る**
+  - buttonはEnter/Spaceで操作できるのが自然
+  - divでボタンっぽく作ると崩れやすい
+- **disabledが使える**
+  - button disabled は自然に無効化できる（aには基本ない）
+- **アイコンだけボタンは説明が必要**
+  - 文字が無いなら aria-label="閉じる" のように意味を付ける
+
+---
+
+## 例で理解（よく使うパターン 5つ）
+
+### 1) ページ移動はa
+
+~~~html
+<a href="/contact.html">お問い合わせ</a>
+~~~
+
+### 2) その場の開閉はbutton
+
+~~~html
+<button type="button" aria-expanded="false" aria-controls="faq1">
+  Q. 返金できますか？
+</button>
+<div id="faq1" hidden>
+  <p>A. 条件により可能です。</p>
+</div>
+~~~
+
+### 3) フォーム送信はbutton type="submit"
+
+~~~html
+<form action="/submit" method="post">
+  <button type="submit">送信</button>
+</form>
+~~~
+
+### 4) 無効化（押せない状態）
+
+~~~html
+<button type="button" disabled>送信（準備中）</button>
+~~~
+
+### 5) アイコンだけのボタン（ラベル必須）
+
+~~~html
+<button type="button" aria-label="閉じる">
+  ×
+</button>
+~~~
+
+---
+
+## 使い分け（aとの違い：迷ったらこれ）
+
+- クリック後にURLが変わる／移動する？ → **a**
+- その場で何かが起きる（表示切替・送信・実行）？ → **button**
+- “見た目がボタン”だからbuttonにするのはNG  
+  意味（動作）で決める。
+
+---
+
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- **buttonはテキストを具体的に**
+  - ×「OK」→ ○「保存する」「カートに入れる」
+- **開閉UIは aria-expanded と aria-controls を使うと強い**
+  - JSで状態を変えると読み上げにも伝わる（例2）
+- **押せない状態は“見た目だけ”にしない**
+  - disabled または aria-disabled="true" を使う（要件に応じて）
+- **aをボタンに見せるのはOK（移動なら）**
+  - ただし意味はaのまま。CSSでボタン風にするだけ
+
+---
+
+## NG・禁止例（事故る書き方）
+
+### NG1）移動なのにbutton（URLが変わらない）
+
+~~~html
+<button type="button" onclick="location.href='/contact.html'">お問い合わせ</button>
+~~~
+
+✅ 正：最初からa
+
+~~~html
+<a href="/contact.html">お問い合わせ</a>
+~~~
+
+### NG2）操作なのにa href="#"（ページ上部に飛ぶ等の事故）
+
+~~~html
+<a href="#" class="btn">開く</a>
+~~~
+
+✅ 正：button type="button"
+
+~~~html
+<button type="button" class="btn">開く</button>
+~~~
+
+### NG3）フォーム内ボタンのtype未指定で誤送信
+
+~~~html
+<form>
+  <button>閉じる</button>
+</form>
+~~~
+
+✅ 正：送信じゃないなら明示
+
+~~~html
+<button type="button">閉じる</button>
+~~~
+
+### NG4）divでボタンを作る（キーボード操作が崩れる）
+
+~~~html
+<div class="btn">押す</div>
+~~~
+
+✅ 正：buttonを使う
+
+---
+
+## 見た目を整える（HTML+CSSセット：5例）
+
+色は使わず、線・余白・影・動きで“押せそう”を作ります。
+
+### 例1）基本ボタン（押しやすい）
+
+<HtmlCssDemo
+  title="例1）基本ボタン（押しやすい）"
+  html={String.raw`<button class="btn" type="button">モーダルを開く</button>`}
+  css={String.raw`.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.10);
+}
+.btn:active{
+  transform: translateY(0);
+  box-shadow: none;
+}`}
+/>
+
+### 例2）無効状態（disabled）も見た目で分かる
+
+<HtmlCssDemo
+  title="例2）無効状態（disabled）も見た目で分かる"
+  html={String.raw`<button class="btn" type="button" disabled>送信（準備中）</button>`}
+  css={String.raw`.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.10);
+}
+.btn:active{
+  transform: translateY(0);
+  box-shadow: none;
+}
+.btn:disabled{
+  opacity: .45;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}`}
+/>
+
+### 例3）アイコンボタン（丸・タップしやすい）
+
+<HtmlCssDemo
+  title="例3）アイコンボタン（丸・タップしやすい）"
+  html={String.raw`<button class="icon-btn" type="button" aria-label="閉じる">×</button>`}
+  css={String.raw`.icon-btn{
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,.10);
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+.icon-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(0,0,0,.12);
+}
+.icon-btn:active{
+  transform: translateY(0);
+  box-shadow: none;
+}`}
+/>
+
+### 例4）リンク（a）をボタン風に（移動なのでaのまま）
+
+<HtmlCssDemo
+  title="例4）リンク（a）をボタン風に（移動なのでaのまま）"
+  html={String.raw`<a class="btn-link" href="/contact.html">お問い合わせ</a>`}
+  css={String.raw`.btn-link{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+.btn-link:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.10);
+  opacity: .95;
+}
+.btn-link:active{
+  transform: translateY(0);
+  box-shadow: none;
+}`}
+/>
+
+### 例5）開閉ボタン（FAQ）っぽく見せる
+
+<HtmlCssDemo
+  title="例5）開閉ボタン（FAQ）っぽく見せる"
+  height={340}
+  html={String.raw`<div class="accordion">
+  <button class="accordion__btn" type="button" aria-expanded="false" aria-controls="a1">
+    Q. 返金できますか？
+  </button>
+
+  <div class="accordion__panel" id="a1" hidden>
+    <p>A. 条件により可能です。</p>
+  </div>
+</div>
+
+<script>
+  const btn = document.querySelector('.accordion__btn');
+  const panel = document.getElementById('a1');
+
+  if (btn && panel) {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      panel.hidden = expanded;
+    });
+  }
+</script>`}
+  css={String.raw`.accordion__btn{
+  width: 100%;
+  text-align: left;
+  padding: .9rem 1rem;
+  border: 1px solid rgba(0,0,0,.22);
+  border-radius: 16px;
+  background: transparent;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.accordion__btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.accordion__btn:active{
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.accordion__panel{
+  padding: .8rem 1rem;
+  line-height: 1.85;
+}
+
+.accordion__panel p{
+  margin: 0;
+}`}
+/>
+
+---
+
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. クリックで別ページに移動するのは a と button どっち？</summary>
+  <p>A. a。</p>
+</details>
+
+<details>
+  <summary>Q. フォームの外で使うボタンは type をどうするのが安全？</summary>
+  <p>A. type="button" を明示。</p>
+</details>
+
+<details>
+  <summary>Q. アイコンだけのボタンで必要な属性は？</summary>
+  <p>A. aria-label（例：aria-label="閉じる"）。</p>
+</details>
+
+---
+
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1. 「お問い合わせへ移動」は a で作り、CSS例4でボタン風にしてください。
+2. 「詳細を開く」は button type="button" で作り、CSS例1を当てて“押せる感”を出してください。  
+   余裕があれば、開閉用に aria-expanded / aria-controls を付けるところまで。

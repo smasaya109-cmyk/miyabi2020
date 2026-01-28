@@ -1,5 +1,5 @@
 ---
-title: "href（相対/絶対/#/mailto/tel/download）"
+title: "7. href（相対/絶対/#/mailto/tel/download）"
 date: "2026-01-26"
 summary: "hrefを使い分けると「どこへ飛ぶか（ページ/位置/メール/電話/ダウンロード）」を正確に指定できます。"
 category: "html"
@@ -157,19 +157,17 @@ hrefを使い分けると「どこへ飛ぶか（ページ/位置/メール/電�
 
 ### 例1：リンク種類を並べて見やすく（リスト化）
 
-```html
-<ul class="links">
+<HtmlCssDemo
+  title="例1：リンク種類を並べて見やすく（リスト化）"
+  html={String.raw`<ul class="links">
   <li><a href="./about.html">About（相対）</a></li>
   <li><a href="https://example.com">外部サイト（絶対）</a></li>
   <li><a href="#faq">FAQへ（#）</a></li>
 </ul>
 
 <h2 id="faq">FAQ</h2>
-<p>ここが飛び先です。</p>
-```
-
-```css
-.links {
+<p>ここが飛び先です。</p>`}
+  css={String.raw`.links {
   list-style: none;
   padding: 0;
   margin: 0 0 16px;
@@ -188,13 +186,15 @@ hrefを使い分けると「どこへ飛ぶか（ページ/位置/メール/電�
 
 .links a:hover {
   opacity: 0.75;
-}
-```
+}`}
+  height={320}
+/>
 
 ### 例2：ページ内リンクを“目次”っぽく
 
-```html
-<nav class="toc" aria-label="このページの目次">
+<HtmlCssDemo
+  title="例2：ページ内リンクを“目次”っぽく"
+  html={String.raw`<nav class="toc" aria-label="このページの目次">
   <a href="#sec1">概要</a>
   <a href="#sec2">料金</a>
   <a href="#sec3">連絡先</a>
@@ -207,11 +207,8 @@ hrefを使い分けると「どこへ飛ぶか（ページ/位置/メール/電�
 <p>...</p>
 
 <h2 id="sec3">連絡先</h2>
-<p>...</p>
-```
-
-```css
-.toc {
+<p>...</p>`}
+  css={String.raw`.toc {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
@@ -229,20 +226,19 @@ hrefを使い分けると「どこへ飛ぶか（ページ/位置/メール/電�
 
 .toc a:hover {
   opacity: 0.75;
-}
-```
+}`}
+  height={320}
+/>
 
 ### 例3：downloadリンクをカード化（配布物が分かる）
 
-```html
-<a class="download" href="/files/menu.pdf" download>
+<HtmlCssDemo
+  title="例3：downloadリンクをカード化（配布物が分かる）"
+  html={String.raw`<a class="download" href="/files/menu.pdf" download>
   <span class="download__title">メニューPDF</span>
   <span class="download__meta">ダウンロード</span>
-</a>
-```
-
-```css
-.download {
+</a>`}
+  css={String.raw`.download {
   display: grid;
   gap: 6px;
   padding: 14px 16px;
@@ -264,8 +260,10 @@ hrefを使い分けると「どこへ飛ぶか（ページ/位置/メール/電�
 .download__meta {
   opacity: 0.8;
   font-size: 0.95rem;
-}
-```
+}`}
+  height={220}
+/>
+
 
 ---
 

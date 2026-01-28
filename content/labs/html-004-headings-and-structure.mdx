@@ -1,5 +1,5 @@
 ---
-title: "見出し（h1〜h6）と文章構造のルール"
+title: "4. 見出し（h1〜h6）と文章構造のルール"
 date: "2026-01-26"
 summary: "見出し（h1〜h6）を正しく使うと、ページの「目次」が整い、読みやすさ・SEO・アクセシビリティが良くなります。"
 category: "html"
@@ -167,16 +167,14 @@ links: []
 
 ### 例1：見出しの余白と読みやすさを整える
 
-```html
-<main class="doc">
+<HtmlCssDemo
+  title="例1：見出しの余白と読みやすさを整える"
+  html={String.raw`<main class="doc">
   <h1 class="doc__title">見出しのルール</h1>
   <h2 class="doc__h2">基本</h2>
   <p>見出しは構造を作ります。</p>
-</main>
-```
-
-```css
-.doc {
+</main>`}
+  css={String.raw`.doc {
   max-width: 760px;
   margin: 0 auto;
   padding: 24px;
@@ -191,13 +189,15 @@ links: []
   margin: 28px 0 10px;
   padding-bottom: 8px;
   border-bottom: 1px solid currentColor;
-}
-```
+}`}
+  height={240}
+/>
 
 ### 例2：目次っぽいナビ（見出しと相性が良い）
 
-```html
-<nav class="toc" aria-label="目次">
+<HtmlCssDemo
+  title="例2：目次っぽいナビ（見出しと相性が良い）"
+  html={String.raw`<nav class="toc" aria-label="目次">
   <a class="toc__link" href="#mat">材料</a>
   <a class="toc__link" href="#steps">手順</a>
 </nav>
@@ -207,11 +207,8 @@ links: []
 <p>…</p>
 
 <h2 id="steps">手順</h2>
-<p>…</p>
-```
-
-```css
-.toc {
+<p>…</p>`}
+  css={String.raw`.toc {
   display: flex;
   gap: 12px;
   padding: 12px;
@@ -226,20 +223,19 @@ links: []
 
 .toc__link:hover {
   opacity: 0.7;
-}
-```
+}`}
+  height={300}
+/>
 
 ### 例3：カード内の見出しを小さく見せる（構造は保つ）
 
-```html
-<article class="card">
+<HtmlCssDemo
+  title="例3：カード内の見出しを小さく見せる（構造は保つ）"
+  html={String.raw`<article class="card">
   <h3 class="card__title">時短レシピ3選</h3>
   <p>10分で作れるメニュー…</p>
-</article>
-```
-
-```css
-.card {
+</article>`}
+  css={String.raw`.card {
   border: 1px solid currentColor;
   border-radius: 18px;
   padding: 16px;
@@ -249,8 +245,10 @@ links: []
 .card__title {
   margin: 0 0 8px;
   font-size: 1.05rem; /* 見た目はCSSで小さく */
-}
-```
+}`}
+  height={220}
+/>
+
 
 ---
 

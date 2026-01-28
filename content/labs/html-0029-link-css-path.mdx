@@ -1,0 +1,315 @@
+---
+title: "29. link（CSS読み込みとパス）"
+date: "2026-01-28"
+summary: "<link rel=\"stylesheet\" href=\"...\">でCSSを読み込む。headに置く／詰まりやすいのはhrefのパス／404はNetworkで確認。外部CSSでHTMLと見た目を分離して管理する。"
+category: "html"
+level: "beginner"
+tags: ["html", "link", "stylesheet", "css", "path", "relative-path", "head", "devtools", "network", "class"]
+draft: false
+---
+
+# 29. link（CSS読み込みとパス）
+
+---
+## まず結論
+
+`<link rel="stylesheet" href="...">` でCSSを読み込めば、HTMLと見た目を分離して管理できるようになります。
+
+---
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Link CSS</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1 class="title">こんにちは</h1>
+</body>
+</html>
+~~~
+
+`style.css`（同じフォルダに作る）
+
+~~~css
+.title{
+  border-bottom: 2px solid currentColor;
+  display: inline-block;
+  padding-bottom: .2rem;
+}
+~~~
+
+---
+## 重要ポイント（ここで迷いがち）
+
+- CSS読み込みは `<head>` に書くのが基本  
+  ページ表示の最初からスタイルが当たって、チラつきが減ります。
+- 属性はこれだけ覚えればOK  
+  - `rel="stylesheet"`：これはCSSですよ  
+  - `href="style.css"`：CSSファイルの場所（パス）
+- 詰まりNo.1はパス（ファイルの場所）  
+  - `href="style.css"`：HTMLと同じ場所  
+  - `href="css/style.css"`：HTMLの下に `css/` フォルダ  
+  - `href="../style.css"`：1つ上の階層
+- 読み込めてない時の確認  
+  DevTools → Networkで `style.css` が404になってないか  
+  ファイル名のスペル、拡張子、配置場所もチェック。
+
+---
+## 例で理解（よく使うパターン 5つ）
+
+### 1) 同じフォルダ（最初はこれ）
+
+~~~text
+/project
+  index.html
+  style.css
+~~~
+
+~~~html
+<link rel="stylesheet" href="style.css" />
+~~~
+
+### 2) cssフォルダに分ける（実務っぽい）
+
+~~~text
+/project
+  index.html
+  css/
+    style.css
+~~~
+
+~~~html
+<link rel="stylesheet" href="css/style.css" />
+~~~
+
+### 3) 下の階層のページから“上のcss”を読む
+
+~~~text
+/project
+  css/style.css
+  pages/about.html
+~~~
+
+`pages/about.html` から読む場合：
+
+~~~html
+<link rel="stylesheet" href="../css/style.css" />
+~~~
+
+### 4) 複数CSSを読み込む（順番に注意）
+
+~~~html
+<link rel="stylesheet" href="base.css" />
+<link rel="stylesheet" href="components.css" />
+<link rel="stylesheet" href="page.css" />
+~~~
+
+後に書いた方が上書きされやすいので、意図的に順番を設計します。
+
+### 5) 最小の“リセットっぽい”ベースを自分で置く
+
+~~~css
+*{ box-sizing: border-box; }
+body{ margin: 0; line-height: 1.6; }
+img{ max-width: 100%; height: auto; display: block; }
+~~~
+
+外部リセットに頼らず、まずは自前の最小セットでOK。
+
+---
+## 使い分け（styleタグ/インラインとの違い）
+
+- `<link>`（外部CSS）：基本これ。再利用・管理がラク
+- `<style>`（head内）：小さな検証や1ページ完結用
+- `style=""`（インライン）：一時的・例外。増えると地獄
+
+---
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- class名はHTMLの役割で、見た目はCSSへ（#14と相性良い）
+- **パスは“今いるHTMLから見た相対位置”**で考える  
+  「CSSはどこ？今のHTMLはどこ？」を図にすると一発。
+- キャッシュで変更が反映されない時がある  
+  まずはハードリロード（開発中あるある）。それでもダメならパスミス疑い。
+- 印刷用CSSなど、用途別に分けることもできる  
+  （慣れてからでOK。まずは1枚で十分。）
+
+---
+## NG・禁止例（事故る書き方）
+
+### NG1）headじゃなくbodyの最後にlink（チラつきやすい）
+
+~~~html
+<body>
+  ...
+  <link rel="stylesheet" href="style.css" />
+</body>
+~~~
+
+✅ 正：headへ
+
+~~~html
+<head>
+  <link rel="stylesheet" href="style.css" />
+</head>
+~~~
+
+### NG2）relを書き忘れる
+
+~~~html
+<link href="style.css" />
+~~~
+
+✅ 正
+
+~~~html
+<link rel="stylesheet" href="style.css" />
+~~~
+
+### NG3）パスが間違って404（読み込めてないのに気づかない）
+
+~~~html
+<link rel="stylesheet" href="styles.css" />
+~~~
+
+✅ 正：ファイル名と場所を合わせる（Networkで確認）
+
+### NG4）インラインstyleだらけで管理不能
+
+~~~html
+<h1 style="...">...</h1>
+<p style="...">...</p>
+~~~
+
+✅ 正：classへ寄せる
+
+~~~html
+<h1 class="title">...</h1>
+~~~
+
+---
+## 見た目を整える（HTML+CSSセット：4例）
+
+外部CSS前提で「コピペでそれっぽく」なるセットです。
+
+### 例1）見出しと本文の基本
+
+<HtmlCssDemo
+  title="例1）見出しと本文の基本"
+  height={860}
+  html={String.raw`<!-- index.html（外部CSS前提） -->
+<main class="wrap">
+  <h1 class="title">ページタイトル</h1>
+  <p class="lead">ここに導入文が入ります。</p>
+</main>`}
+  css={String.raw`/* style.css */
+*{ box-sizing: border-box; }
+body{ margin: 0; line-height: 1.8; }
+.wrap{ max-width: 920px; margin: 0 auto; padding: 24px 16px; }
+.title{
+  margin: 0 0 .6rem;
+  display: inline-block;
+  padding-bottom: .2rem;
+  border-bottom: 2px solid currentColor;
+}
+.lead{ margin: 0; opacity: .9; }`}
+/>
+
+### 例2）カード（外部CSSで再利用）
+
+<HtmlCssDemo
+  title="例2）カード（外部CSSで再利用）"
+  height={940}
+  html={String.raw`<div class="wrap grid">
+  <article class="card">
+    <h2 class="card__title">カード1</h2>
+    <p class="card__text">本文…</p>
+  </article>
+
+  <article class="card">
+    <h2 class="card__title">カード2</h2>
+    <p class="card__text">本文…</p>
+  </article>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+body{ margin: 0; line-height: 1.8; }
+.wrap{ max-width: 920px; margin: 0 auto; padding: 24px 16px; }
+
+.grid{ display: grid; gap: 1rem; }
+@media (min-width: 760px){ .grid{ grid-template-columns: 1fr 1fr; } }
+
+.card{
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.card__title{ margin: 0 0 .4rem; font-size: 1.1rem; }
+.card__text{ margin: 0; line-height: 1.85; }`}
+/>
+
+### 例3）ナビ（複数ページで使い回す）
+
+<HtmlCssDemo
+  title="例3）ナビ（複数ページで使い回す）"
+  height={820}
+  html={String.raw`<nav class="nav" aria-label="主要メニュー">
+  <a class="nav__link" href="/">ホーム</a>
+  <a class="nav__link" href="/about.html">会社情報</a>
+</nav>`}
+  css={String.raw`.nav{ display: flex; gap: .6rem; flex-wrap: wrap; padding: 16px; }
+.nav__link{
+  display: inline-block;
+  padding: .55rem .85rem;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 999px;
+  text-decoration: none;
+}
+.nav__link:hover{ box-shadow: 0 10px 22px rgba(0,0,0,.10); }`}
+/>
+
+### 例4）パス確認用：読み込めたら“線が出る”
+
+<HtmlCssDemo
+  title="例4）パス確認用：読み込めたら“線が出る”"
+  height={720}
+  html={String.raw`<h1 class="test">CSS読めてる？</h1>`}
+  css={String.raw`.test{
+  border: 3px dashed currentColor;
+  display: inline-block;
+  padding: .4rem .6rem;
+}`}
+/>
+
+線が出れば読み込みOK。出なければパスかlinkを書き間違いです。
+
+---
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. CSS読み込みの基本タグは？</summary>
+  <p>A. <code>&lt;link rel="stylesheet" href="..."&gt;</code>。</p>
+</details>
+
+<details>
+  <summary>Q. href="css/style.css" はどんな配置を想定？</summary>
+  <p>A. HTMLの下に <code>css/</code> フォルダがあり、その中に <code>style.css</code> がある。</p>
+</details>
+
+<details>
+  <summary>Q. CSSが当たらないときの最優先チェックは？</summary>
+  <p>A. パス（配置）と404（Networkで確認）。</p>
+</details>
+
+---
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1) `index.html` と `style.css` を同じフォルダに置き、例4の“線が出るテスト”で読み込み確認をしてください。
+
+2) `css/` フォルダを作って `style.css` を移動し、href を `css/style.css` に直して、まだ当たるか確認してください。

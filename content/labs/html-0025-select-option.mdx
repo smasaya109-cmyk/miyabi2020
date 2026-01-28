@@ -1,0 +1,408 @@
+---
+title: "25. select / option（選択UI）"
+date: "2026-01-28"
+summary: "候補が決まっている選択はselect。nameとvalueの関係／未選択防止の定番パターン／optgroupやdisabledも押さえて誤送信を減らす。"
+category: "html"
+level: "beginner"
+tags: ["html", "form", "select", "option", "optgroup", "label", "name", "value", "required", "selected", "disabled", "accessibility"]
+draft: false
+---
+
+# 25. select / option（選択UI）
+
+---
+## まず結論
+
+候補が決まっている選択はselectで作ると、入力ミスを減らしつつ確実に値を送れます。
+
+---
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Select Minimum</title>
+</head>
+<body>
+  <form action="/submit" method="post">
+    <label for="plan">プラン</label>
+    <select id="plan" name="plan">
+      <option value="light">ライト</option>
+      <option value="standard">スタンダード</option>
+      <option value="pro">プロ</option>
+    </select>
+
+    <button type="submit">送信</button>
+  </form>
+</body>
+</html>
+~~~
+
+---
+## 重要ポイント（ここで迷いがち）
+
+- selectは候補から選ぶ箱、optionは候補1つ
+- 送信されるのは「selectのname」と「選ばれたoptionのvalue」  
+  - 画面に見える文字：ライト  
+  - 送信値：`value="light"`
+- labelで必ず紐付ける（#21）  
+  `label for="plan"` ↔ `select id="plan"`
+- 未選択を許したくないなら“プレースホルダー的option”を用意  
+  `value="" + disabled selected` で「選んでください」を作る（下の例）
+- 初期選択はselected  
+  ただし“意図せず勝手に選ばれている”と誤送信が増えるので注意
+
+---
+## 例で理解（よく使うパターン 5つ）
+
+### 1) 「選んでください」を先頭に置く（実務で超よくある）
+
+~~~html
+<label for="pref">都道府県</label>
+<select id="pref" name="pref" required>
+  <option value="" disabled selected>選んでください</option>
+  <option value="tokyo">東京都</option>
+  <option value="osaka">大阪府</option>
+  <option value="aichi">愛知県</option>
+</select>
+~~~
+
+requiredと合わせると「未選択」のまま送れません。
+
+### 2) 既定値を選んでおく（設定画面など）
+
+~~~html
+<label for="notify">通知</label>
+<select id="notify" name="notify">
+  <option value="on" selected>受け取る</option>
+  <option value="off">受け取らない</option>
+</select>
+~~~
+
+### 3) optgroupでカテゴリ分け（候補が多いとき）
+
+~~~html
+<label for="course">コース</label>
+<select id="course" name="course">
+  <optgroup label="入門">
+    <option value="html">HTML</option>
+    <option value="css">CSS</option>
+  </optgroup>
+  <optgroup label="発展">
+    <option value="js">JavaScript</option>
+    <option value="react">React</option>
+  </optgroup>
+</select>
+~~~
+
+### 4) 表示名と送信値を分ける（値は短く・安定に）
+
+~~~html
+<label for="time">希望時間</label>
+<select id="time" name="time">
+  <option value="am">午前</option>
+  <option value="pm">午後</option>
+</select>
+~~~
+
+### 5) disabledな選択肢（準備中など）
+
+~~~html
+<label for="plan2">プラン</label>
+<select id="plan2" name="plan">
+  <option value="light">ライト</option>
+  <option value="standard">スタンダード</option>
+  <option value="pro" disabled>プロ（準備中）</option>
+</select>
+~~~
+
+---
+## 使い分け（checkbox/radio/textareaとの違い）
+
+- select：候補が多めで、1つを選ばせたい
+- radio：候補が少なく、全部見せたい（2〜5個くらい）
+- checkbox：複数選べる必要がある
+- textarea：自由入力（文章）
+
+---
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- “選んでください”を必ず入れて誤送信を減らす  
+  何も考えずに最初の項目が送られる事故を防ぎます。
+- valueは英字・短く・変えない前提で  
+  サーバーや集計で扱いやすい（表示名が変わってもvalueは固定にできる）。
+- 候補が多いならoptgroupで探しやすく
+- ラベルは具体的に  
+  ×「選択」→ ○「都道府県」「プラン」「希望時間」
+
+---
+## NG・禁止例（事故る書き方）
+
+### NG1）nameが無い（送信されるキーがない）
+
+~~~html
+<select id="plan">
+  <option value="light">ライト</option>
+</select>
+~~~
+
+✅ 正：nameを付ける
+
+~~~html
+<select id="plan" name="plan">
+  <option value="light">ライト</option>
+</select>
+~~~
+
+### NG2）未選択のつもりが、最初の項目が勝手に送られる
+
+~~~html
+<select name="pref">
+  <option value="tokyo">東京都</option>
+  <option value="osaka">大阪府</option>
+</select>
+~~~
+
+✅ 正：「選んでください」を置く + required
+
+~~~html
+<select name="pref" required>
+  <option value="" disabled selected>選んでください</option>
+  <option value="tokyo">東京都</option>
+  <option value="osaka">大阪府</option>
+</select>
+~~~
+
+### NG3）valueを入れずに表示文字に依存（後で変更に弱い）
+
+~~~html
+<option>ライト</option>
+~~~
+
+✅ 正：valueを明示
+
+~~~html
+<option value="light">ライト</option>
+~~~
+
+### NG4）label無し（何の選択か分からない）
+
+placeholderが無いので、特に迷子になりやすい。
+
+✅ 正：labelを付ける
+
+~~~html
+<label for="p">プラン</label>
+<select id="p" name="plan">
+  <option value="light">ライト</option>
+</select>
+~~~
+
+---
+## 見た目を整える（HTML+CSSセット：5例）
+
+色は使わず、線・余白・影・フォーカスで整えます。
+
+### 例1）基本のselect（フォーム統一）
+
+<HtmlCssDemo
+  title="例1）基本のselect（フォーム統一）"
+  height={760}
+  html={String.raw`<div class="field">
+  <label class="label" for="plan3">プラン</label>
+  <select class="select" id="plan3" name="plan" required>
+    <option value="" disabled selected>選んでください</option>
+    <option value="light">ライト</option>
+    <option value="standard">スタンダード</option>
+    <option value="pro">プロ</option>
+  </select>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 520px; }
+.label{ font-size: .95rem; }
+.select{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+  background: transparent;
+}
+.select:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}`}
+/>
+
+### 例2）幅いっぱい（レイアウト崩れ防止）
+
+<HtmlCssDemo
+  title="例2）幅いっぱい（レイアウト崩れ防止）"
+  height={720}
+  html={String.raw`<div class="field">
+  <label class="label" for="pref3">都道府県</label>
+  <select class="select full" id="pref3" name="pref" required>
+    <option value="" disabled selected>選んでください</option>
+    <option value="tokyo">東京都</option>
+    <option value="osaka">大阪府</option>
+    <option value="aichi">愛知県</option>
+  </select>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 520px; }
+.label{ font-size: .95rem; }
+.select{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  background: transparent;
+}
+.full{ width: 100%; }`}
+/>
+
+### 例3）“下矢印”をそれっぽく（疑似的）
+
+<HtmlCssDemo
+  title="例3）“下矢印”をそれっぽく（疑似的）"
+  height={820}
+  html={String.raw`<div class="select-wrap">
+  <label class="label" for="time2">希望時間</label>
+  <select class="select" id="time2" name="time" required>
+    <option value="" disabled selected>選んでください</option>
+    <option value="am">午前</option>
+    <option value="pm">午後</option>
+  </select>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.select-wrap{ position: relative; max-width: 520px; display: grid; gap: .35rem; }
+.label{ font-size: .95rem; }
+.select{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  background: transparent;
+}
+
+.select-wrap::after{
+  content: "▾";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(6px);
+  pointer-events: none;
+  opacity: .7;
+}`}
+/>
+
+### 例4）グループ（optgroup）でも同じ見た目で
+
+<HtmlCssDemo
+  title="例4）グループ（optgroup）でも同じ見た目で"
+  height={820}
+  html={String.raw`<div class="field">
+  <label class="label" for="course2">コース</label>
+  <select class="select" id="course2" name="course">
+    <optgroup label="入門">
+      <option value="html">HTML</option>
+      <option value="css">CSS</option>
+    </optgroup>
+    <optgroup label="発展">
+      <option value="js">JavaScript</option>
+      <option value="react">React</option>
+    </optgroup>
+  </select>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 520px; }
+.label{ font-size: .95rem; }
+.select{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  background: transparent;
+}
+optgroup{ font-style: normal; }`}
+/>
+
+### 例5）フォームの“カード化”
+
+<HtmlCssDemo
+  title="例5）フォームの“カード化”"
+  height={920}
+  html={String.raw`<form class="form-card" action="/submit" method="post">
+  <div class="field">
+    <label class="label" for="pref2">都道府県</label>
+    <select class="select" id="pref2" name="pref" required>
+      <option value="" disabled selected>選んでください</option>
+      <option value="tokyo">東京都</option>
+      <option value="osaka">大阪府</option>
+    </select>
+  </div>
+  <button class="btn" type="submit">送信</button>
+</form>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.form-card{
+  max-width: 560px;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+  display: grid;
+  gap: .9rem;
+}
+.field{ display: grid; gap: .35rem; }
+.label{ font-size: .95rem; }
+
+.select{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  background: transparent;
+}
+.select:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+}`}
+/>
+
+---
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. 送信される値はoptionのどれ？（表示文字？value？）</summary>
+  <p>A. value。</p>
+</details>
+
+<details>
+  <summary>Q. 未選択を防ぐ定番のやり方は？</summary>
+  <p>A. <code>value="" disabled selected</code> の「選んでください」option + <code>required</code>。</p>
+</details>
+
+<details>
+  <summary>Q. 候補が少ないとき、selectより向くことが多いのは？</summary>
+  <p>A. radio（全部見せられる）。</p>
+</details>
+
+---
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1) 「都道府県」をselectで作り、先頭に「選んでください」を置いてrequiredにしてください。  
+valueは英字（例：tokyo）にする。
+
+2) 候補が3つだけの「希望時間（午前/午後/指定なし）」を作り、  
+select版とradio版の両方を作って、どちらが選びやすいか比べてください。

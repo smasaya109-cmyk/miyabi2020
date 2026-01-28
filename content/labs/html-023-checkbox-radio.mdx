@@ -1,0 +1,435 @@
+---
+title: "23. inputの種類（checkbox / radio）"
+date: "2026-01-28"
+summary: "複数選べるcheckbox、1つだけ選ぶradio。name/value/labelの関係を理解して“自然に送れる”選択UIを作る。"
+category: "html"
+level: "beginner"
+tags: ["html", "form", "input", "checkbox", "radio", "label", "name", "value", "required", "accessibility"]
+draft: false
+---
+
+# 23. inputの種類（checkbox / radio）
+
+---
+## まず結論
+
+複数選べるならcheckbox、1つだけ選ぶならradioを使うと、送信データもUIも自然になります。
+
+---
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checkbox & Radio</title>
+</head>
+<body>
+  <form action="/submit" method="post">
+    <p>参加したい曜日（複数OK）</p>
+    <input id="mon" name="days" type="checkbox" value="mon" />
+    <label for="mon">月</label>
+
+    <input id="wed" name="days" type="checkbox" value="wed" />
+    <label for="wed">水</label>
+
+    <p>支払い方法（1つだけ）</p>
+    <input id="pay-card" name="pay" type="radio" value="card" />
+    <label for="pay-card">カード</label>
+
+    <input id="pay-bank" name="pay" type="radio" value="bank" />
+    <label for="pay-bank">銀行振込</label>
+
+    <button type="submit">送信</button>
+  </form>
+</body>
+</html>
+~~~
+
+---
+## 重要ポイント（ここで迷いがち）
+
+- checkbox（チェックボックス）：複数選択OK  
+  - 同じnameで複数に付ける → 選んだ分だけ送られる  
+  - 何も選ばれない可能性がある（必須にするなら工夫が必要）
+- radio（ラジオボタン）：1つだけ選択  
+  - **同じname**を共有すると「1つだけ」が成立  
+  - nameが違うと“全部選べる”状態になって事故る
+- valueが送信される中身  
+  - 画面に見える文字（label）と送信値（value）は別  
+  - 例：labelは「銀行振込」、valueはbank
+- labelは必須級（小さい丸/四角を狙わなくて済む）  
+  - label for と input id を紐付ける（#21）
+
+---
+## 例で理解（よく使うパターン 5つ）
+
+### 1) 利用規約同意（checkbox 1個）
+
+~~~html
+<input id="agree" name="agree" type="checkbox" value="yes" required />
+<label for="agree">利用規約に同意する</label>
+~~~
+
+checkboxでもrequiredは使えます（“チェック必須”にできる）。
+
+### 2) 興味分野（checkbox 複数）
+
+~~~html
+<p>興味のある分野（複数可）</p>
+
+<input id="tag-html" name="tags" type="checkbox" value="html" />
+<label for="tag-html">HTML</label>
+
+<input id="tag-css" name="tags" type="checkbox" value="css" />
+<label for="tag-css">CSS</label>
+
+<input id="tag-js" name="tags" type="checkbox" value="js" />
+<label for="tag-js">JavaScript</label>
+~~~
+
+### 3) 配送時間（radio 1つ）
+
+~~~html
+<p>配送時間</p>
+
+<input id="t-am" name="time" type="radio" value="am" required />
+<label for="t-am">午前</label>
+
+<input id="t-pm" name="time" type="radio" value="pm" />
+<label for="t-pm">午後</label>
+~~~
+
+radioで必須にしたい場合、グループ内のどれか1つにrequiredを付けるのが一般的。
+
+### 4) “既定で選ばれている”状態（checked）
+
+~~~html
+<input id="pay-card2" name="pay" type="radio" value="card" checked />
+<label for="pay-card2">カード</label>
+~~~
+
+### 5) checkboxの初期ON（設定画面など）
+
+~~~html
+<input id="mail" name="notify_mail" type="checkbox" value="1" checked />
+<label for="mail">メール通知を受け取る</label>
+~~~
+
+---
+## 使い分け（超シンプルに）
+
+- 複数OK → checkbox
+- 1つだけ → radio
+
+「はい/いいえ」でも、どっちが自然？
+- “同意”などON/OFFならcheckboxが自然
+- 2択の選択（例：個人/法人）ならradioが自然
+
+---
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- radio/checkboxは「選択肢のまとまり」を先に示す  
+  例：<p>支払い方法</p> のように“何の選択か”が分かると迷いにくい
+- valueはサーバーが扱いやすい値に  
+  例：bank / card、mon / tue などブレない短い英字が無難
+- クリック領域を広くする（CSSでlabelをブロック化）  
+  スマホで誤タップが激減
+- 必須は“見た目だけ”にしない  
+  requiredを使う（エラー表示は次のテーマで拡張）
+
+---
+## NG・禁止例（事故る書き方）
+
+### NG1）radioなのにnameがバラバラ（全部選べてしまう）
+
+~~~html
+<input type="radio" name="pay1" value="card" />
+<input type="radio" name="pay2" value="bank" />
+~~~
+
+✅ 正：同じnameに統一
+
+~~~html
+<input type="radio" name="pay" value="card" />
+<input type="radio" name="pay" value="bank" />
+~~~
+
+### NG2）valueが無い/適当で後で困る
+
+~~~html
+<input id="pay" name="pay" type="radio" />
+~~~
+
+✅ 正：valueを決める
+
+~~~html
+<input id="pay-card" name="pay" type="radio" value="card" />
+~~~
+
+### NG3）label無しで小さいクリック地獄
+
+~~~html
+<input type="checkbox" /> 利用規約に同意
+~~~
+
+✅ 正：labelで紐付け
+
+~~~html
+<input id="agree2" type="checkbox" />
+<label for="agree2">利用規約に同意</label>
+~~~
+
+### NG4）checkbox複数でidを使い回す（紐付けが壊れる）
+
+~~~html
+<input id="tag" type="checkbox" />
+<input id="tag" type="checkbox" />
+~~~
+
+✅ 正：idはユニークに
+
+---
+## 見た目を整える（HTML+CSSセット：5例）
+
+色は使わず、線・余白・影・押しやすさで整えます。
+
+### 例1）選択肢を“押せる行”にする（おすすめ）
+
+<HtmlCssDemo
+  title="例1）選択肢を“押せる行”にする（おすすめ）"
+  height={820}
+  html={String.raw`<div class="group">
+  <p class="group__title">興味のある分野（複数可）</p>
+
+  <div class="choice">
+    <input class="choice__ctl" id="c1" name="tags" type="checkbox" value="html" />
+    <label class="choice__label" for="c1">HTML</label>
+  </div>
+
+  <div class="choice">
+    <input class="choice__ctl" id="c2" name="tags" type="checkbox" value="css" />
+    <label class="choice__label" for="c2">CSS</label>
+  </div>
+
+  <div class="choice">
+    <input class="choice__ctl" id="c3" name="tags" type="checkbox" value="js" />
+    <label class="choice__label" for="c3">JavaScript</label>
+  </div>
+</div>`}
+  css={String.raw`.group{ max-width: 560px; }
+.group__title{ margin: 0 0 .6rem; font-weight: 600; }
+
+.choice{
+  display: flex;
+  gap: .7rem;
+  align-items: center;
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 16px;
+  margin: .5rem 0;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.choice__ctl{ width: 18px; height: 18px; }
+.choice__label{ cursor: pointer; line-height: 1.6; flex: 1; }
+
+.choice:has(.choice__ctl:focus-visible){
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}`}
+/>
+
+### 例2）横並び（タグっぽい）※見た目だけ軽く
+
+<HtmlCssDemo
+  title="例2）横並び（タグっぽい）※見た目だけ軽く"
+  height={760}
+  html={String.raw`<div class="chips" aria-label="興味のある分野（複数可）">
+  <input id="t1" name="tags" type="checkbox" value="html" />
+  <label for="t1" class="chip">HTML</label>
+
+  <input id="t2" name="tags" type="checkbox" value="css" />
+  <label for="t2" class="chip">CSS</label>
+
+  <input id="t3" name="tags" type="checkbox" value="js" />
+  <label for="t3" class="chip">JavaScript</label>
+</div>`}
+  css={String.raw`.chips{ display: flex; gap: .5rem; flex-wrap: wrap; }
+.chips input{
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.chip{
+  display: inline-block;
+  padding: .5rem .85rem;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 999px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.chips input:focus-visible + .chip{
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+.chips input:checked + .chip{
+  box-shadow: 0 10px 22px rgba(0,0,0,.10);
+  transform: translateY(-1px);
+}`}
+/>
+
+### 例3）ラジオを縦に揃える（グループっぽく）
+
+<HtmlCssDemo
+  title="例3）ラジオを縦に揃える（グループっぽく）"
+  height={860}
+  html={String.raw`<div class="group">
+  <p class="group__title">支払い方法（1つだけ）</p>
+
+  <div class="choice">
+    <input class="choice__ctl" id="r1" name="pay" type="radio" value="card" required />
+    <label class="choice__label" for="r1">カード</label>
+  </div>
+
+  <div class="choice">
+    <input class="choice__ctl" id="r2" name="pay" type="radio" value="bank" />
+    <label class="choice__label" for="r2">銀行振込</label>
+  </div>
+
+  <div class="choice">
+    <input class="choice__ctl" id="r3" name="pay" type="radio" value="cash" />
+    <label class="choice__label" for="r3">代引き</label>
+  </div>
+</div>`}
+  css={String.raw`.group{ max-width: 560px; }
+.group__title{ margin: 0 0 .6rem; font-weight: 600; }
+
+.choice{
+  display: flex;
+  gap: .7rem;
+  align-items: center;
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 16px;
+  margin: .5rem 0;
+}
+.choice__ctl{ width: 18px; height: 18px; }
+.choice__label{ cursor: pointer; line-height: 1.6; flex: 1; }
+
+.choice:has(.choice__ctl:focus-visible){
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 18px;
+}`}
+/>
+
+### 例4）“必須”の見せ方（見た目はラベル、実際はrequired）
+
+<HtmlCssDemo
+  title="例4）“必須”の見せ方（見た目はラベル、実際はrequired）"
+  height={900}
+  html={String.raw`<div class="group">
+  <p class="group__title">
+    連絡方法 <span class="req" aria-hidden="true">必須</span>
+  </p>
+
+  <div class="choice">
+    <input class="choice__ctl" id="m1" name="contact_method" type="radio" value="email" required />
+    <label class="choice__label" for="m1">メール</label>
+  </div>
+
+  <div class="choice">
+    <input class="choice__ctl" id="m2" name="contact_method" type="radio" value="tel" />
+    <label class="choice__label" for="m2">電話</label>
+  </div>
+</div>`}
+  css={String.raw`.group{ max-width: 560px; }
+.group__title{ margin: 0 0 .6rem; font-weight: 600; }
+
+.req{
+  display: inline-block;
+  padding: .1rem .45rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: .8rem;
+  opacity: .8;
+  margin-left: .4rem;
+}
+
+.choice{
+  display: flex;
+  gap: .7rem;
+  align-items: center;
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 16px;
+  margin: .5rem 0;
+}
+.choice__ctl{ width: 18px; height: 18px; }
+.choice__label{ cursor: pointer; line-height: 1.6; flex: 1; }`}
+/>
+
+### 例5）フォーカスが分かる（キーボード操作）
+
+<HtmlCssDemo
+  title="例5）フォーカスが分かる（キーボード操作）"
+  height={740}
+  html={String.raw`<div class="choice">
+  <input class="choice__ctl" id="f1" name="days" type="checkbox" value="fri" />
+  <label class="choice__label" for="f1">金</label>
+</div>
+
+<div class="choice">
+  <input class="choice__ctl" id="f2" name="days" type="checkbox" value="sat" />
+  <label class="choice__label" for="f2">土</label>
+</div>`}
+  css={String.raw`.choice{
+  max-width: 560px;
+  display: flex;
+  gap: .7rem;
+  align-items: center;
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 16px;
+  margin: .5rem 0;
+}
+.choice__ctl{ width: 18px; height: 18px; }
+.choice__label{ cursor: pointer; line-height: 1.6; flex: 1; }
+
+.choice__ctl:focus-visible{
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 6px;
+}`}
+/>
+
+---
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. 複数選択できる入力はどっち？</summary>
+  <p>A. checkbox。</p>
+</details>
+
+<details>
+  <summary>Q. radioで「1つだけ選べる」条件は何？</summary>
+  <p>A. 同じnameを共有していること。</p>
+</details>
+
+<details>
+  <summary>Q. 送信される値を決めるのはラベル（表示文字）？それとも？</summary>
+  <p>A. value（送信される中身）。</p>
+</details>
+
+---
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1) 「興味のある分野（HTML/CSS/JS）」をcheckboxで作り、  
+それぞれに value="html" 等を付けてください。CSS例1で“押せる行”に。
+
+2) 「連絡方法（メール/電話）」をradioで作り、  
+同じname（例：contact_method）にして1つだけ選べることを確認。  
+片方をcheckedにして初期選択も試してください。

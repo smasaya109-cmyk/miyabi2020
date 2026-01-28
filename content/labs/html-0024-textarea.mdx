@@ -1,0 +1,334 @@
+---
+title: "24. textarea（複数行入力）"
+date: "2026-01-28"
+summary: "長文・複数行入力はtextarea。終了タグ／初期値の書き方／name・rows・labelを押さえて“自然に送れる”フォームにする。"
+category: "html"
+level: "beginner"
+tags: ["html", "form", "textarea", "label", "name", "rows", "placeholder", "maxlength", "required", "accessibility", "aria-describedby", "resize"]
+draft: false
+---
+
+# 24. textarea（複数行入力）
+
+---
+## まず結論
+
+長文や複数行の入力はtextareaを使うと、改行込みで自然に送れるフォームになります。
+
+---
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Textarea Minimum</title>
+</head>
+<body>
+  <form action="/contact" method="post">
+    <label for="msg">お問い合わせ内容</label>
+    <textarea id="msg" name="message" rows="5"></textarea>
+
+    <button type="submit">送信</button>
+  </form>
+</body>
+</html>
+~~~
+
+---
+## 重要ポイント（ここで迷いがち）
+
+- textareaは“開始タグと終了タグがある”  
+  inputみたいに `/>` で閉じません。
+  ~~~html
+  <textarea></textarea>
+  ~~~
+- 初期値は属性じゃなく“中身”に書く  
+  ~~~html
+  <textarea>ここが初期値</textarea>
+  ~~~
+  `value="..."` は使いません（初心者の詰まりポイント）。
+- 送信のキーはname（#20）  
+  `name="message"` が送信データ名になります。
+- 行数の目安はrows  
+  `rows="5"` のように“見た目の高さ”の初期値を決めます。
+- labelで紐付け必須（#21）  
+  `label for` と `textarea id` を一致させます。
+
+> 小ネタ：初期値を入れるとき、HTMLの改行やスペースも「値」に入ります。  
+> 余計な先頭改行を避けたいなら、`<textarea>初期値</textarea>` のように同じ行に書くのが安全。
+
+---
+## 例で理解（よく使うパターン 5つ）
+
+### 1) お問い合わせ（基本）
+
+~~~html
+<label for="msg1">内容</label>
+<textarea id="msg1" name="message" rows="6"></textarea>
+~~~
+
+### 2) 文字数制限（maxlength）
+
+~~~html
+<label for="msg2">内容（500文字まで）</label>
+<textarea id="msg2" name="message" rows="6" maxlength="500"></textarea>
+~~~
+
+### 3) 必須（required）
+
+~~~html
+<label for="msg3">内容</label>
+<textarea id="msg3" name="message" rows="6" required></textarea>
+~~~
+
+### 4) 例文（placeholder）※補助
+
+~~~html
+<label for="msg4">内容</label>
+<textarea
+  id="msg4"
+  name="message"
+  rows="6"
+  placeholder="例：相談したい内容を具体的に…"
+></textarea>
+~~~
+
+### 5) 初期値（編集フォームなど）
+
+~~~html
+<label for="msg5">自己紹介</label>
+<textarea id="msg5" name="bio" rows="6">はじめまして。現在…</textarea>
+~~~
+
+---
+## 使い分け（似た要素/属性との違い）
+
+### input type="text" vs textarea
+- 1行だけ → input
+- 複数行/長文 → textarea
+
+### placeholder vs 初期値
+- placeholder：入力例（入力すると消える）
+- 初期値：実際に入力済みとして入る（textareaの中身に書く）
+
+### rows vs CSSのheight
+- rows：最低限の初期行数（まずはこれでOK）
+- height：デザイン固定したい時にCSSで調整
+
+---
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- “何を書けばいいか”を短く補足すると送信率が上がる  
+  例：「いつ・どこで・何が起きたか」など。
+- maxlengthは“理由がある範囲”に  
+  長すぎる制限は離脱を招きます（例：500〜2000は運用次第）。
+- resizeの制御はやりすぎ注意  
+  拡大できると助かるユーザーもいます（消すなら理由を持つ）。
+- セキュリティ注意（HTML側では防げない）  
+  入力の安全な扱いはサーバー側での検証・エスケープが必須（ここは“部品の理解”でOK）。
+
+---
+## NG・禁止例（事故る書き方）
+
+### NG1）textareaをinputみたいに閉じる
+
+~~~html
+<textarea id="msg" name="message" />
+~~~
+
+✅ 正：開始＋終了タグ
+
+~~~html
+<textarea id="msg" name="message"></textarea>
+~~~
+
+### NG2）value属性で初期値を入れようとする
+
+~~~html
+<textarea name="message" value="初期値"></textarea>
+~~~
+
+✅ 正：中身に書く
+
+~~~html
+<textarea name="message">初期値</textarea>
+~~~
+
+### NG3）label無し（何を書く欄か分からない）
+
+~~~html
+<textarea name="message"></textarea>
+~~~
+
+✅ 正：labelを付ける
+
+~~~html
+<label for="m">内容</label>
+<textarea id="m" name="message"></textarea>
+~~~
+
+### NG4）name無し（送信データになりにくい）
+
+~~~html
+<textarea id="msg"></textarea>
+~~~
+
+✅ 正：nameを付ける
+
+~~~html
+<textarea id="msg" name="message"></textarea>
+~~~
+
+---
+## 見た目を整える（HTML+CSSセット：5例）
+
+色は使わず、線・余白・影・フォーカスで整えます。
+
+### 例1）基本（フォームの見た目統一）
+
+<HtmlCssDemo
+  title="例1）基本（フォームの見た目統一）"
+  height={760}
+  html={String.raw`<div class="field">
+  <label class="label" for="msg6">内容</label>
+  <textarea class="textarea" id="msg6" name="message" rows="6"></textarea>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 620px; }
+.label{ font-size: .95rem; }
+.textarea{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+  line-height: 1.7;
+}
+.textarea:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}`}
+/>
+
+### 例2）幅いっぱいにする
+
+<HtmlCssDemo
+  title="例2）幅いっぱいにする"
+  height={720}
+  html={String.raw`<div class="field">
+  <label class="label" for="msg8">内容</label>
+  <textarea class="textarea full" id="msg8" name="message" rows="6"></textarea>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 620px; }
+.label{ font-size: .95rem; }
+.textarea{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  line-height: 1.7;
+}
+.full{ width: 100%; }`}
+/>
+
+### 例3）リサイズを縦だけに（やりすぎ注意）
+
+<HtmlCssDemo
+  title="例3）リサイズを縦だけに（やりすぎ注意）"
+  height={720}
+  html={String.raw`<div class="field">
+  <label class="label" for="msg9">内容</label>
+  <textarea class="textarea only-y" id="msg9" name="message" rows="6"></textarea>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 620px; }
+.label{ font-size: .95rem; }
+.textarea{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  line-height: 1.7;
+}
+.only-y{ resize: vertical; }`}
+/>
+
+### 例4）“メモ欄”っぽく（行間強め）
+
+<HtmlCssDemo
+  title="例4）“メモ欄”っぽく（行間強め）"
+  height={760}
+  html={String.raw`<div class="field">
+  <label class="label" for="msg10">メモ</label>
+  <textarea class="textarea memo" id="msg10" name="memo" rows="8" placeholder="要点を箇条書きで…"></textarea>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 620px; }
+.label{ font-size: .95rem; }
+.textarea{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  line-height: 1.7;
+}
+.memo{ line-height: 1.9; }`}
+/>
+
+### 例5）説明文を紐付け（aria-describedby）
+
+<HtmlCssDemo
+  title="例5）説明文を紐付け（aria-describedby）"
+  height={860}
+  html={String.raw`<div class="field">
+  <label class="label" for="msg7">内容</label>
+  <p class="help" id="msg-help">できれば「いつ・どこで・何が」を書いてください。</p>
+  <textarea class="textarea" id="msg7" name="message" rows="6" aria-describedby="msg-help"></textarea>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 620px; }
+.label{ font-size: .95rem; }
+.help{ margin: 0; font-size: .9rem; opacity: .85; line-height: 1.6; }
+
+.textarea{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  line-height: 1.7;
+}
+.textarea:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}`}
+/>
+
+---
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. textareaはinputと同じようにvalue属性で初期値を入れる？</summary>
+  <p>A. 入れない（初期値は中身に書く）。</p>
+</details>
+
+<details>
+  <summary>Q. textareaを閉じる必要はある？</summary>
+  <p>A. ある（終了タグが必要）。</p>
+</details>
+
+<details>
+  <summary>Q. 送信データのキーになる属性は？</summary>
+  <p>A. name。</p>
+</details>
+
+---
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1) お問い合わせフォームの「内容」をtextareaに置き換えてください。  
+`label + id + name="message" + rows="6"` をセットにする。
+
+2) 「自己紹介」欄を作って、初期値として `はじめまして。` をtextareaの中身に入れてください（value属性は使わない）。

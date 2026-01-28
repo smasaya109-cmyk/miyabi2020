@@ -1,0 +1,347 @@
+---
+title: "30. よくあるHTMLのNG集（入れ子/閉じ忘れ/構造崩れ総まとめ）"
+date: "2026-01-28"
+summary: "崩れの原因はだいたい「閉じ忘れ／入れ子NG／意味の取り違え／id重複／フォームのname不足」。典型NGを潰すだけでクリック・送信・レイアウトが一気に安定する。"
+category: "html"
+level: "beginner"
+tags: ["html", "debug", "nesting", "closing-tag", "structure", "a", "button", "ul", "li", "id", "form", "name", "label", "devtools"]
+draft: false
+---
+
+# 30. よくあるHTMLのNG集（入れ子/閉じ忘れ/構造崩れ総まとめ）
+
+---
+## まず結論
+
+“見た目が崩れる・クリックできない・送れない”の原因はだいたい「入れ子/閉じ忘れ/意味の取り違え」なので、典型NGを潰すだけで一気に安定します。
+
+---
+## 最小の書き方（コピペで動く最小コード：正しい骨格）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HTML NGまとめ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>ページタイトル</h1>
+    <nav aria-label="主要メニュー">
+      <ul>
+        <li><a href="#sec1">セクション1</a></li>
+        <li><a href="#sec2">セクション2</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="sec1">
+      <h2>セクション1</h2>
+      <p>本文。</p>
+    </section>
+
+    <section id="sec2">
+      <h2>セクション2</h2>
+      <p>本文。</p>
+    </section>
+
+    <form action="/submit" method="post">
+      <label for="email">メール</label>
+      <input id="email" name="email" type="email" required />
+      <button type="submit">送信</button>
+    </form>
+  </main>
+
+  <footer>
+    <small>© サイト名</small>
+  </footer>
+</body>
+</html>
+~~~
+
+---
+## 重要ポイント（“崩れ”の原因トップ5）
+
+- 閉じタグ忘れ：DOMがズレて、全体がリンクになったり、レイアウトが崩れる
+- 入れ子NG：aの中にa、ul直下にdivなど
+- 意味の取り違え：移動はa、操作はbutton、表はtableなど
+- id重複：ページ内リンク/label/JSが壊れる
+- フォームのname不足：送ってるつもりなのにデータが無い
+
+---
+## 例で理解（典型NG→正しい書き換え 5つ）
+
+### 1) 閉じタグ忘れ（aが全体リンク化）
+
+❌ NG
+
+~~~html
+<a href="/news.html">お知らせ
+<p>本文が続く…</p>
+~~~
+
+✅ 正
+
+~~~html
+<a href="/news.html">お知らせ</a>
+<p>本文が続く…</p>
+~~~
+
+直し方：VS Codeなら自動補完/ハイライト、DevToolsで要素を選んで範囲が広がってないか確認。
+
+### 2) 入れ子NG：リンクの中にリンク
+
+❌ NG
+
+~~~html
+<a href="/blog/1.html">
+  <h2>記事</h2>
+  <a href="/author.html">著者</a>
+</a>
+~~~
+
+✅ 正（カード全体リンクをやめる）
+
+~~~html
+<article>
+  <h2><a href="/blog/1.html">記事</a></h2>
+  <a href="/author.html">著者</a>
+</article>
+~~~
+
+### 3) ul/olの直下がliじゃない
+
+❌ NG
+
+~~~html
+<ul>
+  <div><li>項目</li></div>
+</ul>
+~~~
+
+✅ 正
+
+~~~html
+<ul>
+  <li><span>項目</span></li>
+</ul>
+~~~
+
+覚え方：「リストの子はliだけ」。
+
+### 4) aとbuttonの取り違え
+
+❌ NG（移動なのにbutton）
+
+~~~html
+<button type="button" onclick="location.href='/contact.html'">お問い合わせ</button>
+~~~
+
+✅ 正
+
+~~~html
+<a href="/contact.html">お問い合わせ</a>
+~~~
+
+❌ NG（操作なのにa href="#"）
+
+~~~html
+<a href="#" class="btn">開く</a>
+~~~
+
+✅ 正
+
+~~~html
+<button type="button" class="btn">開く</button>
+~~~
+
+### 5) フォーム：name無し / type未指定で誤送信
+
+❌ NG（nameが無い）
+
+~~~html
+<input id="email" type="email" />
+~~~
+
+✅ 正
+
+~~~html
+<input id="email" name="email" type="email" />
+~~~
+
+❌ NG（フォーム内buttonのtype未指定）
+
+~~~html
+<form>
+  <button>閉じる</button>
+</form>
+~~~
+
+✅ 正
+
+~~~html
+<button type="button">閉じる</button>
+~~~
+
+---
+## 使い分け（間違えやすい組み合わせ早見）
+
+- リスト：`ul/ol > li`（子はli）
+- ナビ：`nav > ul > li > a`
+- リンク：移動はa
+- ボタン：操作はbutton（フォーム外は `type="button"`）
+- 見出し：h1はページの主題、h2以降は章
+- フォーム送信：nameが無いとデータになりにくい
+- ページ内リンク：`href="#x"` ↔ `id="x"`（idは唯一）
+
+---
+## 実務のコツ（詰まり回避：確認の順番）
+
+1) DevToolsで要素を選択  
+   意図しない範囲（全体リンク化など）になってないか見る  
+2) Consoleのエラー確認（JSが絡むなら）  
+3) Networkで404確認（CSS/JSが当たらないなら）  
+4) HTMLの検証（バリデータ）  
+   “自分では気づかない閉じ忘れ”が一発で見つかることが多い  
+5) 最小再現に切り出す  
+   怪しい部分だけ抜き出すと原因が見える  
+
+---
+## NG・禁止例（総まとめ：6個）
+
+- aの閉じ忘れ（全体リンク化） → 閉じタグ確認
+- aの中にa（入れ子リンク） → 構造を分ける
+- ul/ol直下にli以外 → 必ずli
+- id重複 → ユニークに
+- フォームのname無し → nameを付ける
+- フォーム内buttonのtype未指定 → submit/buttonを明示
+
+---
+## 見た目を整える（HTML+CSSセット：4例）
+
+“崩れにくい最小スタイル”を置いて、確認しやすくします（色なし）。
+
+### 例1）全体の読みやすさ（余白・行間）
+
+<HtmlCssDemo
+  title="例1）全体の読みやすさ（余白・行間）"
+  height={760}
+  html={String.raw`<main class="wrap">
+  <h1>タイトル</h1>
+  <p>本文…</p>
+</main>`}
+  css={String.raw`*{ box-sizing: border-box; }
+body{ margin: 0; line-height: 1.8; }
+.wrap{ max-width: 920px; margin: 0 auto; padding: 24px 16px; }`}
+/>
+
+### 例2）ナビ（押しやすい）
+
+<HtmlCssDemo
+  title="例2）ナビ（押しやすい）"
+  height={860}
+  html={String.raw`<nav aria-label="主要メニュー">
+  <ul class="menu">
+    <li><a class="menu__link" href="#a">A</a></li>
+    <li><a class="menu__link" href="#b">B</a></li>
+  </ul>
+</nav>`}
+  css={String.raw`.menu{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:flex;
+  gap:.6rem;
+  flex-wrap:wrap;
+}
+.menu__link{
+  display:inline-block;
+  min-height:44px;
+  padding:.55rem .85rem;
+  border:1px solid rgba(0,0,0,.2);
+  border-radius:999px;
+  text-decoration:none;
+}
+.menu__link:focus-visible{
+  outline:3px solid currentColor;
+  outline-offset:4px;
+  border-radius:999px;
+}`}
+/>
+
+### 例3）フォーム（label + inputの基本）
+
+<HtmlCssDemo
+  title="例3）フォーム（label + inputの基本）"
+  height={860}
+  html={String.raw`<div class="field">
+  <label class="label" for="e1">メール</label>
+  <input class="input" id="e1" name="email" type="email" required />
+</div>`}
+  css={String.raw`.field{ display:grid; gap:.35rem; max-width:520px; }
+.label{ font-size:.95rem; }
+.input{
+  padding:.75rem .9rem;
+  border:1px solid rgba(0,0,0,.25);
+  border-radius:14px;
+  box-shadow:0 10px 22px rgba(0,0,0,.06);
+}
+.input:focus{
+  outline:2px solid currentColor;
+  outline-offset:2px;
+}`}
+/>
+
+### 例4）カード（構造が崩れてないか確認しやすい）
+
+<HtmlCssDemo
+  title="例4）カード（構造が崩れてないか確認しやすい）"
+  height={840}
+  html={String.raw`<a class="card" href="/x.html">
+  <h2 class="card__title">カード</h2>
+  <p class="card__text">概要</p>
+</a>`}
+  css={String.raw`.card{
+  display:block;
+  padding:1rem 1.1rem;
+  border:1px solid rgba(0,0,0,.18);
+  border-radius:18px;
+  text-decoration:none;
+  box-shadow:0 10px 22px rgba(0,0,0,.08);
+}
+.card__title{ margin: 0 0 .4rem; font-size: 1.1rem; }
+.card__text{ margin: 0; line-height: 1.85; opacity: .9; }`}
+/>
+
+---
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. ulの直下に置ける要素は基本何？</summary>
+  <p>A. <code>li</code>。</p>
+</details>
+
+<details>
+  <summary>Q. 「移動」と「操作」で使い分ける要素は？</summary>
+  <p>A. 移動は <code>a</code>、操作は <code>button</code>。</p>
+</details>
+
+<details>
+  <summary>Q. フォームで「送信データの項目名」になる属性は？</summary>
+  <p>A. <code>name</code>。</p>
+</details>
+
+---
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1) わざと「aの閉じ忘れ」を1回作って、ページ全体がリンクっぽくなるのを確認し、正しく直してください。  
+DevToolsでaを選ぶと範囲が広がるのを見られたら勝ち。
+
+2) 次の3つを同じページに作り、チェックリストで自己点検してください。  
+- `nav > ul > li > a` のメニュー  
+- `href="#x"` と `id="x"` のページ内リンク  
+- `label for` と `input id` と `name` を揃えたフォーム  

@@ -1,0 +1,392 @@
+---
+title: "18. 画像リンク/カードリンク（aの中に入れられる要素）"
+date: "2026-01-28"
+summary: "aの中に画像や見出し・説明文を入れてカード全体をリンク化。押しやすいUIを、入れ子リンクNGなどのルール込みで身につける。"
+category: "html"
+level: "beginner"
+tags: ["html", "a", "link", "card", "img", "alt", "accessibility", "focus"]
+draft: false
+---
+
+# 18. 画像リンク/カードリンク（aの中に入れられる要素）
+
+---
+
+## まず結論
+
+aの中に画像や見出し・説明文を入れて「カード全体をリンク」にでき、押しやすいUIが作れます。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Card Link Minimum</title>
+</head>
+<body>
+  <a href="/blog/1.html">
+    <img src="thumb.jpg" alt="記事のサムネイル" />
+    <h2>記事タイトル</h2>
+    <p>記事の概要が入ります。</p>
+  </a>
+</body>
+</html>
+~~~
+
+※画像thumb.jpgは手元の適当な画像に置き換えてOK（無ければimgを一旦消しても動きます）。
+
+---
+
+## 重要ポイント（ここで迷いがち）
+
+- **今のHTMLではaの中にブロック要素を入れてOK**
+  - h2やp、divなどをまとめてリンクにできる（昔の知識だと「ダメ」と覚えてる人がいます）。
+- **カード全体がリンク＝押しやすい（スマホで特に強い）**
+  - ただし“リンクの中に別のリンク”は作れない（後述のNG）。
+- **画像リンクはaltが超重要**
+  - リンクの中の画像は「リンクのラベル（リンクの名前）」として読まれやすい。
+  - 画像が内容を伝えるなら具体的に（例：「新プランの告知バナー」）
+  - 画像が装飾だけなら alt=""（空）で読み上げを邪魔しない
+- **カードがリンクなら、見出しテキストもリンクの一部**
+  - “どこを押しても同じリンク”にするのが基本。
+- **キーボード操作（Tab移動）も1回で済む**
+  - リンクが1つなので操作がシンプルになる。
+
+---
+
+## 例で理解（よく使うパターン 4つ）
+
+### 1) 画像＋タイトルのリンク（シンプル）
+
+~~~html
+<a class="card" href="/blog/1.html">
+  <img class="card__img" src="thumb.jpg" alt="記事『はじめてのHTML』のサムネイル" />
+  <h2 class="card__title">はじめてのHTML</h2>
+</a>
+~~~
+
+### 2) カード一覧（複数記事・商品など）
+
+~~~html
+<div class="grid">
+  <a class="card" href="/blog/1.html">
+    <h2 class="card__title">記事1</h2>
+    <p class="card__text">概要…</p>
+  </a>
+
+  <a class="card" href="/blog/2.html">
+    <h2 class="card__title">記事2</h2>
+    <p class="card__text">概要…</p>
+  </a>
+</div>
+~~~
+
+### 3) 画像が装飾だけのとき（alt空にする）
+
+~~~html
+<a class="banner" href="/campaign.html">
+  <img src="banner.jpg" alt="" />
+  <span class="banner__text">キャンペーンを見る</span>
+</a>
+~~~
+
+### 4) リンクの範囲を“カードの一部”にしたいとき（カード全体リンクじゃない）
+
+~~~html
+<article class="card">
+  <h2 class="card__title">記事タイトル</h2>
+  <p class="card__text">概要…</p>
+  <a class="card__more" href="/blog/1.html">続きを読む</a>
+</article>
+~~~
+
+「カード内に複数リンクを置きたい」なら、この形（全体リンクにしない）が安全。
+
+---
+
+## 使い分け（似た要素との違い）
+
+- **カード全体リンク（aで包む）**
+  - 1クリックで完結、押しやすい
+  - ただし中に別リンクを置けない
+- **カード内にリンクを置く（article + a）**
+  - 「続きを読む」「著者」「タグ」など複数リンクが必要ならこっち
+- **buttonと混ぜない**
+  - 「移動」ならa、「その場の操作」ならbutton（#17）。
+
+---
+
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- **リンクの文言（カード内のテキスト）は具体的に**
+  - タイトルがそのままリンク名になるので分かりやすい。
+- **フォーカス（Tabで選択中）を見えるようにする**
+  - CSSで:focus-visibleを整えると操作性が上がる。
+- **外部へ別タブで飛ばすなら（必要なときだけ）**
+  - target="_blank" + rel="noopener noreferrer" をセット（#8で深掘り）。
+- **画像のaltは「リンクの目的が分かるか」を基準に**
+  - 画像だけのリンクにしないのが理想（テキストも一緒に置くと強い）。
+
+---
+
+## NG・禁止例（事故る書き方）
+
+### NG1）リンクの中にリンク（入れ子リンク）
+
+~~~html
+<a href="/blog/1.html">
+  <h2>記事</h2>
+  <a href="/author.html">著者</a>
+</a>
+~~~
+
+✅ 正：カード全体リンクをやめて、内側に個別リンク
+
+~~~html
+<article>
+  <h2><a href="/blog/1.html">記事</a></h2>
+  <a href="/author.html">著者</a>
+</article>
+~~~
+
+### NG2）画像リンクなのにaltが空（内容が伝わらない）
+
+~~~html
+<a href="/campaign.html"><img src="banner.jpg" alt="" /></a>
+~~~
+
+✅ 正：目的が分かるaltか、テキストを足す
+
+~~~html
+<a href="/campaign.html">
+  <img src="banner.jpg" alt="冬のキャンペーン" />
+  <span>キャンペーンを見る</span>
+</a>
+~~~
+
+### NG3）a href="#"でカードを“ボタン代わり”にする
+
+~~~html
+<a href="#" class="card">開く</a>
+~~~
+
+✅ 正：その場の操作ならbutton
+
+~~~html
+<button type="button" class="card-btn">開く</button>
+~~~
+
+### NG4）リンク領域が小さくて押しづらい
+
+タイトルだけがリンクで、余白が押せない  
+✅ 正：カード全体リンク、またはaをdisplay:blockにして範囲を広げる
+
+---
+
+## 見た目を整える（HTML+CSSセット：5例）
+
+色は使わず、線・影・余白・動き・フォーカスで整えます。
+
+### 例1）カード全体リンク（基本）
+
+<HtmlCssDemo
+  title="例1）カード全体リンク（基本）"
+  html={String.raw`<a class="card" href="/blog/1.html">
+  <h2 class="card__title">記事タイトル</h2>
+  <p class="card__text">概要が入ります。</p>
+</a>`}
+  css={String.raw`.card{
+  display: block;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  text-decoration: none;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.card:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(0,0,0,.10);
+}
+.card__title{ margin: 0 0 .4rem; font-size: 1.1rem; }
+.card__text{ margin: 0; line-height: 1.85; opacity: .9; }`}
+/>
+
+### 例2）画像つきカード（画像は上・角丸）
+
+<HtmlCssDemo
+  title="例2）画像つきカード（画像は上・角丸）"
+  height={380}
+  html={String.raw`<a class="pcard" href="/blog/1.html">
+  <img
+    class="pcard__img"
+    src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'><rect width='100%25' height='100%25' fill='white'/><rect x='36' y='36' width='1128' height='558' rx='28' fill='none' stroke='black' stroke-opacity='.18'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-size='36' fill='black' fill-opacity='.55'>thumb.jpg</text></svg>"
+    alt="記事『はじめてのHTML』のサムネイル"
+  />
+  <div class="pcard__body">
+    <h2 class="pcard__title">はじめてのHTML</h2>
+    <p class="pcard__text">タグの役割から始めます。</p>
+  </div>
+</a>`}
+  css={String.raw`.pcard{
+  display: block;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  text-decoration: none;
+  overflow: hidden;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.pcard:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(0,0,0,.10);
+}
+.pcard__img{
+  display:block;
+  width:100%;
+  height:auto;
+}
+.pcard__body{ padding: 1rem 1.1rem; }
+.pcard__title{ margin: 0 0 .35rem; font-size: 1.1rem; }
+.pcard__text{ margin: 0; line-height: 1.85; opacity: .9; }`}
+/>
+
+### 例3）カード一覧（グリッド）
+
+<HtmlCssDemo
+  title="例3）カード一覧（グリッド）"
+  height={420}
+  html={String.raw`<div class="grid">
+  <a class="card" href="/blog/1.html">
+    <h2 class="card__title">記事1</h2>
+    <p class="card__text">概要…</p>
+  </a>
+
+  <a class="card" href="/blog/2.html">
+    <h2 class="card__title">記事2</h2>
+    <p class="card__text">概要…</p>
+  </a>
+
+  <a class="card" href="/blog/3.html">
+    <h2 class="card__title">記事3</h2>
+    <p class="card__text">概要…</p>
+  </a>
+</div>`}
+  css={String.raw`.grid{
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 760px){
+  .grid{ grid-template-columns: 1fr 1fr 1fr; }
+}
+
+.card{
+  display: block;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  text-decoration: none;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.card:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(0,0,0,.10);
+}
+.card__title{ margin: 0 0 .35rem; font-size: 1.05rem; }
+.card__text{ margin: 0; line-height: 1.8; opacity: .85; }`}
+/>
+
+### 例4）フォーカスが見える（キーボード操作に強い）
+
+<HtmlCssDemo
+  title="例4）フォーカスが見える（キーボード操作に強い）"
+  html={String.raw`<a class="card" href="/blog/1.html">
+  <h2 class="card__title">記事タイトル</h2>
+  <p class="card__text">概要…</p>
+</a>`}
+  css={String.raw`.card{
+  display: block;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  text-decoration: none;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.card:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(0,0,0,.10);
+}
+.card:focus-visible{
+  outline: 3px solid currentColor;
+  outline-offset: 4px;
+}
+.card__title{ margin: 0 0 .4rem; font-size: 1.1rem; }
+.card__text{ margin: 0; line-height: 1.85; opacity: .9; }`}
+/>
+
+### 例5）カード内リンク型（複数リンクが必要なとき）
+
+<HtmlCssDemo
+  title="例5）カード内リンク型（複数リンクが必要なとき）"
+  height={420}
+  html={String.raw`<article class="post">
+  <h2 class="post__title"><a href="/blog/1.html">記事タイトル</a></h2>
+  <p class="post__text">概要…</p>
+  <p class="post__meta">
+    <a href="/author.html">著者</a> /
+    <a href="/tag/html.html">HTML</a>
+  </p>
+</article>`}
+  css={String.raw`.post{
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.post__title{ margin: 0 0 .4rem; font-size: 1.1rem; }
+.post__text{ margin: 0 0 .6rem; line-height: 1.85; opacity: .9; }
+.post__meta{ margin: 0; opacity: .85; }
+
+.post a{ text-decoration: none; }
+.post a:hover{ text-decoration: underline; }
+.post a:focus-visible{
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 6px;
+}`}
+/>
+
+---
+
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. カード全体をリンクにしたいとき、基本はどう書く？</summary>
+  <p>A. aで中身（画像/見出し/文章）を全部包む。</p>
+</details>
+
+<details>
+  <summary>Q. リンクの中に別のリンクを入れていい？</summary>
+  <p>A. ダメ（入れ子リンクはNG）。</p>
+</details>
+
+<details>
+  <summary>Q. 装飾だけの画像をリンクに入れるときのaltは？</summary>
+  <p>A. alt=""（空）（読み上げを邪魔しない）。</p>
+</details>
+
+---
+
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1. 記事カードを2枚作り、カード全体リンク（aで包む）にしてください。  
+   タイトルと概要を入れ、CSS例1を当てて“押せるカード”にする。
+2. 「著者リンク」や「タグリンク」も入れたい想定で、カード内リンク型（article + 内側に複数a）でも同じ内容を作ってみてください。  
+   どっちが要件に合うか（リンクが1つか複数か）を言語化できたら勝ち。

@@ -1,5 +1,5 @@
 ---
-title: "画像：imgタグ"
+title: "9. 画像：imgタグ"
 date: "2026-01-26"
 summary: "imgタグで画像を表示でき、srcで場所、altで代替テキストを指定して「伝わる画像」にできます。"
 category: "html"
@@ -149,45 +149,41 @@ imgタグで画像を表示でき、srcで場所、altで代替テキストを�
 
 ### 例1：はみ出し防止（超定番）
 
-```html
-<img class="img" src="photo.jpg" alt="海辺の風景写真" />
-```
-
-```css
-.img {
+<HtmlCssDemo
+  title="例1：はみ出し防止（超定番）"
+  html={String.raw`<img class="img" src="photo.jpg" alt="海辺の風景写真" />`}
+  css={String.raw`.img {
   max-width: 100%;
   height: auto;
   display: block;
-}
-```
+}`}
+  height={190}
+/>
 
 ### 例2：角丸＋影で“写真っぽく”
 
-```html
-<img class="photo" src="profile.jpg" alt="プロフィール写真" />
-```
-
-```css
-.photo {
+<HtmlCssDemo
+  title="例2：角丸＋影で“写真っぽく”"
+  html={String.raw`<img class="photo" src="profile.jpg" alt="プロフィール写真" />`}
+  css={String.raw`.photo {
   max-width: 100%;
   height: auto;
   display: block;
   border-radius: 18px;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.10);
-}
-```
+}`}
+  height={210}
+/>
 
 ### 例3：キャプション付きレイアウト（figure）
 
-```html
-<figure class="figure">
+<HtmlCssDemo
+  title="例3：キャプション付きレイアウト（figure）"
+  html={String.raw`<figure class="figure">
   <img class="figure__img" src="chart.png" alt="売上推移の折れ線グラフ" />
   <figcaption class="figure__cap">2025年の月別売上推移</figcaption>
-</figure>
-```
-
-```css
-.figure {
+</figure>`}
+  css={String.raw`.figure {
   margin: 0;
   display: grid;
   gap: 10px;
@@ -204,19 +200,18 @@ imgタグで画像を表示でき、srcで場所、altで代替テキストを�
 .figure__cap {
   opacity: 0.8;
   font-size: 0.95rem;
-}
-```
+}`}
+  height={260}
+/>
 
 ### 例4：画像リンクを押しやすく（a + img）
 
-```html
-<a class="logoLink" href="/index.html">
+<HtmlCssDemo
+  title="例4：画像リンクを押しやすく（a + img）"
+  html={String.raw`<a class="logoLink" href="/index.html">
   <img class="logoLink__img" src="logo.png" alt="トップページへ戻る" />
-</a>
-```
-
-```css
-.logoLink {
+</a>`}
+  css={String.raw`.logoLink {
   display: inline-block;
   padding: 10px;
   border-radius: 14px;
@@ -230,8 +225,10 @@ imgタグで画像を表示でき、srcで場所、altで代替テキストを�
   display: block;
   height: 40px;
   width: auto;
-}
-```
+}`}
+  height={220}
+/>
+
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-title: "aタグ（リンクの基本）"
+title: "6. aタグ（リンクの基本）"
 date: "2026-01-26"
 summary: "aタグでページ遷移・外部サイト・ファイルなどへの「行き先」を作れます（＝Webの回遊の核）。"
 category: "html"
@@ -150,12 +150,10 @@ aタグでページ遷移・外部サイト・ファイルなどへの「行き�
 
 ### 例1：押しやすいテキストリンク（色指定なし）
 
-```html
-<a class="link" href="/contact.html">お問い合わせ</a>
-```
-
-```css
-.link {
+<HtmlCssDemo
+  title="例1：押しやすいテキストリンク（色指定なし）"
+  html={String.raw`<a class="link" href="/contact.html">お問い合わせ</a>`}
+  css={String.raw`.link {
   display: inline-block;
   padding: 8px 10px;
   text-decoration: underline;
@@ -170,17 +168,16 @@ aタグでページ遷移・外部サイト・ファイルなどへの「行き�
 .link:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 3px;
-}
-```
+}`}
+  height={180}
+/>
 
 ### 例2：ボタン“風”リンク（遷移はaでOK）
 
-```html
-<a class="cta" href="/signup.html">無料で始める</a>
-```
-
-```css
-.cta {
+<HtmlCssDemo
+  title="例2：ボタン“風”リンク（遷移はaでOK）"
+  html={String.raw`<a class="cta" href="/signup.html">無料で始める</a>`}
+  css={String.raw`.cta {
   display: inline-block;
   padding: 10px 14px;
   border: 1px solid currentColor;
@@ -194,21 +191,20 @@ aタグでページ遷移・外部サイト・ファイルなどへの「行き�
 .cta:hover {
   transform: translateY(-1px);
   opacity: 0.85;
-}
-```
+}`}
+  height={190}
+/>
 
 ### 例3：リスト型ナビ（複数リンクを整理）
 
-```html
-<nav class="nav" aria-label="サイト内メニュー">
+<HtmlCssDemo
+  title="例3：リスト型ナビ（複数リンクを整理）"
+  html={String.raw`<nav class="nav" aria-label="サイト内メニュー">
   <a class="nav__item" href="/about.html">About</a>
   <a class="nav__item" href="/works.html">Works</a>
   <a class="nav__item" href="/contact.html">Contact</a>
-</nav>
-```
-
-```css
-.nav {
+</nav>`}
+  css={String.raw`.nav {
   display: flex;
   gap: 10px;
   padding: 10px;
@@ -226,8 +222,10 @@ aタグでページ遷移・外部サイト・ファイルなどへの「行き�
 
 .nav__item:hover {
   opacity: 0.75;
-}
-```
+}`}
+  height={210}
+/>
+
 
 ---
 

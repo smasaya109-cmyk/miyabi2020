@@ -1,5 +1,5 @@
 ---
-title: "target と rel（別タブと安全・nofollow含む）"
+title: "8. target と rel（別タブと安全・nofollow含む）"
 date: "2026-01-26"
 summary: 'target="_blank"で別タブ表示にでき、同時にrelを正しく付けると安全性とSEOの意図（nofollow等）をコントロールできます。'
 category: "html"
@@ -173,14 +173,12 @@ target="_blank"を使わないなら、noopenerの必要性は下がる（ただ
 
 ### 例1：別タブだと分かるリンク（テキストで示す）
 
-```html
-<a class="ext" href="https://example.com" target="_blank" rel="noopener noreferrer">
+<HtmlCssDemo
+  title="例1：別タブだと分かるリンク（テキストで示す）"
+  html={String.raw`<a class="ext" href="https://example.com" target="_blank" rel="noopener noreferrer">
   公式サイト（別タブ）
-</a>
-```
-
-```css
-.ext {
+</a>`}
+  css={String.raw`.ext {
   display: inline-block;
   padding: 10px 12px;
   border: 1px solid currentColor;
@@ -196,13 +194,15 @@ target="_blank"を使わないなら、noopenerの必要性は下がる（ただ
 .ext:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 3px;
-}
-```
+}`}
+  height={190}
+/>
 
 ### 例2：外部リンク一覧（nofollow混在の例）
 
-```html
-<ul class="out">
+<HtmlCssDemo
+  title="例2：外部リンク一覧（nofollow混在の例）"
+  html={String.raw`<ul class="out">
   <li>
     <a href="https://example.com" target="_blank" rel="noopener noreferrer">
       公式（別タブ）
@@ -213,11 +213,8 @@ target="_blank"を使わないなら、noopenerの必要性は下がる（ただ
       広告リンク（nofollow）
     </a>
   </li>
-</ul>
-```
-
-```css
-.out {
+</ul>`}
+  css={String.raw`.out {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -237,23 +234,22 @@ target="_blank"を使わないなら、noopenerの必要性は下がる（ただ
 .out a:hover {
   opacity: 0.85;
   transform: translateY(-1px);
-}
-```
+}`}
+  height={240}
+/>
 
 ### 例3：カード内の外部リンクCTA（安全セット込み）
 
-```html
-<article class="card">
+<HtmlCssDemo
+  title="例3：カード内の外部リンクCTA（安全セット込み）"
+  html={String.raw`<article class="card">
   <h2 class="card__title">参考資料</h2>
   <p>公式ドキュメントを別タブで開きます。</p>
   <a class="card__cta" href="https://example.com" target="_blank" rel="noopener noreferrer">
     公式を見る（別タブ）
   </a>
-</article>
-```
-
-```css
-.card {
+</article>`}
+  css={String.raw`.card {
   border: 1px solid currentColor;
   border-radius: 18px;
   padding: 16px;
@@ -276,8 +272,10 @@ target="_blank"を使わないなら、noopenerの必要性は下がる（ただ
 .card__cta:hover {
   opacity: 0.85;
   transform: translateY(-1px);
-}
-```
+}`}
+  height={280}
+/>
+
 
 ---
 

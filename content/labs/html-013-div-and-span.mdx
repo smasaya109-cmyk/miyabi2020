@@ -1,0 +1,290 @@
+---
+title: "13. div と span（箱とインライン）"
+date: "2026-01-28"
+summary: "divでブロックのまとまり、spanで文章の一部（インライン）を包む。意味を持たない要素だからこそ使い分けが大事。"
+category: "html"
+level: "beginner"
+tags: ["html", "div", "span", "inline", "block", "semantic"]
+draft: false
+---
+
+# 13. div と span（箱とインライン）
+
+## まず結論
+
+divで“まとまり（ブロック）”を作り、spanで“文章の一部（インライン）”だけを狙って装飾・指定できるようになります。
+
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>div & span Minimum</title>
+</head>
+<body>
+  <div>
+    <h1>お知らせ</h1>
+    <p>本日の受付は<span>10:00</span>からです。</p>
+  </div>
+</body>
+</html>
+~~~
+
+## 重要ポイント（ここで迷いがち）
+
+- **divはブロック要素（箱）**
+  - まとまりを作るための“汎用コンテナ”。見出し＋文章＋ボタン…などをひとまとめにできる。
+- **spanはインライン要素（文の一部）**
+  - 文章の途中の「この単語だけ」など、最小単位を包む。
+- **どちらも“意味”は持たない（セマンティックではない）**
+  - だから便利だけど、使いすぎると構造が読みにくくなる。  
+  → 可能なら `header / main / section / article / nav / footer` などを優先（#16で詳しく）。
+- **目的は主に2つ**
+  - CSSで見た目を当てるため（classを付ける）
+  - JSで操作対象にするため（class / data-* を付ける）
+- **よくある詰まり：spanに幅/高さが効かない**
+  - spanはインラインなので、`width/height` は基本効きにくい。必要なら `display: inline-block;` を使う。
+
+## 例で理解（よく使うパターン 5つ）
+
+### 1) カード（まとまり）を作る：div
+
+~~~html
+<div class="card">
+  <h2>イベント</h2>
+  <p>参加無料・予約不要</p>
+  <a href="/event.html">詳細を見る</a>
+</div>
+~~~
+
+### 2) 文章の一部だけ強調：span
+
+~~~html
+<p>提出期限は<span class="deadline">明日</span>です。</p>
+~~~
+
+### 3) レイアウトの“列”を作る：div
+
+~~~html
+<div class="columns">
+  <div class="col">
+    <h2>左</h2>
+    <p>説明文</p>
+  </div>
+  <div class="col">
+    <h2>右</h2>
+    <p>説明文</p>
+  </div>
+</div>
+~~~
+
+### 4) バッジ（タグ）を文章の前へ：span
+
+~~~html
+<p>
+  <span class="badge">NEW</span>
+  新しいプランを公開しました
+</p>
+~~~
+
+### 5) JSで部分だけ差し替え：span
+
+~~~html
+<p>残り<span id="count">3</span>席</p>
+~~~
+
+idは本来“唯一”が前提（#15）。JS用途なら `data-*` や `class` でもOK（#27）。
+
+## 使い分け（似た要素/属性との違い）
+
+- **div vs section**
+  - sectionは“内容の区切り（章）”という意味がある。章として成立するならsection。  
+  - ただの箱ならdiv。
+- **span vs strong/em**
+  - 強調の意味なら `strong`（重要） / `em`（強勢）を使う。
+  - 見た目だけならspanでもできるけど、意味が必要なら専用要素を優先。
+- **divを使う前に考える**
+  - 「ここはnavじゃない？ mainじゃない？ articleじゃない？」  
+  → 意味がある要素があるならそっちが読みやすい。
+
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- **div/spanは“最終手段”くらいの気持ちで**
+  - セマンティック要素があると検索・読み上げ・保守がラク。
+- **class名は「見た目」より「役割」で**
+  - `left blue` みたいな見た目命名より、`card badge nav__link` など役割命名が崩れに強い。
+- **意味のある強調は strong/em を使う**
+  - 読み上げや解析にもメリットがある。
+
+## NG・禁止例
+
+### NG1）全部divで作る（意味が消える）
+
+~~~html
+<div>
+  <div>メニュー</div>
+  <div>記事</div>
+  <div>フッター</div>
+</div>
+~~~
+
+✅ 正：意味のある要素を使う
+
+~~~html
+<header>…</header>
+<nav>…</nav>
+<main>…</main>
+<footer>…</footer>
+~~~
+
+### NG2）spanで段落や見出しを代用する
+
+~~~html
+<span>タイトルっぽい</span>
+~~~
+
+✅ 正：見出しはh1-h6、段落はp
+
+### NG3）ulの子にdivを入れる（構造が崩れる）
+
+~~~html
+<ul>
+  <div><li>項目</li></div>
+</ul>
+~~~
+
+✅ 正：ul直下はli
+
+~~~html
+<ul>
+  <li><span>項目</span></li>
+</ul>
+~~~
+
+### NG4）spanに幅・高さを期待して詰まる
+
+~~~html
+<span class="box">OK</span>
+~~~
+
+~~~css
+.box{ width: 200px; height: 60px; } /* 効きにくい */
+~~~
+
+✅ 正：必要ならinline-blockへ
+
+~~~css
+.box{ display:inline-block; width:200px; height:60px; }
+~~~
+
+---
+
+## 見た目を整える（HTML+CSSセット：4例）
+
+色は使わず、線・余白・影・タイポだけで整えます。
+
+### 例1）カード（div）の基本
+
+<HtmlCssDemo
+  title="例1）カード（div）の基本"
+  html={String.raw`<div class="card">
+  <h2 class="card__title">お知らせ</h2>
+  <p class="card__text">本日の受付は10:00からです。</p>
+</div>`}
+  css={String.raw`.card{
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 16px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.card__title{ margin: 0 0 .4rem; font-size: 1.15rem; }
+.card__text{ margin: 0; line-height: 1.8; }`}
+  height={220}
+/>
+
+### 例2）文章の一部（span）だけ下線で強調
+
+<HtmlCssDemo
+  title="例2）文章の一部（span）だけ下線で強調"
+  html={String.raw`<p class="note">
+  提出期限は<span class="uline">明日</span>です。
+</p>`}
+  css={String.raw`.note{ line-height: 1.9; }
+.uline{
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: .2em;
+}`}
+  height={200}
+/>
+
+### 例3）バッジ（span）をinline-blockで“ラベル化”
+
+<HtmlCssDemo
+  title="例3）バッジ（span）をinline-blockで“ラベル化”"
+  html={String.raw`<p>
+  <span class="badge">NEW</span>
+  新しいプランを公開しました
+</p>`}
+  css={String.raw`.badge{
+  display: inline-block;
+  padding: .15rem .5rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: .85rem;
+  letter-spacing: .04em;
+  margin-right: .4rem;
+  transform: translateY(-.04em);
+}`}
+  height={210}
+/>
+
+### 例4）2カラム（div）でレイアウト
+
+<HtmlCssDemo
+  title="例4）2カラム（div）でレイアウト"
+  html={String.raw`<div class="cols">
+  <div class="cols__item">
+    <h2>左</h2>
+    <p>説明文が入ります。</p>
+  </div>
+  <div class="cols__item">
+    <h2>右</h2>
+    <p>説明文が入ります。</p>
+  </div>
+</div>`}
+  css={String.raw`.cols{
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 720px){
+  .cols{ grid-template-columns: 1fr 1fr; }
+}
+.cols__item{
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 16px;
+  padding: 1rem;
+}
+.cols__item h2{ margin: 0 0 .4rem; font-size: 1.05rem; }
+.cols__item p{ margin: 0; line-height: 1.8; }`}
+  height={320}
+/>
+
+## 理解チェック（3問・答え付き）
+
+- 文章の途中の一語だけを包むなら div と span どっち？  
+  → **span**
+- “意味がある区切り（章）”なら div と section どっちを優先？  
+  → **section**
+- spanにwidthが効きにくいのはなぜ？  
+  → **インライン要素だから（必要ならdisplay: inline-block;）**
+
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1. 「お知らせカード」を作ってください。  
+   div.card の中に h2 と p を入れ、CSS例1を当てて“カードっぽく”整える。
+2. 文章「提出期限は明日です。」の「明日」だけをspanで包み、  
+   CSS例2（下線強調）を当てて“狙って強調”できるのを確認してください。

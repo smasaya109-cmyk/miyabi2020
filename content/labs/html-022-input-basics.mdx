@@ -1,0 +1,376 @@
+---
+title: "22. input基本（type=text/email/password）"
+date: "2026-01-28"
+summary: "inputのtypeを正しく選ぶと、入力補助（キーボード）と簡易バリデーションが効いてフォーム品質が上がる。required / name / autocomplete もセットで習得。"
+category: "html"
+level: "beginner"
+tags: ["html", "form", "input", "type", "email", "password", "required", "autocomplete", "accessibility"]
+draft: false
+---
+
+# 22. input基本（type=text/email/password）
+
+---  
+## まず結論
+
+typeを正しく選ぶだけで、入力しやすさ（キーボード）とバリデーション（簡易チェック）が一気に良くなります。
+
+---  
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Input Basic</title>
+</head>
+<body>
+  <form action="/login" method="post">
+    <label for="email">メール</label>
+    <input id="email" name="email" type="email" autocomplete="email" required>
+
+    <label for="pw">パスワード</label>
+    <input id="pw" name="password" type="password" autocomplete="current-password" required>
+
+    <button type="submit">ログイン</button>
+  </form>
+</body>
+</html>
+~~~
+
+---  
+## 重要ポイント（初心者が迷いがち）
+
+- typeで“入力の性質”が決まる
+  - text：一般的な文字
+  - email：メール形式を想定（簡易チェック＋スマホで@が出やすい）
+  - password：伏せ字になる（中身は送られるので“暗号化”ではない）
+- nameが送信のキー（超重要）（#20）
+  - idは紐付け用、送信データ名はname
+- requiredは“必須”をブラウザにも伝える
+  - 見た目だけの「必須」ではなく、実際に必須になる
+- autocompleteを付けると入力が速い
+  - email：autocomplete="email"
+  - パスワード（ログイン）：current-password
+  - パスワード（新規作成）：new-password
+- パスワードは“見せない”だけ
+  - 通信の安全はHTTPSなど別の話（HTMLだけで守れるわけではない）
+
+---  
+## 例で理解（よく使うパターン 5つ）
+
+### 1) 名前（text）
+
+~~~html
+<label for="name">お名前</label>
+<input id="name" name="name" type="text" autocomplete="name">
+~~~
+
+### 2) メール（email）
+
+~~~html
+<label for="email2">メール</label>
+<input id="email2" name="email" type="email" autocomplete="email" required>
+~~~
+
+### 3) パスワード（password）
+
+~~~html
+<label for="pw2">パスワード</label>
+<input id="pw2" name="password" type="password" autocomplete="current-password" required>
+~~~
+
+### 4) 新規登録：新しいパスワード（new-password）
+
+~~~html
+<label for="pw3">パスワード</label>
+<input id="pw3" name="password" type="password" autocomplete="new-password" required>
+~~~
+
+### 5) 入力のヒント（placeholderは補助）
+
+~~~html
+<label for="email3">メール</label>
+<input id="email3" name="email" type="email" placeholder="example@domain.com">
+~~~
+
+placeholderは“例”として便利だけど、ラベルの代わりにはしない（#21）。
+
+---  
+## 使い分け（似た属性との違い）
+
+### type="text" vs type="email"
+
+- メールなら email（入力補助と簡易チェックが得）
+- ただの文字なら text
+
+### required vs “必須と書く”
+
+- required：実際に送信前チェックが働く
+- 表示だけ：人には伝わるが、ミスを止められない
+
+### password vs “暗号化”
+
+- password：表示を隠すだけ
+- 暗号化：通信/保存の問題（HTMLだけでは完結しない）
+
+---  
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- フォームは“何を入れるか”が明確なラベルに  
+  ×「入力」→ ○「メールアドレス」
+- autocompleteはユーザー体験が良くなる（特にスマホ）
+- 入力ミスが起きる項目は、次回のテーマで属性を足していく  
+  placeholder / required / name / value など（#26で深掘り）
+- パスワード欄の説明は“要件”を短く  
+  例：「8文字以上」など。長い注意書きは逆に読まれない
+
+---  
+## NG・禁止例（事故る書き方）
+
+### NG1）type="text"でメール欄を作る
+
+~~~html
+<input name="email" type="text">
+~~~
+
+✅ 正：メールはemail
+
+~~~html
+<input name="email" type="email" autocomplete="email">
+~~~
+
+### NG2）label無し（何の入力か分からない）
+
+~~~html
+<input name="password" type="password">
+~~~
+
+✅ 正：labelを付ける
+
+~~~html
+<label for="pw">パスワード</label>
+<input id="pw" name="password" type="password">
+~~~
+
+### NG3）nameが無い（送信データになりにくい）
+
+~~~html
+<input id="email" type="email">
+~~~
+
+✅ 正：nameを付ける
+
+~~~html
+<input id="email" name="email" type="email">
+~~~
+
+### NG4）必須なのにrequiredが無い（表示だけ必須）
+
+~~~html
+<label for="email">メール（必須）</label>
+<input id="email" name="email" type="email">
+~~~
+
+✅ 正：requiredも付ける
+
+~~~html
+<label for="email">メール</label>
+<input id="email" name="email" type="email" required>
+~~~
+
+---  
+## 見た目を整える（HTML+CSSセット：5例）
+
+色は使わず、線・余白・影・フォーカスで整えます。
+
+### 例1）ログインフォーム（基本セット）
+
+<HtmlCssDemo
+  title="例1）ログインフォーム（基本セット）"
+  height={880}
+  html={String.raw`<form class="form" action="/login" method="post">
+  <div class="field">
+    <label class="label" for="email4">メール</label>
+    <input class="input" id="email4" name="email" type="email" autocomplete="email" required />
+  </div>
+
+  <div class="field">
+    <label class="label" for="pw4">パスワード</label>
+    <input class="input" id="pw4" name="password" type="password" autocomplete="current-password" required />
+  </div>
+
+  <button class="btn" type="submit">ログイン</button>
+</form>`}
+  css={String.raw`.form{ max-width: 420px; display: grid; gap: .9rem; }
+.field{ display: grid; gap: .35rem; }
+.label{ font-size: .95rem; }
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+}`}
+/>
+
+### 例2）入力の幅を揃える（box-sizing）
+
+<HtmlCssDemo
+  title="例2）入力の幅を揃える（box-sizing）"
+  height={520}
+  html={String.raw`<div class="wrap">
+  <input class="input wide" type="text" placeholder="幅100%の入力" />
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+.wrap{ max-width: 520px; }
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+}
+.wide{ width: 100%; }`}
+/>
+
+### 例3）パスワード説明を付ける（補足）
+
+<HtmlCssDemo
+  title="例3）パスワード説明を付ける（補足）"
+  height={760}
+  html={String.raw`<div class="field">
+  <label class="label" for="pw5">パスワード</label>
+  <p class="help" id="pw-help">8文字以上で入力してください。</p>
+  <input class="input" id="pw5" name="password" type="password" aria-describedby="pw-help" autocomplete="new-password" />
+</div>`}
+  css={String.raw`.field{ display: grid; gap: .35rem; max-width: 520px; }
+.label{ font-size: .95rem; }
+.help{ margin: 0; font-size: .9rem; opacity: .85; line-height: 1.6; }
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}`}
+/>
+
+### 例4）必須バッジ（見た目）
+
+<HtmlCssDemo
+  title="例4）必須バッジ（見た目）"
+  height={740}
+  html={String.raw`<div class="field">
+  <label class="label" for="email5">
+    メール <span class="req" aria-hidden="true">必須</span>
+  </label>
+  <input class="input" id="email5" name="email" type="email" autocomplete="email" required />
+</div>`}
+  css={String.raw`.field{ display: grid; gap: .35rem; max-width: 520px; }
+.label{ font-size: .95rem; }
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.req{
+  display: inline-block;
+  padding: .1rem .45rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: .8rem;
+  margin-left: .4rem;
+  opacity: .8;
+}`}
+/>
+
+### 例5）入力＋ボタンを横並び（検索っぽい）
+
+<HtmlCssDemo
+  title="例5）入力＋ボタンを横並び（検索っぽい）"
+  height={760}
+  html={String.raw`<form class="search" action="/search" method="get">
+  <label class="sr-only" for="q2">検索</label>
+  <input class="search__input" id="q2" name="q" type="search" placeholder="キーワード" />
+  <button class="search__btn" type="submit">検索</button>
+</form>`}
+  css={String.raw`.search{
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+  max-width: 520px;
+}
+.search__input{
+  flex: 1;
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+}
+.search__input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.search__btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+}
+.sr-only{
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0);
+  border: 0;
+}`}
+/>
+
+画面には見せないラベル（sr-only）でも、アクセシビリティ上は有効です。
+
+---  
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. メール入力欄に使うべきtypeは？</summary>
+  <p>A. type="email"。</p>
+</details>
+
+<details>
+  <summary>Q. パスワード欄が“暗号化”されるわけではない。何が起きているだけ？</summary>
+  <p>A. 画面表示が伏せ字になるだけ（通信の安全は別の仕組み）。</p>
+</details>
+
+<details>
+  <summary>Q. 入力補助で便利な属性は？（メールとログインパスワード）</summary>
+  <p>A. autocomplete="email" と autocomplete="current-password"。</p>
+</details>
+
+---  
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1) ログインフォームを作り、メールをtype="email"、パスワードをtype="password"にしてください。  
+両方に label・name・required・autocomplete を付ける。
+
+2) 新規登録フォームを作り、パスワード欄だけ autocomplete="new-password" にして、  
+“ログイン用と登録用でautocompleteが違う”ことを確認してください。

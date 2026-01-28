@@ -39,13 +39,44 @@ function hasVisualHtml(code: string): boolean {
   );
 }
 
-function wrapHtmlForPreview(code: string) {
+function injectCssIntoHtmlDocument(doc: string, css: string) {
+  const safeCss = css.trim();
+  if (!safeCss) return doc;
+
+  const styleTag = `<style>\n${safeCss}\n</style>`;
+
+  // 1) <head> があるなら </head> の直前に挿入
+  if (/<\/head>/i.test(doc)) {
+    return doc.replace(/<\/head>/i, `${styleTag}\n</head>`);
+  }
+
+  // 2) <html> はあるが <head> がないケース：最低限のheadを作って挿入
+  if (/<html[\s>]/i.test(doc)) {
+    return doc.replace(/<html([^>]*)>/i, (m) => {
+      return `${m}
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    ${styleTag}
+  </head>`;
+    });
+  }
+
+  // 3) それ以外は先頭にstyleを付ける（断片想定）
+  return `${styleTag}\n${doc}`;
+}
+
+function wrapHtmlForPreview(code: string, css?: string) {
   const raw = code.trim();
 
   const hasDoc =
     /<!doctype/i.test(raw) || /<html[\s>]/i.test(raw) || /<head[\s>]/i.test(raw);
 
-  if (hasDoc) return raw;
+  if (hasDoc) {
+    return css ? injectCssIntoHtmlDocument(raw, css) : raw;
+  }
+
+  const extraCss = (css ?? "").trim();
 
   return `<!doctype html>
 <html lang="ja">
@@ -61,9 +92,17 @@ function wrapHtmlForPreview(code: string) {
         font-size: 14px;
         color: #111827;
       }
-      a { color: #0f766e; }
+      a {
+        color: inherit;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+      a:hover { opacity: .8; }
       img { max-width: 100%; height: auto; display: block; }
       code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+      /* --- demo css --- */
+${extraCss ? "\n" + extraCss + "\n" : ""}
     </style>
   </head>
   <body>
@@ -181,7 +220,6 @@ export function createMdxComponents() {
           id={id}
           className={cn(
             "scroll-mt-24 text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100",
-            // Divider上下の「呼吸」を確保（2個目以降だけ線）
             withDivider
               ? "mt-20 border-t border-neutral-200 pt-24 dark:border-neutral-800"
               : "mt-12",
@@ -189,7 +227,6 @@ export function createMdxComponents() {
           )}
         >
           {withDivider ? (
-            // ✅ Divider（border-top）の直下に「アイコンのみ」を配置（ボックス無し／少し大きめ）
             <div className="-mt-8 mb-7 flex justify-center">
               <NotebookPenIcon className="text-neutral-400 dark:text-neutral-500" />
             </div>
@@ -348,6 +385,110 @@ export function createMdxComponents() {
     // MDXの `---` は「線」ではなく「スペース」だけにする（divider二重回避）
     hr: () => <div aria-hidden className="my-10 md:my-12 pt-20" />,
 
+    /**
+     * ✅ 追加：HTML+CSSを渡すと、CSS込みでプレビューできるコンポーネント
+     * 量産の「HTML+CSSセット」をこの形に寄せるのが一番ラク。
+     */
+    HtmlCssDemo: ({
+      title,
+      html,
+      css,
+      height,
+    }: {
+      title?: string;
+      html: string;
+      css: string;
+      height?: number;
+    }) => {
+      const h = typeof height === "number" ? height : 176;
+      const previewAvailable = hasVisualHtml(html);
+      const srcDoc = previewAvailable ? wrapHtmlForPreview(html, css) : null;
+
+      const CodeCard = ({
+        label,
+        code,
+      }: {
+        label: string;
+        code: string;
+      }) => {
+        return (
+          <div className="w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950 shadow-sm dark:border-neutral-800">
+            <div className="flex items-center justify-between border-b border-neutral-800/60 px-3 py-2">
+              <span className="text-xs font-medium text-neutral-200">{label}</span>
+              <span className="text-xs text-neutral-400">Code</span>
+            </div>
+            <pre className="w-full max-w-full overflow-x-auto p-4 text-sm leading-6 text-neutral-50">
+              <code className="font-mono text-sm text-neutral-50">{code}</code>
+            </pre>
+          </div>
+        );
+      };
+
+      return (
+        <div className="mt-6 w-full min-w-0 max-w-full">
+          {title ? (
+            <p className="mb-2 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+              {title}
+            </p>
+          ) : null}
+
+          <div className="hidden w-full min-w-0 max-w-full gap-4 md:grid md:grid-cols-2">
+            <div className="grid min-w-0 gap-3">
+              <CodeCard label="HTML" code={html} />
+              <CodeCard label="CSS" code={css} />
+            </div>
+
+            <div className="min-w-0 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+              <div className="flex items-center justify-between border-b border-neutral-200 px-3 py-2 dark:border-neutral-800">
+                <span className="text-xs font-medium text-neutral-700 dark:text-neutral-200">
+                  Preview
+                </span>
+                <span className="text-xs text-neutral-400">desktop</span>
+              </div>
+
+              {previewAvailable ? (
+                <iframe
+                  title="demo"
+                  sandbox="allow-scripts"
+                  srcDoc={srcDoc ?? ""}
+                  className="w-full bg-white"
+                  style={{ height: h }}
+                />
+              ) : (
+                <div className="p-3 text-xs text-neutral-500 dark:text-neutral-400">
+                  ※ 表示要素がないためプレビューは省略しました。
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="md:hidden">
+            <div className="grid gap-3">
+              <CodeCard label="HTML" code={html} />
+              <CodeCard label="CSS" code={css} />
+            </div>
+
+            {previewAvailable ? (
+              <details className="mt-3 w-full max-w-full rounded-2xl border border-neutral-200 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+                <summary className="cursor-pointer select-none text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                  Preview を表示
+                </summary>
+                <div className="mt-3 w-full max-w-full overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-800">
+                  <iframe
+                    title="demo"
+                    sandbox="allow-scripts"
+                    srcDoc={srcDoc ?? ""}
+                    className="w-full bg-white"
+                    style={{ height: h }}
+                  />
+                </div>
+              </details>
+            ) : null}
+          </div>
+        </div>
+      );
+    },
+
     pre: (props: ComponentProps<"pre">) => {
       const { code, language } = extractCodeInfoFromPre(props.children);
 
@@ -366,7 +507,6 @@ export function createMdxComponents() {
       const langLabel = prettyLang(language);
       const isHtml = language === "html";
 
-      // “表示要素があるHTMLだけ” プレビューする（metaだけ等は白紙になるので省略）
       const previewAvailable = isHtml && hasVisualHtml(code);
       const srcDoc = previewAvailable ? wrapHtmlForPreview(code) : null;
 

@@ -1,0 +1,524 @@
+---
+title: "19. テーブル入門（table/thead/tbody/tr/th/td）"
+date: "2026-01-28"
+summary: "行×列のデータはtableで正しく表現。thead/tbody、th/td、caption、scope、スマホ横スクロールまで一気に押さえる。"
+category: "html"
+level: "beginner"
+tags: ["html", "table", "thead", "tbody", "tr", "th", "td", "caption", "scope", "accessibility"]
+draft: false
+---
+
+# 19. テーブル入門（table/thead/tbody/tr/th/td）
+
+## まず結論
+
+表（行×列のデータ）は table と th/td で正しく組むと、読みやすく・読み上げにも強い表が作れます。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Table Minimum</title>
+</head>
+<body>
+  <table>
+    <thead>
+      <tr>
+        <th>プラン</th>
+        <th>料金</th>
+        <th>対象</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ライト</td>
+        <td>1,000円</td>
+        <td>まず試したい</td>
+      </tr>
+      <tr>
+        <td>スタンダード</td>
+        <td>3,000円</td>
+        <td>しっかり使う</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>
+~~~
+
+---
+
+## 重要ポイント（ここで迷いがち）
+
+- **表は“データ”のためのもの**
+  - レイアウト目的で表を使わない（並べたいだけならCSSのgrid/flex）。
+- **行はtr、見出しセルはth、データセルはtd**
+- **thead/tbodyは“意味と整理”のため**
+  - なくても動くけど、あると読みやすく保守もしやすい。
+- **thは見出し（ラベル）として重要**
+  - 読み上げで「この値は何の列/行か」が伝わりやすい。
+- **よくある詰まり：thを全部tdで書いてしまう**
+  - 見た目は近くても意味が落ちる。
+
+---
+
+## 例で理解（よく使うパターン 4つ）
+
+### 1) 料金表（列見出し）
+
+~~~html
+<table>
+  <thead>
+    <tr>
+      <th>プラン</th>
+      <th>月額</th>
+      <th>サポート</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ライト</td>
+      <td>1,000円</td>
+      <td>メール</td>
+    </tr>
+    <tr>
+      <td>プロ</td>
+      <td>5,000円</td>
+      <td>チャット</td>
+    </tr>
+  </tbody>
+</table>
+~~~
+
+### 2) 営業時間（行見出し：曜日がラベル）
+
+~~~html
+<table>
+  <tbody>
+    <tr>
+      <th>月</th>
+      <td>10:00–18:00</td>
+    </tr>
+    <tr>
+      <th>火</th>
+      <td>10:00–18:00</td>
+    </tr>
+    <tr>
+      <th>水</th>
+      <td>定休日</td>
+    </tr>
+  </tbody>
+</table>
+~~~
+
+“左列がラベル”なら th を行の先頭に置くのが自然。
+
+### 3) scopeで「どっちの見出しか」を明確に（おすすめ）
+
+~~~html
+<table>
+  <thead>
+    <tr>
+      <th scope="col">プラン</th>
+      <th scope="col">料金</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">ライト</th>
+      <td>1,000円</td>
+    </tr>
+    <tr>
+      <th scope="row">スタンダード</th>
+      <td>3,000円</td>
+    </tr>
+  </tbody>
+</table>
+~~~
+
+- scope="col"：列の見出し  
+- scope="row"：行の見出し
+
+### 4) キャプション（表のタイトル）を付ける
+
+~~~html
+<table>
+  <caption>料金プラン一覧</caption>
+  <thead>...</thead>
+  <tbody>...</tbody>
+</table>
+~~~
+
+何の表かが一瞬で分かり、アクセシビリティにも強い。
+
+---
+
+## 使い分け（似た要素との違い）
+
+- **表（table） vs リスト（ul/ol）**
+  - 行×列の対応がある → table
+  - ただ並ぶだけ → ul/ol
+- **表（table） vs カード一覧（div）**
+  - 比較・一覧性が重要（料金比較など） → table
+  - 文章中心・自由なレイアウト → カード（div/article）
+- **th vs td**
+  - ラベル（見出し） → th
+  - 値（データ） → td
+
+---
+
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- **captionは付けると強い**（表の目的が伝わる）
+- **scopeを付けると読み上げが安定**（列/行の関係が明確）
+- **スマホで横に溢れる表は“横スクロール”にする**
+  - 無理に文字を小さくしない（下のCSS例でやる）。
+- **表の中にボタンやリンクを入れるときは、操作対象が分かる文言に**
+  - ×「詳細」→ ○「ライトプランの詳細」
+
+---
+
+## NG・禁止例（事故る書き方）
+
+### NG1）表でレイアウトを作る（古い＆崩れやすい）
+
+~~~html
+<table>
+  <tr>
+    <td>左カラム</td>
+    <td>右カラム</td>
+  </tr>
+</table>
+~~~
+
+✅ 正：レイアウトはCSS（grid/flex）で
+
+### NG2）見出し行も全部td
+
+~~~html
+<tr>
+  <td>プラン</td>
+  <td>料金</td>
+</tr>
+~~~
+
+✅ 正：見出しはth
+
+~~~html
+<tr>
+  <th>プラン</th>
+  <th>料金</th>
+</tr>
+~~~
+
+### NG3）tr直下に文字（セルを作らない）
+
+~~~html
+<tr>
+  プラン
+</tr>
+~~~
+
+✅ 正：th/tdのセルに入れる
+
+### NG4）行・列の対応が曖昧（データが読めない）
+
+列数が揃っていない、ラベルが無い等  
+✅ 正：列/行のラベルを用意し、必要ならscopeを付ける
+
+---
+
+## 見た目を整える（HTML+CSSセット：5例）
+
+色は使わず、線・余白・影・スクロールで整えます。
+
+### 例1）基本の“読みやすい表”
+
+<HtmlCssDemo
+  title="例1）基本の“読みやすい表”"
+  height={520}
+  html={String.raw`<div class="table-wrap">
+  <table class="table">
+    <caption>料金プラン一覧</caption>
+    <thead>
+      <tr>
+        <th scope="col">プラン</th>
+        <th scope="col">料金</th>
+        <th scope="col">対象</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">ライト</th>
+        <td>1,000円</td>
+        <td>まず試したい</td>
+      </tr>
+      <tr>
+        <th scope="row">スタンダード</th>
+        <td>3,000円</td>
+        <td>しっかり使う</td>
+      </tr>
+      <tr>
+        <th scope="row">プロ</th>
+        <td>5,000円</td>
+        <td>がっつり使う</td>
+      </tr>
+    </tbody>
+  </table>
+</div>`}
+  css={String.raw`.table-wrap{ max-width: 920px; }
+
+.table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table caption{
+  text-align: left;
+  font-weight: 600;
+  margin: 0 0 .6rem;
+}
+
+.table th, .table td{
+  padding: .75rem .9rem;
+  border-bottom: 1px solid rgba(0,0,0,.16);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table thead th{
+  border-bottom: 2px solid rgba(0,0,0,.22);
+}`}
+/>
+
+### 例2）ゼブラ（交互）で行を追いやすく（薄い影で）
+
+<HtmlCssDemo
+  title="例2）ゼブラ（交互）で行を追いやすく"
+  height={520}
+  html={String.raw`<table class="table zebra">
+  <caption>オプション一覧</caption>
+  <thead>
+    <tr>
+      <th scope="col">項目</th>
+      <th scope="col">内容</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">メール</th><td>24時間以内に返信</td></tr>
+    <tr><th scope="row">チャット</th><td>平日 10:00–18:00</td></tr>
+    <tr><th scope="row">電話</th><td>予約制</td></tr>
+    <tr><th scope="row">訪問</th><td>別途見積</td></tr>
+  </tbody>
+</table>`}
+  css={String.raw`.table{
+  width: 100%;
+  border-collapse: collapse;
+}
+.table caption{
+  text-align: left;
+  font-weight: 600;
+  margin: 0 0 .6rem;
+}
+.table th, .table td{
+  padding: .75rem .9rem;
+  border-bottom: 1px solid rgba(0,0,0,.16);
+  text-align: left;
+}
+.table thead th{
+  border-bottom: 2px solid rgba(0,0,0,.22);
+}
+
+.zebra tbody tr:nth-child(even){
+  box-shadow: inset 0 0 0 9999px rgba(0,0,0,.03);
+}`}
+/>
+
+### 例3）スマホ対策：横スクロールにする（最重要）
+
+<HtmlCssDemo
+  title="例3）スマホ対策：横スクロールにする（最重要）"
+  height={520}
+  html={String.raw`<div class="table-scroll" role="region" aria-label="横スクロールできる表">
+  <table class="table">
+    <caption>比較表（列が多い例）</caption>
+    <thead>
+      <tr>
+        <th scope="col">プラン</th>
+        <th scope="col">料金</th>
+        <th scope="col">サポート</th>
+        <th scope="col">容量</th>
+        <th scope="col">備考</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">ライト</th>
+        <td>1,000円</td>
+        <td>メール</td>
+        <td>5GB</td>
+        <td>まず試す</td>
+      </tr>
+      <tr>
+        <th scope="row">プロ</th>
+        <td>5,000円</td>
+        <td>チャット</td>
+        <td>50GB</td>
+        <td>本格運用</td>
+      </tr>
+    </tbody>
+  </table>
+</div>`}
+  css={String.raw`.table{
+  width: 100%;
+  border-collapse: collapse;
+}
+.table caption{
+  text-align: left;
+  font-weight: 600;
+  margin: 0 0 .6rem;
+}
+.table th, .table td{
+  padding: .75rem .9rem;
+  border-bottom: 1px solid rgba(0,0,0,.16);
+  text-align: left;
+  vertical-align: top;
+}
+.table thead th{
+  border-bottom: 2px solid rgba(0,0,0,.22);
+}
+
+.table-scroll{
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid rgba(0,0,0,.14);
+  border-radius: 16px;
+  padding: .2rem;
+}
+.table-scroll .table{
+  min-width: 560px;
+}`}
+/>
+
+### 例4）セルの“数字”を揃える（右寄せ）
+
+<HtmlCssDemo
+  title="例4）セルの“数字”を揃える（右寄せ）"
+  height={460}
+  html={String.raw`<table class="table">
+  <caption>数値が混ざる表</caption>
+  <thead>
+    <tr>
+      <th scope="col">項目</th>
+      <th scope="col" class="num">値</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">人数</th><td class="num">12</td></tr>
+    <tr><th scope="row">回数</th><td class="num">3</td></tr>
+    <tr><th scope="row">合計</th><td class="num">15</td></tr>
+  </tbody>
+</table>`}
+  css={String.raw`.table{
+  width: 100%;
+  border-collapse: collapse;
+}
+.table caption{
+  text-align: left;
+  font-weight: 600;
+  margin: 0 0 .6rem;
+}
+.table th, .table td{
+  padding: .75rem .9rem;
+  border-bottom: 1px solid rgba(0,0,0,.16);
+  text-align: left;
+}
+.table thead th{
+  border-bottom: 2px solid rgba(0,0,0,.22);
+}
+
+.num{
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}`}
+/>
+
+### 例5）表の“フォーカス見え”を強化（リンクがある場合）
+
+<HtmlCssDemo
+  title="例5）表の“フォーカス見え”を強化（リンクがある場合）"
+  height={420}
+  html={String.raw`<table class="table">
+  <caption>プラン詳細</caption>
+  <tbody>
+    <tr>
+      <th scope="row">ライト</th>
+      <td><a class="rowlink" href="/plan/light.html">ライトプランの詳細を見る</a></td>
+    </tr>
+    <tr>
+      <th scope="row">スタンダード</th>
+      <td><a class="rowlink" href="/plan/standard.html">スタンダードの詳細を見る</a></td>
+    </tr>
+  </tbody>
+</table>`}
+  css={String.raw`.table{
+  width: 100%;
+  border-collapse: collapse;
+}
+.table caption{
+  text-align: left;
+  font-weight: 600;
+  margin: 0 0 .6rem;
+}
+.table th, .table td{
+  padding: .75rem .9rem;
+  border-bottom: 1px solid rgba(0,0,0,.16);
+  text-align: left;
+  vertical-align: top;
+}
+
+.rowlink{
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.rowlink:focus-visible{
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 8px;
+}`}
+/>
+
+---
+
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. 行×列の“データ”を表すなら ul と table どっち？</summary>
+  <p>A. table。</p>
+</details>
+
+<details>
+  <summary>Q. 見出しセルは th と td どっち？</summary>
+  <p>A. th。</p>
+</details>
+
+<details>
+  <summary>Q. スマホで表がはみ出すときの安全策は？</summary>
+  <p>A. 表を包んで <code>overflow-x: auto;</code> で横スクロールにする。</p>
+</details>
+
+---
+
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1. 「料金プラン表」を作ってください。  
+   列：プラン / 料金 / 対象  
+   行：ライト / スタンダード / プロ（3行）  
+   caption と scope も付ける（例1を参考に）
+2. 列が多い表（例：項目を5列）を作り、CSS例3の“横スクロール”を適用して、スマホでも崩れないことを確認してください。

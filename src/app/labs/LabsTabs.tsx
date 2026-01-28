@@ -29,19 +29,56 @@ function cn(...classes: Array<string | undefined | false | null>) {
   return classes.filter(Boolean).join(" ");
 }
 
+/**
+ * 先頭番号を取り出す：
+ * - "29. xxx" / "29．xxx" を想定（半角/全角ドット）
+ * - titleに無ければ slug の "29-xxx" / "29_xxx" も見る
+ */
+function extractOrder(lab: LabItem): number {
+  const mTitle = lab.title.match(/^(\d+)\s*[.．]/);
+  if (mTitle) return Number(mTitle[1]);
+
+  const mSlug = lab.slug.match(/^(\d+)[-_]/);
+  if (mSlug) return Number(mSlug[1]);
+
+  return Number.POSITIVE_INFINITY; // 番号が無いものは最後へ
+}
+
+function sortLabs(list: LabItem[]): LabItem[] {
+  return [...list].sort((a, b) => {
+    const oa = extractOrder(a);
+    const ob = extractOrder(b);
+    if (oa !== ob) return oa - ob;
+
+    // 同順位の安定化：date → title
+    if (a.date !== b.date) return a.date.localeCompare(b.date);
+    return a.title.localeCompare(b.title, "ja");
+  });
+}
+
 export default function LabsTabs({ grouped }: { grouped: Grouped }) {
   const [active, setActive] = useState<Category>("html");
 
-  const counts = useMemo(
+  // ✅ ここでカテゴリごとに番号順へ整列（表示側で確実に揃える）
+  const sorted = useMemo(
     () => ({
-      html: grouped.html.length,
-      css: grouped.css.length,
-      javascript: grouped.javascript.length,
+      html: sortLabs(grouped.html),
+      css: sortLabs(grouped.css),
+      javascript: sortLabs(grouped.javascript),
     }),
     [grouped]
   );
 
-  const items = grouped[active];
+  const counts = useMemo(
+    () => ({
+      html: sorted.html.length,
+      css: sorted.css.length,
+      javascript: sorted.javascript.length,
+    }),
+    [sorted]
+  );
+
+  const items = sorted[active];
 
   return (
     <section>

@@ -1,0 +1,321 @@
+---
+title: "27. data-*属性（JS用データの渡し方）"
+date: "2026-01-28"
+summary: "data-*でHTMLに“JSが読むための値”を持たせる。datasetで読める（ハイフンはキャメル化）／型は基本文字列／機密を入れない／ariaと役割分担。"
+category: "html"
+level: "beginner"
+tags: ["html", "data-attributes", "dataset", "javascript", "dom", "button", "attribute-selector", "aria", "accessibility", "security"]
+draft: false
+---
+
+# 27. data-*属性（JS用データの渡し方）
+
+---
+## まず結論
+
+data-*を使うと、HTMLに“JSが読むための値”を安全に持たせて、クリック対象や設定値を管理しやすくできます。
+
+---
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>data-* Minimum</title>
+</head>
+<body>
+  <button type="button" data-action="open" data-target="#modal">
+    開く
+  </button>
+
+  <script>
+    // data-* を読む最小例（学習用）
+    const btn = document.querySelector('button[data-action="open"]');
+    console.log(btn.dataset.action); // "open"
+    console.log(btn.dataset.target); // "#modal"
+  </script>
+</body>
+</html>
+~~~
+
+datasetで読める（`data-target` → `dataset.target`）のがポイント。
+
+---
+## 重要ポイント（ここで迷いがち）
+
+- data-*は「自由に作れる属性」  
+  例：`data-id` / `data-action` / `data-user-name` など。
+- JSで読むときは `element.dataset` が便利  
+  - `data-id="12"` → `el.dataset.id` は `"12"`（文字列）
+  - `data-user-name="taro"` → `el.dataset.userName`（ハイフンはキャメルケース）
+- 値は基本“文字列”として扱われる  
+  数字として使うなら `Number(el.dataset.count)` など変換が必要。
+- idやclassの乱用を減らせる  
+  - classは見た目用  
+  - data-*は“挙動/設定値”用  
+  で分けると保守が楽。
+- 機密情報を入れない  
+  HTMLは誰でも見られる。トークンやパスワードなどは絶対入れない。
+
+---
+## 例で理解（よく使うパターン 5つ）
+
+### 1) 一覧の「どれが押されたか」を持つ（data-id）
+
+~~~html
+<ul>
+  <li><button type="button" data-id="101">カートに入れる</button></li>
+  <li><button type="button" data-id="102">カートに入れる</button></li>
+</ul>
+~~~
+
+### 2) 動作を分ける（data-action）
+
+~~~html
+<button type="button" data-action="increment">+</button>
+<button type="button" data-action="decrement">-</button>
+~~~
+
+### 3) ターゲットを指定する（data-target）
+
+~~~html
+<button type="button" data-action="toggle" data-target="#faq1">開閉</button>
+<div id="faq1" hidden>...</div>
+~~~
+
+### 4) しきい値など設定値をHTML側に置く（data-max）
+
+~~~html
+<input name="count" type="number" data-max="10" />
+~~~
+
+### 5) CSSでも“条件分岐っぽく”使える（属性セレクタ）
+
+~~~html
+<button class="btn" data-variant="ghost" type="button">ボタン</button>
+~~~
+
+~~~css
+.btn[data-variant="ghost"]{
+  border-style: dashed;
+  opacity: .9;
+}
+~~~
+
+---
+## 使い分け（class / id / aria-* との違い）
+
+- class：主に見た目（CSS）や“同じ部品”の目印
+- id：ページ内で唯一（ラベル紐付け、ページ内リンク）
+- data-*：JS用の値・種類・設定・識別子（“意味はアプリ都合”）
+- aria-*：アクセシビリティ（読み上げ・状態）用  
+  → “操作の状態”は `aria-expanded` 等で持つのが基本（#17でも触れた）
+
+---
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- `js-` class と data-* を組み合わせると事故が減る  
+  例：`.js-toggle`（JSの対象） + `data-target="#x"`（対象ID）
+- 状態はdata-*だけで表さない（必要ならariaも併用）  
+  例：開閉なら `aria-expanded="true/false"` を更新する（読み上げに効く）。
+- 値は短く・安定に  
+  `data-action="open"` のように“動詞”で揃えると読みやすい。
+- 改ざんされる前提で  
+  `data-price="1000"` を信じて決済…みたいなことはNG（サーバー側で検証）。
+
+---
+## NG・禁止例（事故る書き方）
+
+### NG1）機密情報をdata-*に入れる
+
+~~~html
+<div data-token="SECRET">...</div>
+~~~
+
+✅ 正：機密はHTMLに置かない（サーバー側・安全な仕組みで扱う）
+
+### NG2）idを増やしまくってJS専用にする
+
+~~~html
+<button id="btn1">...</button>
+<button id="btn2">...</button>
+~~~
+
+✅ 正：同じ種類はclassやdataでまとめる
+
+~~~html
+<button class="js-add" data-id="1">...</button>
+<button class="js-add" data-id="2">...</button>
+~~~
+
+### NG3）dataの命名がバラバラで読めない
+
+~~~html
+<button data-act="open" data-targetid="x">...</button>
+~~~
+
+✅ 正：ルールを決めて揃える
+
+~~~html
+<button data-action="open" data-target="#x">...</button>
+~~~
+
+### NG4）値が数字なのに文字列のまま計算してバグる
+
+~~~js
+el.dataset.count + 1 // "3" + 1 → "31"
+~~~
+
+✅ 正：数値に変換
+
+~~~js
+Number(el.dataset.count) + 1
+~~~
+
+---
+## 見た目を整える（HTML+CSSセット：4例）
+
+色は使わず、線・余白・影・動きで整えます。
+
+### 例1）data-actionでボタン種類を分ける（CSS側）
+
+<HtmlCssDemo
+  title="例1）data-actionでボタン種類を分ける（CSS側）"
+  height={760}
+  html={String.raw`<div class="actions">
+  <button class="btn" data-action="save" type="button">保存</button>
+  <button class="btn" data-action="delete" type="button">削除</button>
+</div>`}
+  css={String.raw`.actions{ display:flex; gap:.6rem; flex-wrap: wrap; }
+
+.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+  transition: transform .15s ease;
+}
+.btn:hover{ transform: translateY(-1px); }
+.btn[data-action="delete"]{ border-style: dashed; opacity: .85; }`}
+/>
+
+### 例2）カード一覧：data-idで“どれ”かを持つ
+
+<HtmlCssDemo
+  title="例2）カード一覧：data-idで“どれ”かを持つ"
+  height={880}
+  html={String.raw`<div class="grid">
+  <button class="card js-open" data-id="101" type="button">
+    <span class="card__title">商品A</span>
+    <span class="card__meta">ID: 101</span>
+  </button>
+  <button class="card js-open" data-id="102" type="button">
+    <span class="card__title">商品B</span>
+    <span class="card__meta">ID: 102</span>
+  </button>
+</div>`}
+  css={String.raw`.grid{ display:grid; gap: 1rem; }
+@media (min-width: 760px){ .grid{ grid-template-columns: 1fr 1fr; } }
+
+.card{
+  text-align: left;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.card__title{ display:block; font-weight: 600; }
+.card__meta{ display:block; opacity: .8; margin-top: .35rem; }`}
+/>
+
+### 例3）トグル（data-target + focus見え）
+
+<HtmlCssDemo
+  title="例3）トグル（data-target + focus見え）"
+  height={860}
+  html={String.raw`<button class="btn js-toggle" type="button" data-target="#faqx" aria-expanded="false">
+  FAQを開閉
+</button>
+
+<div id="faqx" hidden>
+  <p>中身</p>
+</div>`}
+  css={String.raw`.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+
+.btn:focus-visible{
+  outline: 3px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 14px;
+}
+
+#faqx{
+  margin-top: .8rem;
+  padding: .9rem 1rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 16px;
+}`}
+/>
+
+### 例4）入力にdata-max（UIヒントとして）
+
+<HtmlCssDemo
+  title="例4）入力にdata-max（UIヒントとして）"
+  height={820}
+  html={String.raw`<div class="field">
+  <label class="label" for="count">人数</label>
+  <input class="input" id="count" name="count" type="number" data-max="10" placeholder="最大10" />
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 420px; }
+.label{ font-size: .95rem; }
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}`}
+/>
+
+---
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. data-user-name は dataset では何になる？</summary>
+  <p>A. <code>dataset.userName</code>。</p>
+</details>
+
+<details>
+  <summary>Q. datasetで取れる値の型は基本何？</summary>
+  <p>A. 文字列。</p>
+</details>
+
+<details>
+  <summary>Q. data-*に入れてはいけないものは？</summary>
+  <p>A. 機密情報（トークン/パスワード等）。</p>
+</details>
+
+---
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1) ボタンを3つ作って、`data-action="open" / "close" / "reset"` を付けてください。  
+DevToolsのConsoleで `document.querySelector('[data-action="open"]').dataset.action` を試す。
+
+2) 記事カードを2つ作り、それぞれに `data-id` を付けてください。  
+“どれを押したか”を扱えるイメージを言語化できたらOK（JSは書かなくてもOK）。

@@ -1,5 +1,5 @@
 ---
-title: "meta charset / meta viewport（文字化け・スマホ対応）"
+title: "3. meta charset / meta viewport（文字化け・スマホ対応）"
 date: "2026-01-26"
 summary: "`meta charset`で文字化けを防ぎ、`meta viewport`でスマホでも読みやすい表示倍率にできます。"
 category: "html"
@@ -160,33 +160,30 @@ links: []
 
 ### 例1：スマホでも読みやすい本文幅（viewportと相性◎）
 
-```html
-<main class="page">
+<HtmlCssDemo
+  title="例1：スマホでも読みやすい本文幅（viewportと相性◎）"
+  html={String.raw`<main class="page">
   <h1>読みやすいページ</h1>
   <p>スマホでも横に伸びすぎないようにします。</p>
-</main>
-```
-
-```css
-.page {
+</main>`}
+  css={String.raw`.page {
   max-width: 720px;
   margin: 0 auto;
   padding: 20px;
   line-height: 1.8;
-}
-```
+}`}
+  height={210}
+/>
 
 ### 例2：画像のはみ出し防止（viewportだけでは直らない代表）
 
-```html
-<figure class="media">
+<HtmlCssDemo
+  title="例2：画像のはみ出し防止（viewportだけでは直らない代表）"
+  html={String.raw`<figure class="media">
   <img class="media__img" src="photo.jpg" alt="サンプル画像" />
   <figcaption class="media__cap">画像が横にはみ出さない</figcaption>
-</figure>
-```
-
-```css
-.media {
+</figure>`}
+  css={String.raw`.media {
   margin: 0;
 }
 
@@ -199,20 +196,19 @@ links: []
 .media__cap {
   opacity: 0.8;
   font-size: 0.95rem;
-}
-```
+}`}
+  height={240}
+/>
 
 ### 例3：見出しと本文の余白を整える（スマホで詰まりにくい）
 
-```html
-<section class="block">
+<HtmlCssDemo
+  title="例3：見出しと本文の余白を整える（スマホで詰まりにくい）"
+  html={String.raw`<section class="block">
   <h2 class="block__title">セクション</h2>
   <p>余白があると読みやすい。</p>
-</section>
-```
-
-```css
-.block {
+</section>`}
+  css={String.raw`.block {
   border: 1px solid currentColor;
   border-radius: 16px;
   padding: 16px;
@@ -221,8 +217,9 @@ links: []
 .block__title {
   margin: 0 0 10px;
   letter-spacing: 0.02em;
-}
-```
+}`}
+  height={220}
+/>
 
 ---
 

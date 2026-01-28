@@ -1,5 +1,5 @@
 ---
-title: "HTMLの基本構造（doctype / html / head / body）"
+title: "2. HTMLの基本構造（doctype / html / head / body）"
 date: "2026-01-26"
 summary: "HTMLの基本構造を押さえると、「ブラウザが正しく解釈するページの土台」を毎回迷わず作れます。"
 category: "html"
@@ -170,15 +170,13 @@ HTMLの基本構造を押さえると、「ブラウザが正しく解釈する�
 
 ### 例1：headで読み込んだCSSが効いてるか確認する枠
 
-```html
-<main class="wrap">
+<HtmlCssDemo
+  title="例1：headで読み込んだCSSが効いてるか確認する枠"
+  html={String.raw`<main class="wrap">
   <h1>基本構造チェック</h1>
   <p class="note">CSSが効いていれば枠と余白が出ます。</p>
-</main>
-```
-
-```css
-.wrap {
+</main>`}
+  css={String.raw`.wrap {
   max-width: 720px;
   margin: 0 auto;
   padding: 24px;
@@ -189,20 +187,19 @@ HTMLの基本構造を押さえると、「ブラウザが正しく解釈する�
   border-radius: 14px;
   padding: 12px;
   opacity: 0.9;
-}
-```
+}`}
+  height={220}
+/>
 
 ### 例2：headの情報（title）とbodyの見出しをセットで整える
 
-```html
-<header class="hero">
+<HtmlCssDemo
+  title="例2：headの情報（title）とbodyの見出しをセットで整える"
+  html={String.raw`<header class="hero">
   <h1 class="hero__title">このページの主題</h1>
   <p class="hero__lead">headは設定、bodyは中身。</p>
-</header>
-```
-
-```css
-.hero {
+</header>`}
+  css={String.raw`.hero {
   padding: 20px;
   border-bottom: 1px solid currentColor;
 }
@@ -215,20 +212,19 @@ HTMLの基本構造を押さえると、「ブラウザが正しく解釈する�
 .hero__lead {
   margin: 0;
   opacity: 0.8;
-}
-```
+}`}
+  height={200}
+/>
 
 ### 例3：bodyの中身を“セクション”として区切る
 
-```html
-<section class="section">
+<HtmlCssDemo
+  title="例3：bodyの中身を“セクション”として区切る"
+  html={String.raw`<section class="section">
   <h2 class="section__title">本文エリア</h2>
   <p>ここにコンテンツを増やしていきます。</p>
-</section>
-```
-
-```css
-.section {
+</section>`}
+  css={String.raw`.section {
   padding: 16px;
   border: 1px solid currentColor;
   border-radius: 18px;
@@ -237,8 +233,10 @@ HTMLの基本構造を押さえると、「ブラウザが正しく解釈する�
 
 .section__title {
   margin-top: 0;
-}
-```
+}`}
+  height={220}
+/>
+
 
 ---
 

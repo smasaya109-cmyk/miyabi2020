@@ -1,0 +1,408 @@
+---
+title: "26. name / value / required / placeholder（フォームで重要）"
+date: "2026-01-28"
+summary: "フォームが“ちゃんと送れる”かはname（送信キー）とvalue（送る値）とrequired（必須）で決まる。placeholderは例で、ラベルの代わりにはならない。"
+category: "html"
+level: "beginner"
+tags: ["html", "form", "name", "value", "required", "placeholder", "label", "select", "radio", "checkbox", "hidden", "accessibility", "security"]
+draft: false
+---
+
+# 26. name / value / required / placeholder（フォームで重要）
+
+---
+## まず結論
+
+フォームが“ちゃんと送れる”かは、name（送信キー）とvalue（送る値）とrequired（必須）で決まります。
+
+---
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Form Attributes</title>
+</head>
+<body>
+  <form action="/submit" method="post">
+    <label for="email">メール（必須）</label>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      required
+      placeholder="example@domain.com"
+    />
+
+    <button type="submit">送信</button>
+  </form>
+</body>
+</html>
+~~~
+
+---
+## 重要ポイント（ここで迷いがち）
+
+### 1) name：送信データの“項目名”（超重要）
+- nameが無いと「送信されない / 扱いにくい」ことが多い  
+  例：`name="email"` → `email=...` が送られる
+
+### 2) value：送信される“中身”
+- `input type="text/email/password"` など：ユーザーが入れた文字がvalueになる
+- `checkbox / radio / select`：valueを自分で決めるのが基本（#23/#25）
+- 表示文字（label）と送信値（value）は別
+
+### 3) required：必須をブラウザにも伝える
+- 送信前に「空なら止める」簡易チェックが働く
+- “必須”と書くだけより事故が減る
+
+### 4) placeholder：入力例（ラベルの代わりではない）
+- 入力し始めると消えるので、labelは必須（#21）
+
+---
+## 例で理解（よく使うパターン 5つ）
+
+### 1) nameがあると送れる（テキスト入力）
+
+~~~html
+<label for="name">お名前</label>
+<input id="name" name="name" type="text" placeholder="山田 太郎" />
+~~~
+
+### 2) radio：valueを決める（送信されるのはvalue）
+
+~~~html
+<p>連絡方法</p>
+
+<input id="c-mail" name="contact" type="radio" value="mail" required />
+<label for="c-mail">メール</label>
+
+<input id="c-tel" name="contact" type="radio" value="tel" />
+<label for="c-tel">電話</label>
+~~~
+
+### 3) checkbox：チェックされたものだけ送られる
+
+~~~html
+<input id="agree" name="agree" type="checkbox" value="yes" required />
+<label for="agree">利用規約に同意する</label>
+~~~
+
+### 4) select：未選択を防ぐ（value="" + required）
+
+~~~html
+<label for="pref">都道府県</label>
+<select id="pref" name="pref" required>
+  <option value="" disabled selected>選んでください</option>
+  <option value="tokyo">東京都</option>
+  <option value="osaka">大阪府</option>
+</select>
+~~~
+
+### 5) hidden：ユーザーに見せずに値を送る（用途は限定）
+
+~~~html
+<input type="hidden" name="source" value="lp-a" />
+~~~
+
+例：どのページから来たか等。**信用してはいけない**（改ざんされる前提でサーバー側で検証）。
+
+---
+## 使い分け（似た概念の整理）
+
+### name（キー）とid（紐付け）を混同しない
+- id：label/JS/CSSの目印
+- name：送信データの項目名
+
+### value（送る中身）と見た目（label/text）を混同しない
+- 表示は自由に変えても、valueは安定させると集計がラク
+
+### requiredは“必須”の実体
+- 見た目の「必須」だけだと、人間が見落として事故る
+
+### placeholderは“例”
+- 便利だけど消えるので、ラベルの代わりにしない
+
+---
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- 必須は `required` + 見た目（必須バッジ）の両方が強い
+- placeholderは短く（長文は読まれない）
+- valueは英字・短く・ブレない  
+  例：`contact=mail` / `contact=tel`
+- フォーム送信は信用しない  
+  HTMLのrequired等はユーザーが回避できる。安全はサーバー側で確保。
+- エラーが出たときの導線を考える  
+  labelが正しくあると「どこがエラーか」が説明しやすい。
+
+---
+## NG・禁止例（事故る書き方）
+
+### NG1）name無し（送信できない/拾えない）
+
+~~~html
+<input id="email" type="email" />
+~~~
+
+✅ 正
+
+~~~html
+<input id="email" name="email" type="email" />
+~~~
+
+### NG2）label無しでplaceholderだけ
+
+~~~html
+<input name="email" type="email" placeholder="メール" />
+~~~
+
+✅ 正
+
+~~~html
+<label for="email">メール</label>
+<input id="email" name="email" type="email" placeholder="example@domain.com" />
+~~~
+
+### NG3）radioのvalue未設定で何が送られるか不明
+
+~~~html
+<input name="pay" type="radio" />
+~~~
+
+✅ 正
+
+~~~html
+<input name="pay" type="radio" value="card" />
+~~~
+
+### NG4）必須のつもりなのにrequiredが無い
+
+~~~html
+<label for="tel">電話（必須）</label>
+<input id="tel" name="tel" type="tel" />
+~~~
+
+✅ 正
+
+~~~html
+<label for="tel">電話（必須）</label>
+<input id="tel" name="tel" type="tel" required />
+~~~
+
+### NG5）hiddenを“証拠”として信じる
+`value="admin"` などに改ざん可能。  
+✅ 対策：サーバー側で検証・権限管理。
+
+---
+## 見た目を整える（HTML+CSSセット：5例）
+
+色は使わず、線・余白・影・フォーカスで整えます。
+
+### 例1）必須バッジ + required（王道）
+
+<HtmlCssDemo
+  title="例1）必須バッジ + required（王道）"
+  height={820}
+  html={String.raw`<div class="field">
+  <label class="label" for="email2">
+    メール <span class="req" aria-hidden="true">必須</span>
+  </label>
+  <input class="input" id="email2" name="email" type="email" required placeholder="example@domain.com" />
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 520px; }
+.label{ font-size: .95rem; }
+.req{
+  display: inline-block;
+  padding: .1rem .45rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: .8rem;
+  margin-left: .4rem;
+  opacity: .8;
+}
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}`}
+/>
+
+### 例2）selectの未選択を防ぐセット
+
+<HtmlCssDemo
+  title="例2）selectの未選択を防ぐセット"
+  height={820}
+  html={String.raw`<div class="field">
+  <label class="label" for="pref2">都道府県</label>
+  <select class="input" id="pref2" name="pref" required>
+    <option value="" disabled selected>選んでください</option>
+    <option value="tokyo">東京都</option>
+    <option value="osaka">大阪府</option>
+  </select>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 520px; }
+.label{ font-size: .95rem; }
+
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+select.input{ background: transparent; }
+.input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}`}
+/>
+
+### 例3）checkbox必須（同意）
+
+<HtmlCssDemo
+  title="例3）checkbox必須（同意）"
+  height={760}
+  html={String.raw`<div class="check">
+  <input class="check__box" id="agree2" name="agree" type="checkbox" value="yes" required />
+  <label class="check__label" for="agree2">利用規約に同意する</label>
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.check{
+  max-width: 560px;
+  display: flex;
+  gap: .6rem;
+  align-items: flex-start;
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 16px;
+}
+.check__box{ width: 18px; height: 18px; margin-top: .2rem; }
+.check__label{ cursor: pointer; line-height: 1.6; }
+
+.check:has(.check__box:focus-visible){
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}`}
+/>
+
+### 例4）placeholderは“補助”として薄く（やりすぎない）
+
+<HtmlCssDemo
+  title="例4）placeholderは“補助”として薄く（やりすぎない）"
+  height={720}
+  html={String.raw`<div class="field">
+  <label class="label" for="company">会社名（任意）</label>
+  <input class="input" id="company" name="company" type="text" placeholder="例：株式会社◯◯" />
+</div>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.field{ display: grid; gap: .35rem; max-width: 520px; }
+.label{ font-size: .95rem; }
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+}
+.input::placeholder{ opacity: .6; }`}
+/>
+
+### 例5）フォーム全体をカード化（まとめ）
+
+<HtmlCssDemo
+  title="例5）フォーム全体をカード化（まとめ）"
+  height={980}
+  html={String.raw`<form class="card" action="/submit" method="post">
+  <div class="field">
+    <label class="label" for="name2">お名前</label>
+    <input class="input" id="name2" name="name" type="text" required placeholder="山田 太郎" />
+  </div>
+
+  <div class="field">
+    <label class="label" for="contact2">連絡方法</label>
+    <select class="input" id="contact2" name="contact" required>
+      <option value="" disabled selected>選んでください</option>
+      <option value="mail">メール</option>
+      <option value="tel">電話</option>
+    </select>
+  </div>
+
+  <input type="hidden" name="source" value="lp-a" />
+
+  <button class="btn" type="submit">送信</button>
+</form>`}
+  css={String.raw`*{ box-sizing: border-box; }
+
+.card{
+  max-width: 560px;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+  display: grid;
+  gap: .9rem;
+}
+.field{ display: grid; gap: .35rem; }
+.label{ font-size: .95rem; }
+
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+}
+select.input{ background: transparent; }
+
+.input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+}`}
+/>
+
+---
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. 送信データの“キー（項目名）”はどれ？</summary>
+  <p>A. name。</p>
+</details>
+
+<details>
+  <summary>Q. radio/checkbox/selectで「サーバーに送る中身」を決めるのはどれ？</summary>
+  <p>A. value。</p>
+</details>
+
+<details>
+  <summary>Q. placeholderは何のため？ labelの代わりになる？</summary>
+  <p>A. 入力例のため／代わりにはならない。</p>
+</details>
+
+---
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1) お問い合わせフォームを作り、  
+メール：`type="email"` + `required` + `placeholder`  
+連絡方法：selectで `value="mail"` / `value="tel"` を設定  
+まで入れて“送れる形”にしてください（actionは仮でOK）。
+
+2) 「利用規約に同意する」checkboxを作り、`required` を付けて  
+チェックしないと送れないことを確認してください。

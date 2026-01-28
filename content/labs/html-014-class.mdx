@@ -1,0 +1,311 @@
+---
+title: "14. class（CSS/JSの接点と命名のコツ）"
+date: "2026-01-28"
+summary: "classはCSS/JSの“目印”。複数要素へ再利用でき、命名を役割寄りにすると壊れにくく保守しやすい。"
+category: "html"
+level: "beginner"
+tags: ["html", "class", "css", "javascript", "naming", "bem"]
+draft: false
+---
+
+# 14. class（CSS/JSの接点と命名のコツ）
+
+---
+
+## まず結論
+
+classを付けると、同じ見た目・同じ振る舞いを“まとめて再利用”できるようになります。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>class Minimum</title>
+  <style>
+    .btn{ padding:.7rem 1rem; border:1px solid currentColor; border-radius:14px; text-decoration:none; display:inline-block; }
+  </style>
+</head>
+<body>
+  <a class="btn" href="/contact.html">お問い合わせ</a>
+</body>
+</html>
+~~~
+
+---
+
+## 重要ポイント（初心者がつまずく所だけ）
+
+- **classは“複数の要素に付けてOK”（再利用するための仕組み）**
+  - idは基本1ページで唯一（#15で詳しく）。迷ったらまずclass。
+- **複数のclassを同時に付けられる**
+  - 空白区切りで並べる：`class="btn btn--wide"`
+- **CSS/JSの“操作対象の目印”になる**
+  - CSS: `.btn { ... }`
+  - JS: `document.querySelector('.btn')`
+- **命名は「見た目」より「役割」**
+  - `red left` ではなく `btn card nav__link` みたいにすると壊れにくい。
+- **よくある詰まり：class名にスペースを入れてしまう**
+  - `class="btn primary"` は“2つのclass”であって、`btn primary` という1個の名前ではない。
+
+---
+
+## 例で理解（よく使うパターン 5つ）
+
+### 1) 同じボタン見た目を複数に適用
+
+~~~html
+<a class="btn" href="/price.html">料金を見る</a>
+<a class="btn" href="/contact.html">お問い合わせ</a>
+~~~
+
+### 2) ベース + バリエーション（よく使う）
+
+~~~html
+<a class="btn btn--wide" href="/contact.html">お問い合わせ</a>
+~~~
+
+### 3) コンポーネント分割（カード）
+
+~~~html
+<div class="card">
+  <h2 class="card__title">お知らせ</h2>
+  <p class="card__text">受付は10:00からです。</p>
+</div>
+~~~
+
+### 4) JS用の目印にする（見た目と分けてもOK）
+
+~~~html
+<button class="btn js-open-modal" type="button">開く</button>
+~~~
+
+`.btn` は見た目、`.js-open-modal` はJS用。役割が分かれて保守がラク。
+
+### 5) 状態（state）を表すclass
+
+~~~html
+<a class="btn is-disabled" href="#" aria-disabled="true">送信</a>
+~~~
+
+状態は `is-` などで統一すると読みやすい（プロジェクトでルール化しやすい）。
+
+---
+
+## 使い分け（idとの違い：ここ超重要）
+
+- **class**：複数OK / 再利用向き / スタイリング向き
+- **id**：基本1つだけ / ページ内リンクやフォーム紐付け等に強い / 乱用しない
+- **迷ったら：まずclass**（あとで増やしても壊れにくい）
+
+---
+
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- **class名は“意味が伝わる日本語ローマ字”でもOK**
+  - 例：`class="news-list"` は十分実務的（ただし一貫性が大事）。
+- **is-（状態）と js-（JS用）を分けると事故が減る**
+  - CSS変更がJS挙動を壊す…を避けやすい。
+- **アクセシビリティはclassではなく属性で担保することが多い**
+  - 例：無効状態は `aria-disabled="true"` も併用（見た目だけで終わらせない）。
+
+---
+
+## NG・禁止例（事故る書き方）
+
+### NG1）見た目だけの命名で破綻する
+
+~~~html
+<p class="big">見出しっぽい</p>
+~~~
+
+✅ 正：役割で命名する
+
+~~~html
+<p class="section-title">見出しっぽい</p>
+~~~
+
+### NG2）1要素に全部盛りで意味が不明
+
+~~~html
+<div class="a b c d e f g">...</div>
+~~~
+
+✅ 正：役割を整理（カードならカード構造に）
+
+### NG3）class名に日本語や記号を混ぜる（避ける）
+
+~~~html
+<div class="ボタン!">...</div>
+~~~
+
+✅ 正：英数字とハイフン中心に
+
+~~~html
+<div class="btn-primary">...</div>
+~~~
+
+### NG4）classの付け忘れでCSSが当たらない
+
+「CSS書いたのに変わらない」原因No.1  
+✅ 対策：HTML側にclassがあるか、スペル一致かを確認（DevToolsで要素選択）
+
+---
+
+## 見た目を整える（HTML+CSSセット：5例）
+
+色は使わず、線・余白・影・動きで整えます。
+
+### 例1）ボタン（ベース）
+
+<HtmlCssDemo
+  title="例1）ボタン（ベース）"
+  html={String.raw`<a class="btn" href="/contact.html">お問い合わせ</a>`}
+  css={String.raw`.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.10);
+}`}
+  height={200}
+/>
+
+### 例2）バリエーション（横幅を広げる）
+
+<HtmlCssDemo
+  title="例2）バリエーション（横幅を広げる）"
+  html={String.raw`<a class="btn btn--wide" href="/contact.html">お問い合わせ</a>`}
+  css={String.raw`.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.10);
+}
+.btn--wide{ padding-left: 1.4rem; padding-right: 1.4rem; }`}
+  height={210}
+/>
+
+### 例3）カード（コンポーネント）
+
+<HtmlCssDemo
+  title="例3）カード（コンポーネント）"
+  html={String.raw`<div class="card">
+  <h2 class="card__title">お知らせ</h2>
+  <p class="card__text">受付は10:00からです。</p>
+</div>`}
+  css={String.raw`.card{
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+.card__title{ margin: 0 0 .35rem; font-size: 1.1rem; }
+.card__text{ margin: 0; line-height: 1.85; }`}
+  height={230}
+/>
+
+### 例4）リスト（BEMっぽく分ける）
+
+<HtmlCssDemo
+  title="例4）リスト（BEMっぽく分ける）"
+  html={String.raw`<ul class="menu">
+  <li class="menu__item"><a class="menu__link" href="/">ホーム</a></li>
+  <li class="menu__item"><a class="menu__link" href="/service.html">サービス</a></li>
+</ul>`}
+  css={String.raw`.menu{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+.menu__link{
+  display: inline-block;
+  padding: .6rem .9rem;
+  border: 1px solid rgba(0,0,0,.2);
+  border-radius: 999px;
+  text-decoration: none;
+}`}
+  height={220}
+/>
+
+### 例5）状態クラス（無効っぽく見せる + 属性も）
+
+<HtmlCssDemo
+  title="例5）状態クラス（無効っぽく見せる + 属性も）"
+  html={String.raw`<a class="btn is-disabled" href="#" aria-disabled="true">送信</a>`}
+  css={String.raw`.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.10);
+}
+.is-disabled{
+  opacity: .45;
+  pointer-events: none;
+  box-shadow: none;
+  transform: none;
+}`}
+  height={220}
+/>
+
+---
+
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. classは同じページで複数要素に付けていい？</summary>
+  <p>A. いい（再利用が目的）。</p>
+</details>
+
+<details>
+  <summary>Q. class="btn primary" はclassがいくつ？</summary>
+  <p>A. 2つ（btn と primary）。</p>
+</details>
+
+<details>
+  <summary>Q. 迷ったら class と id どっちを使う？</summary>
+  <p>A. まずclass。</p>
+</details>
+
+---
+
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1. 「料金を見る」「お問い合わせ」の2つのリンクを作り、両方に `.btn` を付けて同じ見た目にしてください。  
+   さらに片方だけ `btn--wide` を追加して“幅の違い”が出るのを確認。
+2. `.card` の中に h2 と p を入れ、`card__title / card__text` を付けてCSS例3を当ててください。  
+   → class名を変えるとCSSが当たらなくなる（=目印）ことも確認。

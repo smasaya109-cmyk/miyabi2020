@@ -1,0 +1,484 @@
+---
+title: "20. フォーム入門（formの役割）"
+date: "2026-01-28"
+summary: "formは入力をまとめて送る箱。action/method/name、button type、GET/POSTの使い分けまで最短で理解する。"
+category: "html"
+level: "beginner"
+tags: ["html", "form", "action", "method", "name", "get", "post", "label", "input", "accessibility"]
+draft: false
+---
+
+# 20. フォーム入門（formの役割）
+
+## まず結論
+
+formは「入力をまとめて送る箱」で、送信先（action）と送信方法（method）を決めると“送れるフォーム”になります。
+
+---
+
+## 最小の書き方（コピペで動く最小コード）
+
+~~~html
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Form Minimum</title>
+</head>
+<body>
+  <form action="/submit" method="post">
+    <label for="name">お名前</label>
+    <input id="name" name="name" type="text">
+
+    <button type="submit">送信</button>
+  </form>
+</body>
+</html>
+~~~
+
+action="/submit" は例です。実際はサーバー側の受け口URLに合わせます（ここでは“形”を学べばOK）。
+
+---
+
+## 重要ポイント（初心者が迷いがち）
+
+- **フォームは「送信する入力」をまとめる枠**
+  - formの中にある入力（input/textarea/selectなど）が送信対象になりやすい
+- **nameが送信の“キー”になる（超重要）**
+  - idは見た目・紐付け用で、送信データの名前はname  
+  - 例：name=name → name=山田 みたいに送られる
+- **methodは主に2つ**
+  - get：URLに付けて送る（検索など、共有したい/再現したい）
+  - post：本文で送る（お問い合わせなど、内容が長い/秘密性が高い）
+- **buttonのtypeに注意**
+  - formの中のbuttonは、type未指定だと送信になりがち  
+  - 送信ボタンは type="submit"、送信しない操作は type="button"
+- **labelを付けると操作性が上がる**
+  - ラベルをクリックして入力にフォーカスできる（#21で深掘り）
+
+---
+
+## 例で理解（よく使うパターン 4つ）
+
+### 1) 検索フォーム（GET）
+
+~~~html
+<form action="/search" method="get">
+  <label for="q">検索</label>
+  <input id="q" name="q" type="search">
+  <button type="submit">検索</button>
+</form>
+~~~
+
+URLが /search?q=キーワード のようになり、共有・ブックマークしやすい。
+
+### 2) お問い合わせフォーム（POST）
+
+~~~html
+<form action="/contact" method="post">
+  <label for="email">メール</label>
+  <input id="email" name="email" type="email" autocomplete="email">
+
+  <label for="msg">内容</label>
+  <textarea id="msg" name="message" rows="5"></textarea>
+
+  <button type="submit">送信</button>
+</form>
+~~~
+
+### 3) 送信しないボタン（フォーム内での事故回避）
+
+~~~html
+<form action="/contact" method="post">
+  <label for="name">お名前</label>
+  <input id="name" name="name" type="text">
+
+  <button type="button">プレビュー</button>
+  <button type="submit">送信</button>
+</form>
+~~~
+
+### 4) 送信先が未定のとき（学習/プロトタイプ）
+
+~~~html
+<form>
+  <label for="name">お名前</label>
+  <input id="name" name="name" type="text">
+  <button type="submit">送信</button>
+</form>
+~~~
+
+action未指定は“同じページへ送信”扱いになることがあります。実務では基本、送信先を決めます。
+
+---
+
+## 使い分け（似た要素との違い）
+
+### フォーム送信（form） vs ただの入力（inputだけ）
+
+- 送って処理したい → formが必要
+- 見た目として入力欄を置くだけ（送らない） → formが不要な場合もある  
+  （ただしJSで扱うなら必要になることも）
+
+### GET vs POST
+
+- 検索・絞り込み・並び替え → GET（URLで再現できるのがメリット）
+- お問い合わせ・ログイン・長文・個人情報 → POST（URLに出さない）
+
+---
+
+## 実務のコツ（SEO/安全/アクセシビリティ）
+
+- 入力には **autocomplete** を付けると入力がラク  
+  例：autocomplete="name" / "email" / "tel"
+- 送信ボタンは具体的な文言に  
+  ×「OK」→ ○「登録する」「送信する」
+- 同じページにフォームが複数あるなら、目的が分かる見出しを付ける
+- “必須”は見た目だけにしない  
+  requiredや適切なtypeでブラウザにも伝える（#26で詳しく）
+
+---
+
+## NG・禁止例（事故る書き方）
+
+### NG1）nameが無い（送信してもデータ名が付かない）
+
+~~~html
+<input id="email" type="email">
+~~~
+
+✅ 正：nameを付ける
+
+~~~html
+<input id="email" name="email" type="email">
+~~~
+
+### NG2）フォーム内のボタンが全部送信になってしまう
+
+~~~html
+<form>
+  <button>プレビュー</button>
+</form>
+~~~
+
+✅ 正：送信しないなら type="button"
+
+~~~html
+<button type="button">プレビュー</button>
+~~~
+
+### NG3）検索なのにPOSTにする（URLで共有できない）
+
+技術的にダメではないが、目的に合いにくい。  
+✅ 正：検索はGETが定番。
+
+### NG4）ラベル無しで何の入力か分からない
+
+~~~html
+<input name="email" type="email" placeholder="メール">
+~~~
+
+✅ 正：labelを付ける（placeholderは補助）
+
+---
+
+## 見た目を整える（HTML+CSSセット：5例）
+
+色は使わず、線・余白・影・フォーカスで整えます。
+
+### 例1）縦並びの基本フォーム
+
+<HtmlCssDemo
+  title="例1）縦並びの基本フォーム"
+  height={560}
+  html={String.raw`<form class="form" action="/contact" method="post">
+  <div class="field">
+    <label class="label" for="name">お名前</label>
+    <input class="input" id="name" name="name" type="text" autocomplete="name" />
+  </div>
+
+  <div class="field">
+    <label class="label" for="email">メール</label>
+    <input class="input" id="email" name="email" type="email" autocomplete="email" />
+  </div>
+
+  <button class="btn" type="submit">送信</button>
+</form>`}
+  css={String.raw`.form{ max-width: 520px; display: grid; gap: .9rem; }
+.field{ display: grid; gap: .35rem; }
+.label{ font-size: .95rem; }
+
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+}
+.btn:hover{ box-shadow: 0 10px 22px rgba(0,0,0,.10); transform: translateY(-1px); }`}
+/>
+
+### 例2）2列（PCだけ）にする
+
+<HtmlCssDemo
+  title="例2）2列（PCだけ）にする"
+  height={580}
+  html={String.raw`<form class="form grid2" action="/contact" method="post">
+  <div class="field">
+    <label class="label" for="name2">お名前</label>
+    <input class="input" id="name2" name="name" type="text" />
+  </div>
+
+  <div class="field">
+    <label class="label" for="email2">メール</label>
+    <input class="input" id="email2" name="email" type="email" />
+  </div>
+
+  <button class="btn" type="submit">送信</button>
+</form>`}
+  css={String.raw`.form{ max-width: 720px; display: grid; gap: .9rem; }
+.field{ display: grid; gap: .35rem; }
+.label{ font-size: .95rem; }
+
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+}
+
+@media (min-width: 760px){
+  .grid2{
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+  }
+  .grid2 .btn{ grid-column: 1 / -1; justify-self: start; }
+}`}
+/>
+
+### 例3）送信ボタンを“右寄せ”
+
+<HtmlCssDemo
+  title="例3）送信ボタンを“右寄せ”"
+  height={560}
+  html={String.raw`<form class="form" action="/contact" method="post">
+  <div class="field">
+    <label class="label" for="email3">メール</label>
+    <input class="input" id="email3" name="email" type="email" />
+  </div>
+
+  <div class="actions">
+    <button class="btn" type="submit">送信</button>
+  </div>
+</form>`}
+  css={String.raw`.form{ max-width: 520px; display: grid; gap: .9rem; }
+.field{ display: grid; gap: .35rem; }
+.label{ font-size: .95rem; }
+
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.actions{ display:flex; justify-content: flex-end; }
+
+.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+}
+.btn:hover{ box-shadow: 0 10px 22px rgba(0,0,0,.10); transform: translateY(-1px); }`}
+/>
+
+### 例4）フォーム全体を“カード化”
+
+<HtmlCssDemo
+  title="例4）フォーム全体を“カード化”"
+  height={620}
+  html={String.raw`<form class="form form-card" action="/contact" method="post">
+  <h1 class="form-title">お問い合わせ</h1>
+
+  <div class="field">
+    <label class="label" for="name4">お名前</label>
+    <input class="input" id="name4" name="name" type="text" />
+  </div>
+
+  <div class="field">
+    <label class="label" for="email4">メール</label>
+    <input class="input" id="email4" name="email" type="email" />
+  </div>
+
+  <button class="btn" type="submit">送信</button>
+</form>`}
+  css={String.raw`.form{ max-width: 520px; display: grid; gap: .9rem; }
+.form-card{
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+
+.form-title{ margin: 0 0 .4rem; font-size: 1.2rem; }
+.field{ display: grid; gap: .35rem; }
+.label{ font-size: .95rem; }
+
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+}
+.btn:hover{ box-shadow: 0 10px 22px rgba(0,0,0,.10); transform: translateY(-1px); }`}
+/>
+
+### 例5）入力が多いときの“区切り”（fieldset風）
+
+<HtmlCssDemo
+  title="例5）入力が多いときの“区切り”（fieldset風）"
+  height={720}
+  html={String.raw`<form class="form form-card" action="/apply" method="post">
+  <h1 class="form-title">お申し込み</h1>
+
+  <div class="group">
+    <h2 class="group__title">基本情報</h2>
+
+    <div class="field">
+      <label class="label" for="name5">お名前</label>
+      <input class="input" id="name5" name="name" type="text" />
+    </div>
+  </div>
+
+  <div class="group">
+    <h2 class="group__title">連絡先</h2>
+
+    <div class="field">
+      <label class="label" for="email5">メール</label>
+      <input class="input" id="email5" name="email" type="email" />
+    </div>
+
+    <div class="field">
+      <label class="label" for="tel5">電話</label>
+      <input class="input" id="tel5" name="tel" type="tel" autocomplete="tel" />
+    </div>
+  </div>
+
+  <button class="btn" type="submit">送信</button>
+</form>`}
+  css={String.raw`.form{ max-width: 560px; display: grid; gap: .9rem; }
+.form-card{
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+
+.form-title{ margin: 0 0 .2rem; font-size: 1.2rem; }
+
+.group{
+  padding-top: .6rem;
+  border-top: 1px solid rgba(0,0,0,.14);
+}
+.group__title{ margin: 0 0 .4rem; font-size: 1.05rem; }
+
+.field{ display: grid; gap: .35rem; }
+.label{ font-size: .95rem; }
+
+.input{
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0,0,0,.25);
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+}
+.input:focus{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.btn{
+  min-height: 44px;
+  padding: .65rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+}
+.btn:hover{ box-shadow: 0 10px 22px rgba(0,0,0,.10); transform: translateY(-1px); }`}
+/>
+
+---
+
+## 理解チェック（3問・答え付き）
+
+<details>
+  <summary>Q. 送信データの“項目名”として重要なのは id と name どっち？</summary>
+  <p>A. name。</p>
+</details>
+
+<details>
+  <summary>Q. 検索フォームでよく使うmethodは？</summary>
+  <p>A. get。</p>
+</details>
+
+<details>
+  <summary>Q. フォーム内で送信しないボタンに付けるべきtypeは？</summary>
+  <p>A. type="button"。</p>
+</details>
+
+---
+
+## ミニ演習（すぐ試せる小課題 2つ）
+
+1. 検索フォームを作ってください。  
+   method="get" / 入力は name="q" / ボタン文言は「検索」  
+   送信するとURLに ?q=... が付くことを確認（実際の送信先は仮でもOK）
+2. お問い合わせフォームを作ってください。  
+   お名前（text）/ メール（email）/ 内容（textarea）/ 送信ボタン  
+   すべてに label と name を付け、CSS例1で整える
