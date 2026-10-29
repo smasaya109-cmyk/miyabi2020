@@ -82,6 +82,7 @@ export function MDX({
       <MDXRemote
         source={source}
         components={{ ...baseComponents, ...components }}
+        options={{ blockJS: false }}
       />
     </article>
   );

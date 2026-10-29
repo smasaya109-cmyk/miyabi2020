@@ -172,6 +172,8 @@ export default async function LabDetailPage({
     source: lab.content,
     components: createMdxComponents(),
     options: {
+      // content/ は自前の MDX なので JS 式（html={String.raw`...`} など）を許可。危険な式は v6 の blockDangerousJS で遮断される
+      blockJS: false,
       mdxOptions: {
         remarkPlugins: [remarkGfm],
       },
